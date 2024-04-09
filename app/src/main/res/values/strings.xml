@@ -1,0 +1,158 @@
+<resources>
+    <string name="app_name">Gratitude Wave</string>
+    <string name="login_welcome">Welcome!</string>
+    <string name="login_label_input_email">Email</string>
+    <string name="login_label_input_pass">Password</string>
+    <string name="login_button_login">Log In</string>
+    <string name="login_button_forgot_password">Forgot password?</string>
+    <string name="login_text_no_account">Don’t have a account?</string>
+    <string name="login_button_to_sign_up">Sign up</string>
+
+    <string name="button_save">Save</string>
+    <string name="button_write">Write</string>
+
+    <!--Messages-->
+    <string name="login_alert_title">Log In failed!</string>
+    <string name="login_alert_message">Incorrect credentials</string>
+
+    <!--Messages-->
+    <string name="login_note_form_error_title">Stop writing!</string>
+    <string name="login_note_form_error_message">You have unsaved changes, do you want to continue?</string>
+    <string name="login_note_form_error_empty">Empty note</string>
+
+    <string name="note_delete_alert_title">Delete note!</string>
+    <string name="note_delete_alert_message">Do you want to continue?</string>
+
+    <!--Labels-->
+    <string name="label_confirm">Accept</string>
+    <string name="label_cancel">Cancel</string>
+    <string name="label_edited">Edited</string>
+    <string name="label_dismiss">Dismiss</string>
+    <string name="label_clean">Clean</string>
+    <string name="label_today">Today</string>
+    <string name="label_go_today">Go to today</string>
+    <string name="label_see_more">See more</string>
+
+    <string name="label_signin_with_google">Sign In With Google</string>
+
+    <!--Tabs-->
+    <string name="tab_label_home">My notes</string>
+    <string name="tab_label_profile">Profile</string>
+
+    <string name="title_label_new_note">New note</string>
+    <string name="title_label_detail_note">Note</string>
+    <string name="title_label_update_note">Update note</string>
+    <string name="title_label_filter_note">Filter note</string>
+
+    <string name="title_label_search_my_notes">Search my notes</string>
+
+
+    <!--Publishing Options-->
+    <string name="publishing_option_private_title">Private</string>
+    <string name="publishing_option_private_description">The note will be saved as part of your personal gratitude journal.</string>
+
+    <string name="publishing_option_public_title">Public</string>
+    <string name="publishing_option_public_description">The note will be publicly posted to the gratitude wall.</string>
+
+    <string name="publishing_option_anonymous_title">Anonymous</string>
+    <string name="publishing_option_anonymous_description">The note will be publicly posted anonymously.</string>
+
+    <string name="publishing_option_send_title">Send note</string>
+    <string name="publishing_option_send_description">You`ll be able to send the note directly to a contact.</string>
+
+    <string name="publishing_option_label_default">Keep this option for my notes.</string>
+
+
+    <string name="title_view_publishing_options">Note types</string>
+
+    <string name="title_optiones_emoticons">How do you feel today?</string>
+
+    <string name="title_selec_tag">Why thank today?</string>
+
+
+    <!--Note Emotions-->
+    <string name="note_emotion_title_Happy">Happy</string>
+    <string name="note_emotion_icon_Happy">😊</string>
+    <string name="note_emotion_description_Happy">Represents a positive and joyful feeling.</string>
+
+    <string name="note_emotion_title_Thankful">Thankful</string>
+    <string name="note_emotion_icon_Thankful">🙏</string>
+    <string name="note_emotion_description_Thankful">Symbolizes gratitude and appreciation.</string>
+
+    <string name="note_emotion_title_Grateful">Grateful</string>
+    <string name="note_emotion_icon_Grateful">🌟</string>
+    <string name="note_emotion_description_Grateful">Conveys a sense of thankfulness and recognition.</string>
+
+    <string name="note_emotion_title_Heartfelt">Heartfelt</string>
+    <string name="note_emotion_icon_Heartfelt">💖</string>
+    <string name="note_emotion_description_Heartfelt">Conveys a sense of thankfulness and recognition.</string>
+
+    <string name="note_emotion_title_Hug">Hug</string>
+    <string name="note_emotion_icon_Hug">🤗</string>
+    <string name="note_emotion_description_Hug">Conveys a sense of thankfulness and recognition.</string>
+
+    <string name="note_emotion_title_Sunflower">Sunflower</string>
+    <string name="note_emotion_icon_Sunflower">🌻</string>
+    <string name="note_emotion_description_Sunflower">Conveys a sense of thankfulness and recognition.</string>
+
+    <string name="note_emotion_title_Raised_Hands">Raised Hands</string>
+    <string name="note_emotion_icon_Raised_Hands">🙌</string>
+    <string name="note_emotion_description_Raised_Hands">Conveys a sense of thankfulness and recognition.</string>
+
+    <string name="note_emotion_message_Happy">I feel happy</string>
+    <string name="note_emotion_message_Thankful">I feel thankful</string>
+    <string name="note_emotion_message_Grateful">I feel grateful</string>
+    <string name="note_emotion_message_Heartfelt">I feel heartfelt</string>
+    <string name="note_emotion_message_Hug">I feel hugged</string>
+    <string name="note_emotion_message_Sunflower">I feel sunflowered</string>
+    <string name="note_emotion_message_Raised_Hands">I feel raised hands</string>
+
+    <string name="placeholder_write_note">What do you have to be grateful for?</string>
+
+    <string name="label_date_today">Today</string>
+    <string name="label_date_yesterday">Yesterday</string>
+
+    <string name="label_note_option_publish">Who can see my note?</string>
+    <string name="label_note_option_tag">Tag</string>
+    <string name="label_note_option_emotion">Emotion</string>
+
+    <string name="label_last_update">Last update</string>
+    <string name="label_title_profile">Profile</string>
+    <string name="label_log_out">Log out</string>
+
+    <string name="label_exit_to_app">Go back to exit the application</string>
+
+    <string name="placeholder_feeback">Send us your comments</string>
+
+    <string name="label_feedback">Thank you for taking a moment to leave us your opinion. Your feedback is essential to improve our application in this initial exploration phase. We greatly appreciate your participation.</string>
+
+    <string name="label_welcome_good_morning">Good morning</string>
+    <string name="label_welcome_good_afternoon">Good afternoon</string>
+    <string name="label_welcome_good_night">Good night</string>
+
+    <string name="label_reminder">Write your first gratitude of the day!</string>
+    <string name="label_thank">Write a note</string>
+
+    <!-- Strings for days of the week in English -->
+    <string name="sunday_abbr">Sun</string>
+    <string name="monday_abbr">Mon</string>
+    <string name="tuesday_abbr">Tue</string>
+    <string name="wednesday_abbr">Wed</string>
+    <string name="thursday_abbr">Thu</string>
+    <string name="friday_abbr">Fri</string>
+    <string name="saturday_abbr">Sat</string>
+
+    <string name="label_home_today">Today</string>
+
+    <string name="title_goals">Challenges</string>
+    <string name="label_goals">My hallenge</string>
+
+    <string name="label_select">Select</string>
+
+
+    <string name="label_repeat_once">Once</string>
+    <string name="label_repeat_daily">Daily</string>
+    <string name="label_repeat_mon_to_fri">Mon to Fri</string>
+    <string name="label_repeat_customized">Customized</string>
+
+</resources>
