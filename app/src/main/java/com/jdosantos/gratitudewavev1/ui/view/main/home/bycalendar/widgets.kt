@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,6 +30,9 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.jdosantos.gratitudewavev1.app.model.CalendarToShow
 import com.jdosantos.gratitudewavev1.app.model.DaysOfCalendar
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT_MID
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT_MIN
 import com.jdosantos.gratitudewavev1.core.common.util.compareDatesWithoutTime
 import com.jdosantos.gratitudewavev1.core.common.util.getDayOfMonth
 import com.jdosantos.gratitudewavev1.core.common.util.getWeekDaysByLocale
@@ -40,28 +42,28 @@ import java.util.Locale
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun CalendarView(
-    months: List<CalendarToShow>,
+    monthsWithNotes: List<CalendarToShow>,
     selectedDate: Date,
     onClick: (Date) -> Unit
 ) {
 
     val pagerState = rememberPagerState(
-        pageCount = months.size,
+        pageCount = monthsWithNotes.size,
         //     initialOffscreenLimit = months.size - 1,
         infiniteLoop = false,
-        initialPage = months.size - 1
+        initialPage = monthsWithNotes.size - 1
     )
 
     val currentPage = remember { pagerState.currentPage }
 
-    val week = remember { getWeekDaysByLocale() }
+    val daysOfWeek = remember { getWeekDaysByLocale(false) }
 
     Card {
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val currentMonth = months[currentPage].display
+            val currentMonth = monthsWithNotes[currentPage].display
             Text(
                 text = currentMonth.capitalize(Locale.ROOT),
                 fontSize = 16.sp,
@@ -69,12 +71,12 @@ fun CalendarView(
                 fontWeight = FontWeight.ExtraBold,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(SPACE_DEFAULT.dp)
             )
             Row(
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp)
+                modifier = Modifier.padding(start = SPACE_DEFAULT.dp, end = SPACE_DEFAULT.dp)
             ) {
-                week.forEach { day ->
+                daysOfWeek.forEach { day ->
                     Box(
                         modifier = Modifier.weight(1f),
                         contentAlignment = Alignment.Center
@@ -87,7 +89,7 @@ fun CalendarView(
             HorizontalPager(
                 state = pagerState, modifier = Modifier
             ) { page ->
-                MonthView(months[page], selectedDate) { onClick(it) }
+                MonthView(monthsWithNotes[page], selectedDate) { onClick(it) }
             }
         }
     }
@@ -97,15 +99,15 @@ fun CalendarView(
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 private fun MonthView(
-    month: CalendarToShow,
+    monthsWithNotes: CalendarToShow,
     selectedDate: Date,
     onClick: (Date) -> Unit
 ) {
 
-    val days = month.days
+    val days = monthsWithNotes.days
     Column(
         modifier = Modifier
-            .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
+            .padding(start = SPACE_DEFAULT_MID.dp, end = SPACE_DEFAULT_MID.dp, bottom = SPACE_DEFAULT_MID.dp)
             .fillMaxWidth()
     ) {
         val weeksInMonth = days.chunked(7)
@@ -161,7 +163,7 @@ private fun DayView(daysOfCalendar: DaysOfCalendar, selectedDate: Date, onClick:
         Box(
             modifier = Modifier
                 .size(48.dp)
-                .padding(4.dp)
+                .padding(SPACE_DEFAULT_MIN.dp)
                 .align(Alignment.Center),
             contentAlignment = Alignment.Center
         ) {

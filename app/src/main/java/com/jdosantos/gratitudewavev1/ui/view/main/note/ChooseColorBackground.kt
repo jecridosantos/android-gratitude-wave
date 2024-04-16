@@ -1,7 +1,6 @@
 package com.jdosantos.gratitudewavev1.ui.view.main.note
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -31,11 +30,13 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jdosantos.gratitudewavev1.R
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
 import com.jdosantos.gratitudewavev1.core.common.util.darkColors
 import com.jdosantos.gratitudewavev1.core.common.util.lightColors
 
@@ -53,11 +54,11 @@ fun ChooseColorBackground(
         ModalBottomSheet(onDismissRequest = { onHide() }) {
 
             Column(
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(SPACE_DEFAULT.dp)
             ) {
                 Text(
                     modifier = Modifier.fillMaxWidth(),
-                    text = "Color",
+                    text = stringResource(R.string.label_color),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center
@@ -101,8 +102,8 @@ private fun CircunferenciaConIcono(
             modifier = Modifier
                 .align(Alignment.Center)
                 .size(100.dp)
-              //  .background(Color.Red)
-                .padding(16.dp)
+                //  .background(Color.Red)
+                .padding(SPACE_DEFAULT.dp)
                 .clip(CircleShape)
                 .clickable {
                     onSelected(
@@ -153,7 +154,7 @@ private fun CircunferenciaConIcono(
 private fun IconColor(painter: Painter, color: Color) {
     Icon(
         painter = painter,
-        contentDescription = "Icono estrella",
+        contentDescription = "",
         tint = color,
         modifier = Modifier.size(36.dp)
     )

@@ -15,6 +15,7 @@ import com.jdosantos.gratitudewavev1.app.model.Tag
 import com.jdosantos.gratitudewavev1.app.store.NoteTypeStore
 import com.jdosantos.gratitudewavev1.app.usecase.GetTagsUseCase
 import com.jdosantos.gratitudewavev1.app.usecase.notes.SaveNoteUseCase
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.VALUE_INT_EMPTY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,9 +38,9 @@ class WriteNoteViewModel @Inject constructor(
 
     private var noteTypeDefault by mutableIntStateOf(0)
 
-    var currentNoteType by mutableStateOf(noteTypeConfigLists[0])
+    private var currentNoteType by mutableStateOf(noteTypeConfigLists[0])
 
-    var showModalType by mutableStateOf(false)
+    private var showModalType by mutableStateOf(false)
 
     var showDialogEmotion by mutableStateOf(false)
 
@@ -114,7 +115,7 @@ class WriteNoteViewModel @Inject constructor(
     }
 
     fun onType(value: Int) {
-        if (value != -1) {
+        if (value != VALUE_INT_EMPTY) {
             note = note.copy(type = value)
             currentNoteType = noteTypeConfigLists[value]
         }

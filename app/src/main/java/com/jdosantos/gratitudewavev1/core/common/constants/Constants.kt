@@ -1,7 +1,5 @@
 package com.jdosantos.gratitudewavev1.core.common.constants
 
-import androidx.compose.ui.unit.dp
-
 class Constants {
     companion object {
         const val CUSTOM_CARD_ONE = 0xFF0DB1AB
@@ -33,7 +31,20 @@ class Constants {
         const val COLOR_9_DARK = 0xFF6B3B51
         const val COLOR_10_DARK = 0xFF4D463E
         const val COLOR_11_DARK = 0xFF2A292E
-
         const val HEIGHT_ITEMS_CONFIG = 64
+        const val WORK_WEEK_SIZE = 5
+        const val VALUE_INT_EMPTY = -1
+        const val MAX_LENGHT_COMMENT_FEEDBACK = 7
+        const val MAX_LENGHT_TITLE_TOP_BAR = 1
+        const val SPACE_DEFAULT_MIN = 4
+        const val SPACE_DEFAULT_MID = 8
+        const val SPACE_DEFAULT = 16
+        const val SPACE_DEFAULT_MAX = 32
+
+        const val GOOGLE_TOKEN = "741930850747-12p5utjs35rpjat1mipu4q4mejnks39d.apps.googleusercontent.com"
+
+        const val VERIFY_EMAIL_OPTION_GO_TO_EMAIL = 0
+        const val VERIFY_EMAIL_OPTION_RESEND_LINK = 1
+        const val VERIFY_EMAIL_OPTION_GO_TO_LOGIN = 2
     }
 }

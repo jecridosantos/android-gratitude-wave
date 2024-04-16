@@ -24,10 +24,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.jdosantos.gratitudewavev1.R
 import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.HEIGHT_ITEMS_CONFIG
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT_MID
 import com.jdosantos.gratitudewavev1.ui.widget.ConfigItem
+import com.jdosantos.gratitudewavev1.ui.widget.TextItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,7 +43,7 @@ fun SettingsView(navController: NavController, settingsViewModel: SettingsViewMo
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = "Settings",
+                        text = stringResource(R.string.label_settings),
                     )
                 },
                 navigationIcon = {
@@ -68,10 +73,10 @@ private fun ContentSettingsView(
 
     Column(modifier = Modifier.padding(paddingValues)) {
 
-        SettingItemCheck(title = "Silenciar notificaciones", configUser.muteNotifications) {
+        SettingItemCheck(title = stringResource(R.string.label_mute_notifications), configUser.muteNotifications) {
             settingsViewModel.saveMuteNotifications(it)
         }
-        SettingItem(title = "Personalizar recordatorios") {
+        SettingItem(title = stringResource(R.string.label_customize_reminders)) {
             navController.navigate("RemindersView")
         }
     }
@@ -85,7 +90,7 @@ private fun SettingItemCheck(
 ) {
     Row(
         modifier = Modifier
-            .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp)
+            .padding(start = SPACE_DEFAULT.dp, end = SPACE_DEFAULT.dp, top = SPACE_DEFAULT_MID.dp, bottom = SPACE_DEFAULT_MID.dp)
             .height(HEIGHT_ITEMS_CONFIG.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -107,7 +112,7 @@ private fun SettingItem(title: String, onClick: () -> Unit) {
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = title, modifier = Modifier.weight(1f))
+            TextItem(text = title, modifier = Modifier.weight(1f))
 
             Icon(
                 imageVector = Icons.Default.KeyboardArrowRight,

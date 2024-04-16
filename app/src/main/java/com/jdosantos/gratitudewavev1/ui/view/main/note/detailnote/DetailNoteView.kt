@@ -1,9 +1,7 @@
 package com.jdosantos.gratitudewavev1.ui.view.main.note.detailnote
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -30,20 +28,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
 import com.jdosantos.gratitudewavev1.core.common.util.getSafeColor
 import com.jdosantos.gratitudewavev1.ui.view.main.note.CurrentDateView
-import com.jdosantos.gratitudewavev1.ui.view.main.note.DisplayDate
 import com.jdosantos.gratitudewavev1.ui.view.main.note.DisplayEmotion
 import com.jdosantos.gratitudewavev1.ui.view.main.note.DisplayTag
 import com.jdosantos.gratitudewavev1.ui.view.main.note.getColors
 import com.jdosantos.gratitudewavev1.ui.widget.AlertComponent
-import java.util.Date
 
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -56,12 +52,9 @@ fun DetailNoteView(
 ) {
 
     val colors = getColors()
-    val isDark = isSystemInDarkTheme()
     val note = detailNoteViewModel.note
 
     var selectedColor by remember { mutableStateOf(colors.getSafeColor(color)) }
-
-    val window = (LocalView.current.context as Activity).window
 
     LaunchedEffect(Unit) {
         detailNoteViewModel.getNoteById(id) {noteColor->
@@ -69,14 +62,6 @@ fun DetailNoteView(
         }
     }
 
-    LaunchedEffect(selectedColor) {
-/*        window?.statusBarColor = selectedColor.toArgb()
-        WindowCompat.getInsetsController(window!!, window.decorView).isAppearanceLightStatusBars =
-            !isDark*/
-    }
-
-
- //   var backgroundColor by remember { mutableStateOf(selectedColor) }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -85,20 +70,17 @@ fun DetailNoteView(
     ) {
         Header({
             navController.popBackStack()
-          //  selectedColor = backgroundDefault
         }, {
             navController.navigate("UpdateNoteView/${id}/${note.color}")
-          //  selectedColor = backgroundDefault
         }) {
             detailNoteViewModel.showAlert()
         }
 
         Column(
             modifier = Modifier
-                .padding(16.dp)
+                .padding(SPACE_DEFAULT.dp)
         ) {
 
-            // HeaderInfo(note.createAt, note.updateAt, note.type)
 
             DisplayNote(note.note)
 
@@ -118,19 +100,6 @@ fun DetailNoteView(
             detailNoteViewModel.clean()
         }
     }
-}
-
-
-@Composable
-private fun HeaderInfo(createAt: Date?, updateAt: Date?, publishingOption: Int?) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        DisplayDate(modifier = Modifier, createAt, updateAt)
-        Spacer(modifier = Modifier.weight(1f))
-        /*DisplayPublishingType(publishingOption!!)*/
-    }
-    Spacer(modifier = Modifier.height(16.dp))
 }
 
 @Composable

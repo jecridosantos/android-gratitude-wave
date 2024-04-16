@@ -19,8 +19,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.jdosantos.gratitudewavev1.R
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,7 +34,7 @@ fun SearchByTagsView(searchByTagsViewModel: SearchByTagsViewModel, navController
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = "Buscar por etiqueta",
+                        text = stringResource(R.string.label_search_by_tag),
                     )
                 },
                 navigationIcon = {
@@ -61,21 +64,23 @@ fun ContentSearchByTagsView(
 
     val tags = searchByTagsViewModel.tags.value
 
-    Column(modifier = Modifier
-        .padding(paddingValues)
-     //   .padding(16.dp)
+    Column(
+        modifier = Modifier
+            .padding(paddingValues)
     ) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(1),
             contentPadding = PaddingValues(8.dp)
         ) {
             items(tags) {
-                Card(modifier = Modifier.padding(4.dp).clickable {
-                    navController.navigate("NotesByTagView/${it.id}/${it.esTag}")
-                }) {
+                Card(modifier = Modifier
+                    .padding(4.dp)
+                    .clickable {
+                        navController.navigate("NotesByTagView/${it.id}/${it.esTag}")
+                    }) {
                     Text(
                         text = it.esTag,
-                        modifier = Modifier.padding(16.dp)
+                        modifier = Modifier.padding(SPACE_DEFAULT.dp)
                     )
                 }
             }

@@ -21,6 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jdosantos.gratitudewavev1.R
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
 
 @Composable
 fun EmptyMessage(painter: Int? = null, message: String, submessage: String? = null) {
@@ -57,7 +58,7 @@ fun EmptyMessage(painter: Int? = null, message: String, submessage: String? = nu
 
                 )
             }
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(SPACE_DEFAULT.dp))
         }
 
 
@@ -86,7 +87,7 @@ fun EmptyNotes() {
                 textAlign = TextAlign.Center, fontWeight = FontWeight.Light, fontSize = 16.sp
 
             )
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(SPACE_DEFAULT.dp))
         }
     }
 

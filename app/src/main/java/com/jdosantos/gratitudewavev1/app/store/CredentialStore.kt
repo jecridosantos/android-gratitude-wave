@@ -18,11 +18,11 @@ class CredentialStore(private val context: Context) {
 
     }
 
-    suspend fun saveValue(password: String) = context.dataStore.edit { preferences ->
+    suspend fun savePassword(password: String) = context.dataStore.edit { preferences ->
         preferences[PASSWORD_KEY] = password
     }
 
-    fun getValue(): Flow<String?> = context.dataStore.data
+    fun getPassword(): Flow<String?> = context.dataStore.data
         .map { preferences ->
             preferences[PASSWORD_KEY] ?: "0"
         }

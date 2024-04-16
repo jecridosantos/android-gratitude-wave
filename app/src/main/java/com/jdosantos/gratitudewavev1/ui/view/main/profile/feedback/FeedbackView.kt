@@ -35,6 +35,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.MAX_LENGHT_COMMENT_FEEDBACK
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT_MID
 import com.jdosantos.gratitudewavev1.ui.widget.Title
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -46,7 +49,7 @@ fun FeedbackView(navController: NavController) {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = "Send Feedback",
+                        text = stringResource(id = R.string.label_send_feedback),
                     )
                 },
                 navigationIcon = {
@@ -73,23 +76,23 @@ private fun ContentFeedbackView(paddingValues: PaddingValues) {
     Column(
         modifier = Modifier
             .padding(paddingValues)
-            .padding(16.dp)
+            .padding(SPACE_DEFAULT.dp)
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
 
         Title(
-            text = "¿Qué te gustó más de la aplicación?",
-            modifier = Modifier.padding(bottom = 16.dp)
+            text = stringResource(R.string.label_send_feedback_title_one),
+            modifier = Modifier.padding(bottom = SPACE_DEFAULT.dp)
         )
-        ItemCheck("Diseño atractivo y amigable.")
-        ItemCheck("Experiencia de usuario fluida.")
-        ItemCheck("Interacción y respuesta.")
-        ItemCheck("Insentivar la práctica de la gratitud.")
+        ItemCheck(stringResource(R.string.label_send_feedback_item_one))
+        ItemCheck(stringResource(R.string.label_send_feedback_item_two))
+        ItemCheck(stringResource(R.string.label_send_feedback_item_three))
+        ItemCheck(stringResource(R.string.label_send_feedback_item_four))
         Spacer(modifier = Modifier.height(32.dp))
         Title(
-            text = "¿En qué podemos mejorar?",
-            modifier = Modifier.padding(bottom = 16.dp)
+            text = stringResource(R.string.label_send_feedback_title_two),
+            modifier = Modifier.padding(bottom = SPACE_DEFAULT.dp)
         )
         OutlinedTextField(
             value = content,
@@ -106,7 +109,7 @@ private fun ContentFeedbackView(paddingValues: PaddingValues) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(200.dp),
-            maxLines = 7,
+            maxLines = MAX_LENGHT_COMMENT_FEEDBACK,
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -115,7 +118,7 @@ private fun ContentFeedbackView(paddingValues: PaddingValues) {
             onClick = { /*TODO*/ },
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = "Enviar")
+            Text(text = stringResource(R.string.label_send))
         }
     }
 }
@@ -131,6 +134,6 @@ private fun ItemCheck(text: String) {
             checked = checked,
             onCheckedChange = { checked = it }
         )
-        Text(text = text, modifier = Modifier.padding(start = 8.dp))
+        Text(text = text, modifier = Modifier.padding(start = SPACE_DEFAULT_MID.dp))
     }
 }

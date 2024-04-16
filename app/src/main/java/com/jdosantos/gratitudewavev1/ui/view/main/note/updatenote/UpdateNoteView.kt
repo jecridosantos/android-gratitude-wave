@@ -1,10 +1,8 @@
 package com.jdosantos.gratitudewavev1.ui.view.main.note.updatenote
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,13 +29,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
 import com.jdosantos.gratitudewavev1.app.model.Note
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT_MIN
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.VALUE_INT_EMPTY
 import com.jdosantos.gratitudewavev1.core.common.util.getSafeColor
 import com.jdosantos.gratitudewavev1.core.common.util.noteEmotionConfigLists
 import com.jdosantos.gratitudewavev1.ui.view.main.note.ChipEmotionChoose
@@ -62,15 +62,11 @@ fun UpdateNoteView(
 
     val context = LocalContext.current
 
-    val isDark = isSystemInDarkTheme()
-
     val colors = getColors()
 
     val backgroundDefault = MaterialTheme.colorScheme.background
 
     var selectedColor by remember { mutableStateOf(colors.getSafeColor(color)) }
-
-    val window = (LocalView.current.context as Activity).window
 
     val note = updateNoteViewModel.note
 
@@ -78,11 +74,6 @@ fun UpdateNoteView(
         updateNoteViewModel.getNoteById(id)
     }
 
-    LaunchedEffect(selectedColor) {
-/*        window?.statusBarColor = selectedColor.toArgb()
-        WindowCompat.getInsetsController(window!!, window.decorView).isAppearanceLightStatusBars =
-            !isDark*/
-    }
 
     fun cleanView() {
         navController.popBackStack()
@@ -112,7 +103,7 @@ fun UpdateNoteView(
         FloatingOptions(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(16.dp), updateNoteViewModel
+                .padding(SPACE_DEFAULT.dp), updateNoteViewModel
         )
 
     }
@@ -134,14 +125,13 @@ fun UpdateNoteView(
     }) {
 
         if (it != null) {
-            selectedColor = if (it == -1) {
+            selectedColor = if (it == VALUE_INT_EMPTY) {
                 backgroundDefault
             } else {
                 colors[it]
             }
             updateNoteViewModel.onColor(it)
         }
-        //   updateNoteViewModel.hideDialogColor()
     }
     if (updateNoteViewModel.showErrorForm) {
         Toast.makeText(
@@ -161,7 +151,7 @@ fun UpdateNoteView(
 private fun Header(onSave: () -> Unit, onCleanView: () -> Unit) {
     Row(
         modifier = Modifier
-            .padding(4.dp)
+            .padding(SPACE_DEFAULT_MIN.dp)
             .height(56.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -192,7 +182,7 @@ private fun Header(onSave: () -> Unit, onCleanView: () -> Unit) {
 @Composable
 private fun Tags(note: Note, updateNoteViewModel: UpdateNoteViewModel) {
     Column(
-        modifier = Modifier.padding(start = 16.dp, end = 16.dp)
+        modifier = Modifier.padding(start = SPACE_DEFAULT.dp, end = SPACE_DEFAULT.dp)
     ) {
 
         if (note.tag != null) {
@@ -205,12 +195,12 @@ private fun Tags(note: Note, updateNoteViewModel: UpdateNoteViewModel) {
             }
         }
 
-        if (note.emotion != -1) {
+        if (note.emotion != VALUE_INT_EMPTY) {
             Row {
                 ChipEmotionChoose(noteEmotionConfigLists[note.emotion!!], {
                     updateNoteViewModel.showDialogEmotion()
                 }) {
-                    updateNoteViewModel.onEmotion(-1)
+                    updateNoteViewModel.onEmotion(VALUE_INT_EMPTY)
                 }
             }
         }
@@ -225,7 +215,7 @@ private fun FloatingOptions(modifier: Modifier, viewModel: UpdateNoteViewModel) 
         shape = RoundedCornerShape(50.dp),
     ) {
         Row(
-            modifier = Modifier.padding(4.dp)
+            modifier = Modifier.padding(SPACE_DEFAULT_MIN.dp)
         ) {
             Spacer(modifier = Modifier.width(8.dp))
             IconFloatingOption(painterResource(id = R.drawable.chinche)) { viewModel.showDialogTag() }

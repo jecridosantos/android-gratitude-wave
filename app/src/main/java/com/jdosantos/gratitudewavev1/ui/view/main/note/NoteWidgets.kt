@@ -57,6 +57,11 @@ import com.jdosantos.gratitudewavev1.core.common.util.getFormattedDate
 import com.jdosantos.gratitudewavev1.core.common.util.lightColors
 import com.jdosantos.gratitudewavev1.app.model.Note
 import com.jdosantos.gratitudewavev1.app.model.Tag
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT_MAX
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT_MID
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT_MIN
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.VALUE_INT_EMPTY
 import com.jdosantos.gratitudewavev1.ui.widget.CardNote
 import java.util.Date
 import java.util.Locale
@@ -112,7 +117,7 @@ fun ChipTagChoose(tag: Tag, onClick: () -> Unit?, onClean: () -> Unit) {
 
 @Composable
 fun DisplayEmotion(emotionIndex: Int?, size: TextUnit) {
-    if (emotionIndex != -1) {
+    if (emotionIndex != VALUE_INT_EMPTY) {
         val noteEmotionConfig = noteEmotionConfigLists[emotionIndex!!]
         Text(
             text = "${stringResource(id = noteEmotionConfig.message)} ${stringResource(id = noteEmotionConfig.icon)}",
@@ -180,7 +185,7 @@ fun ItemOptionsNote(
     ) {
         Row(
             modifier = Modifier
-                .padding(start = 16.dp, end = 16.dp, top = 2.dp, bottom = 2.dp)
+                .padding(start = SPACE_DEFAULT.dp, end = SPACE_DEFAULT.dp, top = SPACE_DEFAULT_MIN.dp, bottom = SPACE_DEFAULT_MIN.dp)
                 .height(40.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -254,7 +259,7 @@ fun DisplayDate(modifier: Modifier, date: Date?, updatedAt: Date?) {
 fun ShowListGirdNotes(notes: List<Note>, onClick: (Note) -> Unit) {
     LazyVerticalStaggeredGrid(
         columns = StaggeredGridCells.Fixed(2),
-        contentPadding = PaddingValues(8.dp),
+        contentPadding = PaddingValues(SPACE_DEFAULT_MID.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         items(notes) { item ->
@@ -287,7 +292,7 @@ fun ShowListNotes(notes: List<Note>, onClick: (Note) -> Unit) {
 
 @Composable
 fun CardItems(icon: Int, text: String, color: Color, onClick: () -> Unit) {
-    Box(modifier = Modifier.padding(bottom = 8.dp)
+    Box(modifier = Modifier.padding(bottom = SPACE_DEFAULT_MID.dp)
         .fillMaxWidth().clickable { onClick() }) {
         Card(
             colors = CardDefaults.cardColors(
@@ -299,7 +304,7 @@ fun CardItems(icon: Int, text: String, color: Color, onClick: () -> Unit) {
             modifier = Modifier .fillMaxWidth()
         ) {
             Column(
-                modifier = Modifier.padding(24.dp)
+                modifier = Modifier.padding(SPACE_DEFAULT.dp)
             ) {
                 Icon(
                     painter = painterResource(id = icon),

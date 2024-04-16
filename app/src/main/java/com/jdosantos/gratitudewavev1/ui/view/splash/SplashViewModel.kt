@@ -16,7 +16,7 @@ class SplashViewModel @Inject constructor(
     private val authenticateUseCase: LoginUseCase
 ) : ViewModel() {
 
-    private val _isAuthenticated = MutableStateFlow<UserAuthState>(value = UserAuthState.UNKNOWN)
+/*    private val _isAuthenticated = MutableStateFlow<UserAuthState>(value = UserAuthState.UNKNOWN)
     val isAuthenticated: StateFlow<UserAuthState> = _isAuthenticated.asStateFlow()
 
     fun onEvent(event: SplashEvent) {
@@ -36,6 +36,6 @@ class SplashViewModel @Inject constructor(
                 }
             }
         }
-    }
+    }*/
 
 }

@@ -1,4 +1,4 @@
-package com.jdosantos.gratitudewavev1.ui.view.main.profile.settings.reminders.save
+package com.jdosantos.gratitudewavev1.ui.view.main.profile.settings.reminders
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
@@ -47,6 +47,8 @@ import com.jdosantos.gratitudewavev1.app.enums.checkSelectedDays
 import com.jdosantos.gratitudewavev1.app.enums.getFirstLetters
 import com.jdosantos.gratitudewavev1.app.model.ConfigUserReminder
 import com.jdosantos.gratitudewavev1.core.common.confignote.RepeatConfig
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.VALUE_INT_EMPTY
 import com.jdosantos.gratitudewavev1.core.common.util.hourFormat
 import com.jdosantos.gratitudewavev1.core.common.util.repeatListOptions
 import com.jdosantos.gratitudewavev1.ui.view.main.profile.settings.SettingsViewModel
@@ -64,7 +66,7 @@ fun SaveRemindersView(
 ) {
     val currentReminder = settingsViewModel.currentReminder
     LaunchedEffect(Unit) {
-        if (id != null && id != -1) {
+        if (id != null && id != VALUE_INT_EMPTY) {
             settingsViewModel.fillReminder(id)
         }
     }
@@ -73,7 +75,7 @@ fun SaveRemindersView(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = "Guardar recordatorio",
+                        text = stringResource(R.string.label_save_reminders),
                     )
                 },
                 navigationIcon = {
@@ -86,7 +88,7 @@ fun SaveRemindersView(
                 },
                 actions = {
                     IconButton(onClick = {
-                        if (id != null && id != -1) {
+                        if (id != null && id != VALUE_INT_EMPTY) {
                             settingsViewModel.updateReminder(id)
                         } else {
                             settingsViewModel.addReminder()
@@ -135,7 +137,7 @@ private fun SaveContentRemindersView(
     // https://material.io/blog/material-3-compose-1-1
     if (showTimePickerDialog.value) {
         TimePickerDialog(
-            title = "Seleccionar hora",
+            title = stringResource(R.string.label_select_time),
 
             onDismissRequest = { showTimePickerDialog.value = false },
             confirmButton = {
@@ -170,25 +172,28 @@ private fun SaveContentRemindersView(
             .padding(paddingValues)
     ) {
 
-        ItemReminderOption("Hora", hourFormat(currentReminder.hour, currentReminder.minute)) {
+        ItemReminderOption(
+            stringResource(R.string.label_time),
+            hourFormat(currentReminder.hour, currentReminder.minute)
+        ) {
             showTimePickerDialog.value = true
         }
 
         var subtitleRepeat = stringResource(id = repeatListOptions[currentReminder.repeat].title)
 
-        if (currentReminder.repeat == 3 && currentReminder.repeatDays!!.size > 0) {
+        if (currentReminder.repeat == RepeatConfig.Custom.id && currentReminder.repeatDays!!.size > 0) {
             subtitleRepeat = getFirstLetters(currentReminder.repeatDays)
         }
 
-        ItemReminderOption("Repetir", subtitleRepeat) {
+        ItemReminderOption(stringResource(R.string.label_repeat), subtitleRepeat) {
             showRepeatDialog.value = true
         }
 
         Spacer(modifier = Modifier.height(16.dp))
         InputRound(
-            "Etiqueta",
+            stringResource(R.string.label_label),
             currentReminder.label!!,
-            "Mi recordatorio de la mañana",
+            stringResource(R.string.label_my_morning_reminder),
             KeyboardType.Text
         ) {
             settingsViewModel.fillReminderLabel(it)
@@ -203,7 +208,7 @@ private fun SaveContentRemindersView(
         // repeatConfigSelect = it!!.id
 
 
-        if (it!!.id == 3) {
+        if (it!!.id == RepeatConfig.Custom.id) {
             showRepeatSelectDayDialog.value = true
         }
 
@@ -215,18 +220,15 @@ private fun SaveContentRemindersView(
         selectedDays = currentReminder.repeatDays!!,
         onDismiss = { showRepeatSelectDayDialog.value = false },
         onConfirm = {
-            //  selectedDays = it
             settingsViewModel.fillReminderRepeatDays(it.toMutableList())
             val (allDaysSelected, weekdaysSelected) = checkSelectedDays(it.toMutableList())
 
             if (allDaysSelected) {
-                //  repeatConfigSelect = 1
-                settingsViewModel.fillReminderRepeat(1)
+                settingsViewModel.fillReminderRepeat(RepeatConfig.Daily.id)
             }
 
             if (weekdaysSelected) {
-                //  repeatConfigSelect = 2
-                settingsViewModel.fillReminderRepeat(2)
+                settingsViewModel.fillReminderRepeat(RepeatConfig.MonToFri.id)
             }
 
             showRepeatSelectDayDialog.value = false
@@ -269,7 +271,7 @@ private fun ChooseRepeat(
         ModalBottomSheet(onDismissRequest = { onHide() }) {
 
             Column(
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(SPACE_DEFAULT.dp)
             ) {
                 TitleRepeatModal()
                 Spacer(modifier = Modifier.height(16.dp))
@@ -294,7 +296,7 @@ private fun ChooseRepeat(
 private fun TitleRepeatModal() {
     Text(
         modifier = Modifier.fillMaxWidth(),
-        text = "Repetir",
+        text = stringResource(id = R.string.label_label),
         fontSize = 20.sp,
         fontWeight = FontWeight.Bold,
         textAlign = TextAlign.Center

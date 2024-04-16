@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -24,22 +22,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.jdosantos.gratitudewavev1.app.model.Note
-import com.jdosantos.gratitudewavev1.ui.view.main.note.DisplayDate
-import com.jdosantos.gratitudewavev1.ui.view.main.note.DisplayEmotion
-import com.jdosantos.gratitudewavev1.ui.view.main.note.DisplayTag
-import com.jdosantos.gratitudewavev1.ui.view.main.note.getColors
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
 
 @Composable
 fun CardProgress(title: String, text: String, color: Color, onClick: () -> Unit) {
     Box(modifier = Modifier
-        .padding(bottom = 16.dp)
+        .padding(bottom = SPACE_DEFAULT.dp)
         .fillMaxWidth()) {
         Card(
             colors = CardDefaults.cardColors(
@@ -86,7 +79,7 @@ fun CardGoal(painter: Painter, title: String, subtitle: String, showRadioButton:
         //    shape = RoundedCornerShape(8.dp)
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(SPACE_DEFAULT.dp),
         ) {
 
             Row(

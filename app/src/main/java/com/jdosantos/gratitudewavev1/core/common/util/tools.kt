@@ -2,6 +2,7 @@ package com.jdosantos.gratitudewavev1.core.common.util
 
 import android.util.Log
 import androidx.compose.ui.graphics.Color
+import com.jdosantos.gratitudewavev1.app.enums.DayOfWeek
 import com.jdosantos.gratitudewavev1.core.common.confignote.Challenge
 import com.jdosantos.gratitudewavev1.core.common.confignote.RepeatConfig
 import com.jdosantos.gratitudewavev1.core.common.constants.Constants
@@ -26,10 +27,10 @@ fun List<Color>.getSafeColor(index: Int?): Color {
     return getOrElse(safeIndex) { this[Constants.DEFAULT_COLOR_INDEX] }
 }
 
-fun getWeekDaysByLocale(): List<String> {
+fun getWeekDaysByLocale(fullNames: Boolean = true): List<String> {
     val locale = Locale.getDefault()
-    val daysInSpanish = listOf("Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom")
-    val daysInEnglish = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+    val daysInSpanish = enumValues<DayOfWeek>().map { if (fullNames) it.nameES else it.abbreviationES }
+    val daysInEnglish = enumValues<DayOfWeek>().map { if (fullNames) it.nameEN else it.abbreviationEN }
 
     return if (locale.language == Locale("es", "ES").language) {
         daysInSpanish

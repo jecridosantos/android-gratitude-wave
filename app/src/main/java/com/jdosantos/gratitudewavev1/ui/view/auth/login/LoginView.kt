@@ -1,6 +1,8 @@
 package com.jdosantos.gratitudewavev1.ui.view.auth.login
 
 import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
@@ -21,20 +23,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -49,56 +48,75 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.GoogleAuthProvider
 import com.jdosantos.gratitudewavev1.R
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.GOOGLE_TOKEN
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT_MAX
 import com.jdosantos.gratitudewavev1.ui.widget.AlertComponent
+import com.jdosantos.gratitudewavev1.ui.widget.InputRound
 import com.jdosantos.gratitudewavev1.ui.widget.Loader
+
+data class LoginViewState(
+    val backPressedOnce: MutableState<Boolean>,
+    val email: MutableState<String>,
+    val password: MutableState<String>
+)
 
 @Composable
 fun LoginView(navController: NavController, loginViewModel: LoginViewModel) {
 
-    var backPressedOnce by remember { mutableStateOf(false) }
     val context = LocalContext.current
+
+    val state = LoginViewState(
+        backPressedOnce = remember { mutableStateOf(false) },
+        email = remember { mutableStateOf("") },
+        password = remember { mutableStateOf("") }
+    )
+
     BackHandler(enabled = true) {
-        backPressedOnce = if (backPressedOnce) {
-            (context as? Activity)?.finish()
-            false
-        } else {
-            true
-        }
+        handleBackPressed(context, state.backPressedOnce)
     }
 
-    if (backPressedOnce) {
-        Toast.makeText(context, stringResource(id = R.string.label_exit_to_app), Toast.LENGTH_SHORT).show()
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
+        try {
 
-    }
-
-
-    val token = "741930850747-12p5utjs35rpjat1mipu4q4mejnks39d.apps.googleusercontent.com"
-
-    val launcher =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) {
-            val task = GoogleSignIn.getSignedInAccountFromIntent(it.data)
-            try {
-
-                val account = task.getResult(ApiException::class.java)
-                val credential = GoogleAuthProvider.getCredential(account.idToken, null)
-                loginViewModel.signInWithGoogle(credential) {
-
-                    navController.navigate("ContainerView") {
-                        popUpTo("SplashView") { inclusive = true }
-                    }
-                }
-            } catch (e: Exception) {
-                Log.d("Login google error", "error: ${e}")
+            val account = task.getResult(ApiException::class.java)
+            val credential = GoogleAuthProvider.getCredential(account.idToken, null)
+            loginViewModel.signInWithGoogle(credential) {
+                handleGoogleSignInResult(navController)
             }
+        } catch (e: Exception) {
+            Log.d("Login google error", "error: $e")
         }
+    }
 
+    ContentLoginView(
+        state = state,
+        loginViewModel,
+        onLoginClick = { email, password ->
+            handleLoginClick(navController, loginViewModel, email, password)
+        },
+        onGoogleSignInClick = { launcher.launch(googleSignInIntent(context)) },
+        onRegisterClick = { navController.navigate("RegisterView") }
+    )
+}
+
+@Composable
+private fun ContentLoginView(
+    state: LoginViewState,
+    loginViewModel: LoginViewModel,
+    onLoginClick: (String, String) -> Unit,
+    onGoogleSignInClick: () -> Unit,
+    onRegisterClick: () -> Unit
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize().padding(SPACE_DEFAULT.dp)
     ) {
-        var email by remember { mutableStateOf("") }
-        var password by remember { mutableStateOf("") }
+
         val isLoading by loginViewModel.isLoading.collectAsState()
         Text(
             text = stringResource(id = R.string.login_welcome),
@@ -106,51 +124,29 @@ fun LoginView(navController: NavController, loginViewModel: LoginViewModel) {
             fontWeight = FontWeight.ExtraLight
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(SPACE_DEFAULT_MAX.dp))
 
-        OutlinedTextField(
-            value = email,
-            onValueChange = { email = it },
-            placeholder = { Text(text = stringResource(id = R.string.login_label_input_email)) },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            shape = RoundedCornerShape(20.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 30.dp, end = 30.dp)
 
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        OutlinedTextField(
-            value = password,
-            onValueChange = { password = it },
-            placeholder = { Text(text = stringResource(id = R.string.login_label_input_pass)) },
-            visualTransformation = PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            shape = RoundedCornerShape(20.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 30.dp, end = 30.dp)
-        )
-        Spacer(modifier = Modifier.height(32.dp))
+        InputRound(
+            stringResource(R.string.login_label_input_email), state.email.value,
+            stringResource(R.string.login_label_input_email), KeyboardType.Email
+        ) {
+            state.email.value = it
+        }
+        InputRound(
+            stringResource(R.string.label_password), state.password.value,
+            stringResource(R.string.label_password_placeholder), KeyboardType.Password
+        ) {
+            state.password.value = it
+        }
+
         Button(
             onClick = {
-
-                if (email != "" && password != "") {
-                    loginViewModel.login(email, password) {isEmailVerified ->
-
-                        if (isEmailVerified) {
-                            navController.navigate("ContainerView") {
-                                popUpTo("SplashView") { inclusive = true }
-                            }
-                        } else {
-                            navController.navigate("VerifyEmailView")
-                        }
-                    }
-                }
+                onLoginClick(state.email.value, state.password.value)
 
             }, modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 30.dp, end = 30.dp)
+                .padding(start = SPACE_DEFAULT.dp, end = SPACE_DEFAULT.dp)
         ) {
             Text(text = stringResource(id = R.string.login_button_login))
         }
@@ -158,32 +154,27 @@ fun LoginView(navController: NavController, loginViewModel: LoginViewModel) {
 
         Button(
             onClick = {
-                val options = GoogleSignInOptions.Builder(
-                    GoogleSignInOptions.DEFAULT_SIGN_IN
-                ).requestIdToken(token)
-                    .requestEmail()
-                    .build()
-
-                val googleSignInClient = GoogleSignIn.getClient(context, options)
-
-                launcher.launch(googleSignInClient.signInIntent)
-
+                onGoogleSignInClick()
             }, modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 30.dp, end = 30.dp)
+                .padding(start = SPACE_DEFAULT.dp, end = SPACE_DEFAULT.dp)
         ) {
-            Image(painter = painterResource(id = R.drawable.googleicon), contentDescription = "", Modifier.size(24.dp))
-            Spacer(modifier = Modifier.width(16.dp))
+            Image(
+                painter = painterResource(id = R.drawable.googleicon),
+                contentDescription = "",
+                Modifier.size(24.dp)
+            )
+            Spacer(modifier = Modifier.width(SPACE_DEFAULT.dp))
             Text(text = stringResource(id = R.string.label_signin_with_google))
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(SPACE_DEFAULT.dp))
         Text(text = stringResource(id = R.string.login_button_forgot_password),
             fontWeight = FontWeight.Light,
             fontSize = 14.sp,
-            color =  MaterialTheme.colorScheme.primary,
+            color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.clickable { })
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(SPACE_DEFAULT.dp))
 
         Row {
             Column {
@@ -197,9 +188,9 @@ fun LoginView(navController: NavController, loginViewModel: LoginViewModel) {
                 Text(text = stringResource(id = R.string.login_button_to_sign_up),
                     fontWeight = FontWeight.Light,
                     fontSize = 14.sp,
-                    color =  MaterialTheme.colorScheme.primary,
+                    color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.clickable {
-                        navController.navigate("RegisterView")
+                        onRegisterClick()
                     })
             }
         }
@@ -219,5 +210,52 @@ fun LoginView(navController: NavController, loginViewModel: LoginViewModel) {
         }
 
     }
+}
 
+private fun handleBackPressed(
+    context: Context,
+    backPressedOnceState: MutableState<Boolean>
+) {
+    if (backPressedOnceState.value) {
+        Toast.makeText(context, R.string.label_exit_to_app, Toast.LENGTH_SHORT).show()
+        (context as? Activity)?.finish()
+    } else {
+        backPressedOnceState.value = true
+    }
+}
+
+private fun handleGoogleSignInResult(navController: NavController) {
+    navController.navigate("ContainerView") {
+        popUpTo("SplashView") { inclusive = true }
+    }
+}
+
+private fun googleSignInIntent(context: Context): Intent {
+    val options = GoogleSignInOptions.Builder(
+        GoogleSignInOptions.DEFAULT_SIGN_IN
+    ).requestIdToken(GOOGLE_TOKEN)
+        .requestEmail()
+        .build()
+
+    val googleSignInClient = GoogleSignIn.getClient(context, options)
+    return googleSignInClient.signInIntent
+}
+
+private fun handleLoginClick(
+    navController: NavController,
+    loginViewModel: LoginViewModel,
+    email: String,
+    password: String
+) {
+    if (email.isNotEmpty() && password.isNotEmpty()) {
+        loginViewModel.login(email, password) { isEmailVerified ->
+            if (isEmailVerified) {
+                navController.navigate("ContainerView") {
+                    popUpTo("SplashView") { inclusive = true }
+                }
+            } else {
+                navController.navigate("VerifyEmailView")
+            }
+        }
+    }
 }

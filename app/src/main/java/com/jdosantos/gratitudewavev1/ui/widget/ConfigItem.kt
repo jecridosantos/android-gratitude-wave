@@ -9,6 +9,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.jdosantos.gratitudewavev1.core.common.constants.Constants
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT_MID
 
 @Composable
 fun ConfigItem(onClick: () -> Unit, content: @Composable () -> Unit) {
@@ -18,7 +20,7 @@ fun ConfigItem(onClick: () -> Unit, content: @Composable () -> Unit) {
             .clickable { onClick() }
     ) {
         Box(
-            modifier = Modifier.align(Alignment.Center).padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
+            modifier = Modifier.align(Alignment.Center).padding(start = SPACE_DEFAULT.dp, end = SPACE_DEFAULT.dp, top = SPACE_DEFAULT_MID.dp, bottom = SPACE_DEFAULT_MID.dp),
         ) {
             content()
         }

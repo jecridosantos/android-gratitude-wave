@@ -133,14 +133,6 @@
     <string name="label_reminder">Write your first gratitude of the day!</string>
     <string name="label_thank">Write a note</string>
 
-    <!-- Strings for days of the week in English -->
-    <string name="sunday_abbr">Sun</string>
-    <string name="monday_abbr">Mon</string>
-    <string name="tuesday_abbr">Tue</string>
-    <string name="wednesday_abbr">Wed</string>
-    <string name="thursday_abbr">Thu</string>
-    <string name="friday_abbr">Fri</string>
-    <string name="saturday_abbr">Sat</string>
 
     <string name="label_home_today">Today</string>
 
@@ -154,5 +146,65 @@
     <string name="label_repeat_daily">Daily</string>
     <string name="label_repeat_mon_to_fri">Mon to Fri</string>
     <string name="label_repeat_customized">Customized</string>
+    <string name="label_select_time">Seleccionar hora</string>
+    <string name="label_time">Hora</string>
+    <string name="label_repeat">Repetir</string>
+    <string name="label_label">Etiqueta</string>
+    <string name="label_my_morning_reminder">Mi recordatorio de la mañana</string>
+    <string name="label_no_reminders">Sin recordatorios</string>
+    <string name="label_reminders">Recordatorios</string>
+    <string name="label_save_reminders">Guardar recordatorio</string>
+    <string name="label_settings">Ajustes</string>
+    <string name="label_customize_reminders">Personalizar recordatorios</string>
+    <string name="label_mute_notifications">Silenciar notificaciones</string>
+    <string name="label_send_feedback">Enviar comentarios</string>
+    <string name="label_help_center">Centro de ayuda</string>
+    <string name="label_privacy_policy">Plíticas de seguridad</string>
+    <string name="label_terms_of_service">Términos de servicio</string>
+    <string name="label_send_feedback_title_one">¿Qué te gustó más de la aplicación?</string>
+    <string name="label_send_feedback_title_two">¿En qué podemos mejorar?</string>
+    <string name="label_send_feedback_item_one">Diseño atractivo y amigable.</string>
+    <string name="label_send_feedback_item_two">Experiencia de usuario fluida.</string>
+    <string name="label_send_feedback_item_three">Interacción y respuesta.</string>
+    <string name="label_send_feedback_item_four">Insentivar la práctica de la gratitud.</string>
+    <string name="label_send">Enviar</string>
+    <string name="label_notifications">Notifications</string>
+    <string name="label_no_notifications">Sin notificaciones</string>
+    <string name="label_color">Color</string>
+    <string name="label_my_progress">Mi progreso</string>
+    <string name="label_all_my_notes">Todas mis notas</string>
+    <string name="label_no_notes_today">Sin notas hoy</string>
+    <string name="label_no_notes_today_message">¿Tienes algo por agradecer hoy?</string>
+    <string name="label_search_by_tag">Buscar por etiqueta</string>
+    <string name="label_see_all">Ver todas</string>
+    <string name="label_total_notes">Notas totales</string>
+    <string name="label_current_streak">Racha actual</string>
+    <string name="label_best_streak">Mejor racha</string>
+    <string name="label_days">días</string>
+    <string name="label_streaks">Rachas</string>
+    <string name="label_select_challenge">Seleccionar desafío</string>
+    <string name="label_no_notes">Sin notas</string>
+    <string name="label_register">Registro</string>
+    <string name="label_name">Name</string>
+    <string name="label_email">Email</string>
+    <string name="label_password">Password</string>
+    <string name="label_name_placeholder">Name</string>
+    <string name="label_email_placeholder">Email</string>
+    <string name="label_password_placeholder">Password</string>
+
+    <string name="label_message_accept_conditions">By creating account, you agree to the Private Policy and Terms and Conditions.</string>
+    <string name="label_message_verify_email">We need verify your email to you can use our app.</string>
+    <string name="label_continue">Continuar</string>
+    <string name="label_error_register">Error en registro</string>
+    <string name="label_verify_email">Verificar correo</string>
+    <string name="label_message_verify_email_with_current_email">We sent an email to  %1$s with a link to verify your email.</string>
+    <string name="label_verify_email_retry">Can’t see it? Try your spam folder or ask us to resend the link.</string>
+    <string name="label_more_options">Más opciones</string>
+    <string name="label_update">Actualizar</string>
+    <string name="label_go_to_email">Ir a mi correo</string>
+    <string name="label_resend_link">Volver a enviar link</string>
+    <string name="label_back_to_top">Volver al inicio</string>
+    <string name="label_resend_link_success">Link de verificacion enviado</string>
+    <string name="label_resend_link_error">No se pudo enviar link</string>
 
 </resources>

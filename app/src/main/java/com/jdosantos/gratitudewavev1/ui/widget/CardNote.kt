@@ -20,6 +20,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jdosantos.gratitudewavev1.app.model.Note
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT_MID
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.VALUE_INT_EMPTY
 import com.jdosantos.gratitudewavev1.ui.view.main.note.DisplayDate
 import com.jdosantos.gratitudewavev1.ui.view.main.note.DisplayEmotion
 import com.jdosantos.gratitudewavev1.ui.view.main.note.DisplayTag
@@ -30,7 +33,7 @@ fun CardNote(note: Note, onClick: () -> Unit) {
     val colors = getColors()
     Card(
         colors = CardDefaults.cardColors(
-            containerColor = if (note.color == null || note.color == -1) colorScheme.background else colors[note.color],
+            containerColor = if (note.color == null || note.color == VALUE_INT_EMPTY) colorScheme.background else colors[note.color],
         ),
         /*  elevation = CardDefaults.cardElevation(
               defaultElevation = 1.dp
@@ -38,12 +41,12 @@ fun CardNote(note: Note, onClick: () -> Unit) {
         border = BorderStroke(3.dp, colorScheme.outlineVariant),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 8.dp, bottom = 8.dp)
+            .padding(top = SPACE_DEFAULT_MID.dp, bottom = SPACE_DEFAULT_MID.dp)
             .clickable { onClick() },
         //    shape = RoundedCornerShape(8.dp)
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(SPACE_DEFAULT.dp),
         ) {
 
             DisplayNote(note.note)

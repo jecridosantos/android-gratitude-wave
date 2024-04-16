@@ -15,12 +15,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -31,18 +31,36 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
 import com.jdosantos.gratitudewavev1.app.store.CredentialStore
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
 import com.jdosantos.gratitudewavev1.ui.widget.AlertComponent
 import com.jdosantos.gratitudewavev1.ui.widget.InputRound
 import com.jdosantos.gratitudewavev1.ui.widget.Loader
 import kotlinx.coroutines.launch
 
+data class RegisterViewState(
+    val name: MutableState<String>,
+    val email: MutableState<String>,
+    val password: MutableState<String>
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterView(navController: NavController, registerViewModel: RegisterViewModel) {
+
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val dataStore = CredentialStore(context)
+
+    val state = RegisterViewState(
+        name = remember { mutableStateOf("") },
+        email = remember { mutableStateOf("") },
+        password = remember { mutableStateOf("") }
+    )
+    val isLoading by registerViewModel.isLoading.collectAsState()
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text(text = "Registro") },
+                title = { Text(text = stringResource(R.string.label_register)) },
                 navigationIcon = {
                     IconButton(onClick = {
                         navController.popBackStack()
@@ -53,88 +71,95 @@ fun RegisterView(navController: NavController, registerViewModel: RegisterViewMo
             )
         }
     ) { paddingValues ->
-        ContentRegisterView(paddingValues, navController, registerViewModel)
+        ContentRegisterView(
+            paddingValues,
+            state,
+            onRegisterClick = {
+                registerViewModel.register(
+                    state.email.value,
+                    state.name.value,
+                    state.password.value
+                ) {
+                    scope.launch {
+                        dataStore.savePassword(state.password.value)
+                    }
+                    navController.navigate("VerifyEmailView")
+                }
+            }
+        )
+    }
+    if (isLoading) {
+        Loader()
+    }
+    if (registerViewModel.showAlert) {
+        AlertComponent(title = stringResource(R.string.label_error_register),
+            message = stringResource(R.string.label_error_register),
+            confirmText = stringResource(id = R.string.label_confirm),
+            cancelText = null,
+            onConfirmClick = { registerViewModel.closeAlert() }) {
+        }
     }
 }
 
 @Composable
-fun ContentRegisterView(
+private fun ContentRegisterView(
     paddingValues: PaddingValues,
-    navController: NavController,
-    registerViewModel: RegisterViewModel
+    state: RegisterViewState,
+    onRegisterClick: () -> Unit
 ) {
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-    val dataStore = CredentialStore(context)
-    var email by remember { mutableStateOf("") }
-    var name by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
 
-    val isLoading by registerViewModel.isLoading.collectAsState()
     Column(
-
         modifier = Modifier
             .padding(paddingValues)
-            .padding(16.dp)
+            .padding(SPACE_DEFAULT.dp)
     ) {
 
-
-        InputRound("Name", name, "Name", KeyboardType.Text) {
-            name = it
+        InputRound(
+            stringResource(R.string.label_name), state.name.value,
+            stringResource(R.string.label_name_placeholder), KeyboardType.Text
+        ) {
+            state.name.value = it
         }
 
-        InputRound("Email", email, "Email", KeyboardType.Email) {
-            email = it
+        InputRound(
+            stringResource(R.string.label_email), state.email.value,
+            stringResource(R.string.label_email_placeholder), KeyboardType.Email
+        ) {
+            state.email.value = it
         }
 
-        InputRound("Password", password, "Password", KeyboardType.Password) {
-            password = it
+        InputRound(
+            stringResource(R.string.label_password), state.password.value,
+            stringResource(R.string.label_password_placeholder), KeyboardType.Password
+        ) {
+            state.password.value = it
         }
 
         Text(
-            text = "By creating account, you agree to the Private Policy and Terms and Conditions.",
+            text = stringResource(id = R.string.label_message_accept_conditions),
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium,
-            modifier = Modifier.padding(start = 16.dp, end = 16.dp)
+            modifier = Modifier.padding(start = SPACE_DEFAULT.dp, end = SPACE_DEFAULT.dp)
         )
 
         Spacer(modifier = Modifier.weight(1f))
         Text(
-            text = "We need verify your email to you can use our app.",
+            text = stringResource(id = R.string.label_message_verify_email),
             fontSize = 14.sp,
             fontWeight = FontWeight.Light,
-            modifier = Modifier.padding(start = 16.dp, end = 16.dp)
+            modifier = Modifier.padding(start = SPACE_DEFAULT.dp, end = SPACE_DEFAULT.dp)
         )
-        fun enabledButton() = email != "" && name != "" && password != ""
+        fun enabledButton() =
+            state.name.value != "" && state.email.value != "" && state.password.value != ""
         Button(
             enabled = enabledButton(),
             onClick = {
-                registerViewModel.register(email, name, password) {
-                    scope.launch {
-                        dataStore.saveValue(password)
-                    }
-                    navController.navigate("VerifyEmailView")
-                }
+                onRegisterClick()
             }, modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(SPACE_DEFAULT.dp)
         ) {
-            Text(text = "Continuar")
-        }
-    }
-
-
-    if (isLoading) {
-        Loader()
-    }
-
-    if (registerViewModel.showAlert) {
-        AlertComponent(title = "Error en registro",
-            message = "Error en registro",
-            confirmText = stringResource(id = R.string.label_confirm),
-            cancelText = null,
-            onConfirmClick = { registerViewModel.closeAlert() }) {
-
+            Text(text = stringResource(R.string.label_continue))
         }
     }
 

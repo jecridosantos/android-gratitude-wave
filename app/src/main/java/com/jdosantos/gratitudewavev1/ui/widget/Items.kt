@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
 
 @Composable
 fun ItemSelectedOptions(selected: Boolean, title: String, onClick: () -> Unit) {
@@ -25,7 +26,7 @@ fun ItemSelectedOptions(selected: Boolean, title: String, onClick: () -> Unit) {
             .selectable(
                 selected = selected, onClick = onClick
             )
-            .padding(16.dp), verticalAlignment = Alignment.CenterVertically
+            .padding(SPACE_DEFAULT.dp), verticalAlignment = Alignment.CenterVertically
     ) {
 
         Text(text = title, fontWeight = FontWeight.Normal, fontSize = 18.sp,

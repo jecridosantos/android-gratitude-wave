@@ -30,6 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
 import com.jdosantos.gratitudewavev1.core.common.util.challengesList
 import com.jdosantos.gratitudewavev1.ui.view.main.note.getColors
 import com.jdosantos.gratitudewavev1.ui.widget.CardGoal
@@ -49,7 +50,7 @@ fun ProgressView(
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(title = {
-                Text(text = "Mi progreso")
+                Text(text = stringResource(id = R.string.label_my_progress))
             },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
@@ -82,34 +83,29 @@ private fun ContentProgressView(
     Column(
         modifier = Modifier
             .padding(paddingValues)
-            .padding(16.dp)
+            .padding(SPACE_DEFAULT.dp)
             .fillMaxSize()
-        //  .verticalScroll(scroll)
     ) {
 
-        Title(text = "Rachas", modifier = Modifier)
+        Title(text = stringResource(R.string.label_streaks), modifier = Modifier)
         Spacer(modifier = Modifier.height(16.dp))
         LazyVerticalStaggeredGrid(
             columns = StaggeredGridCells.Fixed(2),
-            //  contentPadding = PaddingValues(8.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             item {
-                CardProgress("Notas totales", "${progressState.totalNotes}", getColors()[0]) {}
+                CardProgress(stringResource(R.string.label_total_notes), "${progressState.totalNotes}", getColors()[0]) {}
             }
             item {
                 CardProgress(
-                    "Racha actual",
-                    "${progressState.currentStreak} días",
+                    stringResource(R.string.label_current_streak),
+                    "${progressState.currentStreak} ${stringResource(id = R.string.label_days)}",
                     getColors()[1]
                 ) {}
             }
             item {
-                CardProgress("Mejor racha", "${progressState.bestStreak} días", getColors()[2]) {}
+                CardProgress(stringResource(R.string.label_best_streak), "${progressState.bestStreak} ${stringResource(id = R.string.label_days)}", getColors()[2]) {}
             }
-            /*            item {
-                            CardProgress("Progreso semanal", "3/7", getColors()[3]) {}
-                        }*/
         }
         Spacer(modifier = Modifier.height(16.dp))
         Row(
@@ -137,7 +133,7 @@ private fun ContentProgressView(
 
             }
         } else {
-            Text(text = "Seleccionar desafío")
+            Text(text = stringResource(R.string.label_select_challenge))
         }
 
 

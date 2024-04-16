@@ -10,3 +10,8 @@ import androidx.compose.ui.unit.sp
 fun Title(text: String, modifier: Modifier?) {
     Text(text, fontWeight = FontWeight.ExtraBold, fontSize = 18.sp, modifier = modifier!!)
 }
+
+@Composable
+fun TextItem(text: String, modifier: Modifier?) {
+    Text(text, modifier = modifier!!)
+}

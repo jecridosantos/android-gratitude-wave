@@ -33,6 +33,9 @@ import com.jdosantos.gratitudewavev1.R
 import com.jdosantos.gratitudewavev1.core.common.confignote.NoteTypeConfig
 import com.jdosantos.gratitudewavev1.core.common.util.noteTypeConfigLists
 import com.jdosantos.gratitudewavev1.app.store.NoteTypeStore
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT_MID
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.VALUE_INT_EMPTY
 import kotlinx.coroutines.launch
 
 @Composable
@@ -83,7 +86,7 @@ fun ChooseNoteType(
                 }
             },
             dismissButton = {
-                TextButton(onClick = { onDismiss(-1) }) {
+                TextButton(onClick = { onDismiss(VALUE_INT_EMPTY) }) {
                     Text(text = stringResource(id = R.string.label_cancel))
                 }
 
@@ -129,7 +132,7 @@ private fun CheckBoxByDefault(isDefault: MutableState<Boolean>) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 16.dp)
+            .padding(top = SPACE_DEFAULT.dp)
             .selectable(
                 selected = isDefault.value,
                 onClick = { isDefault.value = !isDefault.value }),
@@ -139,7 +142,7 @@ private fun CheckBoxByDefault(isDefault: MutableState<Boolean>) {
         Checkbox(
             checked = isDefault.value,
             onCheckedChange = { isDefault.value = !isDefault.value },
-            modifier = Modifier.padding(end = 8.dp)
+            modifier = Modifier.padding(end = SPACE_DEFAULT_MID.dp)
         )
 
         Text(

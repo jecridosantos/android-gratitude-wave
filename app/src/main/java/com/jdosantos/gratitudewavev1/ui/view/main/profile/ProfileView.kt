@@ -41,7 +41,9 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.jdosantos.gratitudewavev1.R
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
 import com.jdosantos.gratitudewavev1.ui.widget.ConfigItem
+import com.jdosantos.gratitudewavev1.ui.widget.TextItem
 import com.jdosantos.gratitudewavev1.ui.widget.Title
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -82,30 +84,40 @@ fun ContentProfileView(
 
                 HeaderProfile(profileViewModel)
 
-                Box(modifier = Modifier.padding(16.dp)) {
-                    Title(text = "Ajustes", modifier = Modifier)
+                Box(modifier = Modifier.padding(SPACE_DEFAULT.dp)) {
+                    Title(text = stringResource(id = R.string.label_settings), modifier = Modifier)
                 }
 
 
                 Column {
-                    ItemSettings(Icons.Default.Settings, null, "Settings") {
+                    ItemSettings(
+                        Icons.Default.Settings,
+                        null,
+                        stringResource(id = R.string.label_settings)
+                    ) {
                         navController.navigate("SettingsView")
                     }
-                    ItemSettings(Icons.Default.Email, null, "Send feedback") {
+                    ItemSettings(
+                        Icons.Default.Email, null,
+                        stringResource(R.string.label_send_feedback)
+                    ) {
                         navController.navigate("FeedbackView")
                     }
-                    ItemSettings(null, R.drawable.baseline_help_outline_24, "Help Center") {
+                    ItemSettings(
+                        null, R.drawable.baseline_help_outline_24,
+                        stringResource(R.string.label_help_center)
+                    ) {
                         navController.navigate("HelpView")
                     }
-                    ItemSettings(null, null, "Privacy Policy") {}
-                    ItemSettings(null, null, "Terms of Service") {}
+                    ItemSettings(null, null, stringResource(R.string.label_privacy_policy)) {}
+                    ItemSettings(null, null, stringResource(R.string.label_terms_of_service)) {}
                     Spacer(modifier = Modifier.height(16.dp))
                 }
 
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                Box(modifier = Modifier.padding(16.dp)) {
+                Box(modifier = Modifier.padding(SPACE_DEFAULT.dp)) {
                     ElevatedButton(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = {
@@ -139,7 +151,7 @@ private fun HeaderProfile(profileViewModel: ProfileViewModel) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(SPACE_DEFAULT.dp)
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -211,9 +223,13 @@ private fun ItemSettings(
                 Icon(painter = painterResource(icon2), contentDescription = "")
                 Spacer(modifier = Modifier.width(24.dp))
             }
-            Text(text = title, modifier = Modifier.weight(1f))
+            TextItem(text = title, modifier = Modifier.weight(1f))
 
-            Icon(imageVector = Icons.Default.KeyboardArrowRight, contentDescription = "", tint = MaterialTheme.colorScheme.outline)
+            Icon(
+                imageVector = Icons.Default.KeyboardArrowRight,
+                contentDescription = "",
+                tint = MaterialTheme.colorScheme.outline
+            )
 
         }
     }

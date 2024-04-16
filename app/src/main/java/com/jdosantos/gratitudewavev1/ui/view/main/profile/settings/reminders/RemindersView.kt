@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -35,8 +34,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.jdosantos.gratitudewavev1.R
 import com.jdosantos.gratitudewavev1.app.enums.getFirstLetters
 import com.jdosantos.gratitudewavev1.app.model.ConfigUserReminder
+import com.jdosantos.gratitudewavev1.core.common.confignote.RepeatConfig
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT_MID
 import com.jdosantos.gratitudewavev1.core.common.util.hourFormat
 import com.jdosantos.gratitudewavev1.core.common.util.repeatListOptions
 import com.jdosantos.gratitudewavev1.ui.view.main.profile.settings.SettingsViewModel
@@ -51,7 +54,7 @@ fun RemindersView(navController: NavController, settingsViewModel: SettingsViewM
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = "Recordatorios",
+                        text = stringResource(R.string.label_reminders),
                     )
                 },
                 navigationIcon = {
@@ -96,24 +99,24 @@ private fun ContentRemindersView(
     Column(
         modifier = Modifier
             .padding(paddingValues)
-            .padding(16.dp)
+            .padding(SPACE_DEFAULT.dp)
     ) {
         if (isLoading) {
             Loader()
         } else {
             if (data.isNotEmpty()) {
                 LazyColumn {
-                    itemsIndexed(data) {index, item ->
+                    itemsIndexed(data) { index, item ->
 
                         ItemReminder(item, {
                             navController.navigate("SaveRemindersView/$index")
                         }) {
-                        settingsViewModel.updateReminderState(index, it)
+                            settingsViewModel.updateReminderState(index, it)
                         }
                     }
                 }
             } else {
-                EmptyMessage(null, "Sin recordatorios", null)
+                EmptyMessage(null, stringResource(R.string.label_no_reminders), null)
             }
         }
     }
@@ -122,14 +125,14 @@ private fun ContentRemindersView(
 @Composable
 private fun ItemReminder(
     configUserReminder: ConfigUserReminder,
-    onClick: ()-> Unit,
+    onClick: () -> Unit,
     onCheckedChange: (Boolean) -> Unit
 ) {
     val repeatConfigSelect = configUserReminder.repeat
     val selectedDays = configUserReminder.repeatDays
     var subtitleRepeat = stringResource(id = repeatListOptions[repeatConfigSelect].title)
 
-    if (repeatConfigSelect == 3 && selectedDays!!.size > 0) {
+    if (repeatConfigSelect == RepeatConfig.Custom.id && selectedDays!!.size > 0) {
         subtitleRepeat = getFirstLetters(selectedDays)
     }
     var isChecked by remember { mutableStateOf(configUserReminder.active) }
@@ -137,12 +140,12 @@ private fun ItemReminder(
 
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 8.dp, bottom = 8.dp)
+            .padding(top = SPACE_DEFAULT_MID.dp, bottom = SPACE_DEFAULT_MID.dp)
             .clickable { onClick() },
         //    shape = RoundedCornerShape(8.dp)
     ) {
         Row(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(SPACE_DEFAULT.dp),
         ) {
 
             Column {
@@ -157,8 +160,7 @@ private fun ItemReminder(
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
-            Switch(isChecked, onCheckedChange = {
-                it ->
+            Switch(isChecked, onCheckedChange = { it ->
                 isChecked = it
                 onCheckedChange(isChecked)
             })

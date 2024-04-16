@@ -20,12 +20,12 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
 import com.jdosantos.gratitudewavev1.core.common.util.getFormattedDateSimple
 import com.jdosantos.gratitudewavev1.ui.widget.CardNote
 import com.jdosantos.gratitudewavev1.ui.widget.EmptyMessage
@@ -69,8 +69,6 @@ fun ContentByCalendarView(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
-    val scope =
-        rememberCoroutineScope()
 
     val isLoading by byCalendarViewModel.isLoading.collectAsState()
     val data by byCalendarViewModel.notesData.collectAsState()
@@ -85,7 +83,7 @@ fun ContentByCalendarView(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(SPACE_DEFAULT.dp)
     ) {
         val months by byCalendarViewModel.calendar.collectAsState()
 
@@ -114,7 +112,7 @@ fun ContentByCalendarView(
                 }
             } else {
              //   EmptyMessage()
-                EmptyMessage(null, "Sin notas", null)
+                EmptyMessage(null, stringResource(id = R.string.label_no_notes), null)
             }
         }
     }

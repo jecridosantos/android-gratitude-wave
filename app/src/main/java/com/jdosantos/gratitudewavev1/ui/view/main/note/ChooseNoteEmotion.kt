@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jdosantos.gratitudewavev1.R
 import com.jdosantos.gratitudewavev1.core.common.confignote.NoteEmotionConfig
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
 import com.jdosantos.gratitudewavev1.core.common.util.noteEmotionConfigLists
 import com.jdosantos.gratitudewavev1.ui.widget.ItemSelectedOptions
 
@@ -42,7 +43,7 @@ fun ChooseNoteEmotion(
         ModalBottomSheet(onDismissRequest = { onHide() }) {
 
             Column(
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(SPACE_DEFAULT.dp)
             ) {
                 TitleModal()
                 Spacer(modifier = Modifier.height(16.dp))
@@ -90,7 +91,7 @@ fun EmotionItem(selected: Boolean, item: NoteEmotionConfig, onClick: () -> Unit)
             .selectable(
                 selected = selected, onClick = onClick
             )
-            .padding(16.dp), verticalAlignment = Alignment.CenterVertically
+            .padding(SPACE_DEFAULT.dp), verticalAlignment = Alignment.CenterVertically
     ) {
         Text(text = stringResource(id = item.icon), fontSize = 18.sp)
         Spacer(modifier = Modifier.width(16.dp))

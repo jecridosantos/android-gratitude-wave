@@ -1,9 +1,7 @@
 package com.jdosantos.gratitudewavev1.ui.view.main.home.search
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,7 +24,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -34,7 +31,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -46,6 +42,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
 import com.jdosantos.gratitudewavev1.app.model.Tag
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT_MID
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT_MIN
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.VALUE_INT_EMPTY
 import com.jdosantos.gratitudewavev1.ui.widget.Title
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -58,22 +58,13 @@ fun SearchNoteView(
     var active by remember { mutableStateOf(false) }
     val notes by searchNoteViewModel.notesData.collectAsState()
 
-    val window = (LocalView.current.context as Activity).window
-    val colorBackground = MaterialTheme.colorScheme.background
-    val dark = isSystemInDarkTheme()
-    LaunchedEffect(colorBackground) {
-/*        window?.statusBarColor = colorBackground.toArgb()
-        WindowCompat.getInsetsController(window!!, window.decorView).isAppearanceLightStatusBars =
-            !dark*/
-    }
-
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         SearchBar(modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = if (active) 0.dp else 8.dp),
+            .padding(horizontal = if (active) 0.dp else SPACE_DEFAULT_MID.dp),
             query = query,
             onQueryChange = { query = it },
             onSearch = { active = false },
@@ -96,8 +87,10 @@ fun SearchNoteView(
 
                 if (active) {
                     IconButton(onClick = { active = false }) {
-                        Icon(imageVector = Icons.Default.Close,
-                            contentDescription = "")
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = ""
+                        )
                     }
 
                 } else {
@@ -112,7 +105,7 @@ fun SearchNoteView(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(8.dp)
+                            .padding(SPACE_DEFAULT_MID.dp)
                     ) {
 
                         HighlightedText(query, it.note) {
@@ -130,26 +123,6 @@ fun SearchNoteView(
                 navController.navigate("SearchByTagsView")
             }
         }
-
-        /* if (notes.isNotEmpty()) {
-
-             Column(
-                 modifier = Modifier
-                     .fillMaxSize()
-                     .padding(start = 16.dp, end = 16.dp)
-             )
-             {
-                 Title("Mi última nota", modifier = Modifier.padding(start = 0.dp, bottom = 16.dp, top = 16.dp))
-                 LazyColumn {
-                     items(notes.take(1)) { item ->
-                         CardNote(item, showDate = true) {
-                             navController.navigate("DetailNoteView/${item.idDoc}")
-                         }
-                     }
-                 }
-             }
-
-         }*/
     }
 }
 
@@ -157,7 +130,7 @@ fun SearchNoteView(
 fun HighlightedText(searchText: String, content: String, onClick: () -> Unit) {
     val annotatedText = buildAnnotatedString {
         val startIndex = content.indexOf(searchText, ignoreCase = true)
-        if (startIndex == -1) {
+        if (startIndex == VALUE_INT_EMPTY) {
             append(content)
         } else {
             withStyle(
@@ -200,7 +173,7 @@ fun HighlightedText(searchText: String, content: String, onClick: () -> Unit) {
         text = annotatedText,
         maxLines = 2,
         overflow = TextOverflow.Ellipsis,
-        modifier = Modifier.padding(bottom = 10.dp, start = 10.dp),
+        modifier = Modifier.padding(bottom = SPACE_DEFAULT_MID.dp, start = SPACE_DEFAULT_MID.dp),
         onClick = {
             onClick()
         })
@@ -208,20 +181,20 @@ fun HighlightedText(searchText: String, content: String, onClick: () -> Unit) {
 
 @Composable
 fun Tags(tags: List<Tag>, onSearch: (tag: Tag) -> Unit, onClick: () -> Unit) {
-    Column(modifier = Modifier.padding(4.dp)) {
+    Column(modifier = Modifier.padding(SPACE_DEFAULT_MIN.dp)) {
 
         Title(
-            "Buscar por etiqueta",
-            modifier = Modifier.padding(start = 16.dp, bottom = 8.dp, top = 16.dp)
+            stringResource(id = R.string.label_search_by_tag),
+            modifier = Modifier.padding(start = SPACE_DEFAULT.dp, bottom = SPACE_DEFAULT_MID.dp, top = SPACE_DEFAULT.dp)
         )
 
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
-            contentPadding = PaddingValues(8.dp)
+            contentPadding = PaddingValues(SPACE_DEFAULT_MID.dp)
         ) {
             items(tags.take(8)) {
                 Card(modifier = Modifier
-                    .padding(4.dp)
+                    .padding(SPACE_DEFAULT_MIN.dp)
                     .clickable {
                         onSearch(it)
 
@@ -229,7 +202,7 @@ fun Tags(tags: List<Tag>, onSearch: (tag: Tag) -> Unit, onClick: () -> Unit) {
                 ) {
                     Text(
                         text = it.esTag,
-                        modifier = Modifier.padding(16.dp)
+                        modifier = Modifier.padding(SPACE_DEFAULT.dp)
                     )
                 }
             }
@@ -238,11 +211,11 @@ fun Tags(tags: List<Tag>, onSearch: (tag: Tag) -> Unit, onClick: () -> Unit) {
         ElevatedButton(
             onClick = { onClick() },
             modifier = Modifier
-                .padding(start = 16.dp, bottom = 16.dp, top = 8.dp, end = 16.dp)
+                .padding(start = SPACE_DEFAULT.dp, bottom = SPACE_DEFAULT.dp, top = SPACE_DEFAULT_MID.dp, end = SPACE_DEFAULT.dp)
                 .fillMaxWidth(),
 
             ) {
-            Text(text = "Ver todas")
+            Text(text = stringResource(R.string.label_see_all))
 
         }
     }

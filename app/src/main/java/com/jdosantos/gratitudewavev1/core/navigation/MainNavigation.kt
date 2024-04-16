@@ -40,7 +40,7 @@ import com.jdosantos.gratitudewavev1.ui.view.main.profile.help.HelpView
 import com.jdosantos.gratitudewavev1.ui.view.main.profile.settings.SettingsView
 import com.jdosantos.gratitudewavev1.ui.view.main.profile.settings.SettingsViewModel
 import com.jdosantos.gratitudewavev1.ui.view.main.profile.settings.reminders.RemindersView
-import com.jdosantos.gratitudewavev1.ui.view.main.profile.settings.reminders.save.SaveRemindersView
+import com.jdosantos.gratitudewavev1.ui.view.main.profile.settings.reminders.SaveRemindersView
 import com.jdosantos.gratitudewavev1.ui.view.splash.SplashView
 
 @Composable

@@ -12,6 +12,7 @@ import com.jdosantos.gratitudewavev1.app.model.Tag
 import com.jdosantos.gratitudewavev1.app.usecase.notes.GetNoteByIdUseCase
 import com.jdosantos.gratitudewavev1.app.usecase.GetTagsUseCase
 import com.jdosantos.gratitudewavev1.app.usecase.notes.UpdateNoteUseCase
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.VALUE_INT_EMPTY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -111,7 +112,7 @@ class UpdateNoteViewModel @Inject constructor(
     }
 
     fun onType(value: Int) {
-        if (value != -1) {
+        if (value !=VALUE_INT_EMPTY) {
             currentNoteType = noteTypeConfigLists[value]
             note = note.copy(type = value)
         }

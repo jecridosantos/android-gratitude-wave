@@ -7,7 +7,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -18,8 +17,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.jdosantos.gratitudewavev1.R
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
 import com.jdosantos.gratitudewavev1.ui.widget.EmptyMessage
 import com.jdosantos.gratitudewavev1.ui.widget.Loader
 
@@ -35,7 +37,7 @@ fun NotificationsView(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = "Notifications",
+                        text = stringResource(R.string.label_notifications),
                     )
                 },
                 navigationIcon = {
@@ -46,11 +48,6 @@ fun NotificationsView(
                     }
 
                 },
-  /*              actions = {
-                    IconButton(onClick = { *//*TODO*//* }) {
-                        Icon(imageVector = Icons.Default.Settings, contentDescription = "")
-                    }
-                }*/
             )
         }
 
@@ -72,7 +69,7 @@ fun ContentNotificationsView(
     Column(
         modifier = Modifier
             .padding(paddingValues)
-            .padding(16.dp)
+            .padding(SPACE_DEFAULT.dp)
     ) {
         if (isLoading) {
             Loader()
@@ -83,7 +80,7 @@ fun ContentNotificationsView(
                     }
                 }
             } else {
-                EmptyMessage(null, "Sin notificaciones", null)
+                EmptyMessage(null, stringResource(R.string.label_no_notifications), null)
             }
         }
     }

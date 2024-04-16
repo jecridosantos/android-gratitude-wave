@@ -4,15 +4,12 @@ import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -27,12 +24,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.navigation.NavController
+import com.jdosantos.gratitudewavev1.R
+import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
 import com.jdosantos.gratitudewavev1.ui.widget.CardNote
 import com.jdosantos.gratitudewavev1.ui.widget.EmptyMessage
-import com.jdosantos.gratitudewavev1.ui.widget.EmptyNotFound
 import com.jdosantos.gratitudewavev1.ui.widget.Loader
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -94,15 +93,9 @@ fun ContentNotesByTagView(
         modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)
-            .padding(start = 16.dp, end = 16.dp)
+            .padding(start = SPACE_DEFAULT.dp, end = SPACE_DEFAULT.dp)
     ) {
-        
-     /*   AssistChip(onClick = { *//*TODO*//* }, label = {
-            Text(text = notesByTagViewModel.tag.esTag)
-        })
-        
-        Spacer(modifier = Modifier.height(8.dp))*/
-        
+
         if (isLoading) {
             Loader()
         } else {
@@ -115,7 +108,7 @@ fun ContentNotesByTagView(
                     }
                 }
             } else {
-                EmptyMessage(null, "Sin notas", null)
+                EmptyMessage(null, stringResource(R.string.label_no_notes), null)
             }
         }
     }
