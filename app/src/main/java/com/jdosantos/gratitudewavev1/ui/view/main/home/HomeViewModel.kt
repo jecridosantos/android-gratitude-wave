@@ -1,5 +1,6 @@
 package com.jdosantos.gratitudewavev1.ui.view.main.home
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -11,14 +12,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import coil.compose.rememberImagePainter
 import com.jdosantos.gratitudewavev1.R
-import com.jdosantos.gratitudewavev1.core.common.util.getCurrentDate
-import com.jdosantos.gratitudewavev1.core.common.util.getTimeOfDay
-import com.jdosantos.gratitudewavev1.app.enums.TimeOfDay
-import com.jdosantos.gratitudewavev1.app.model.Note
-import com.jdosantos.gratitudewavev1.app.model.User
-import com.jdosantos.gratitudewavev1.app.usecase.GetCurrentUserUseCase
-import com.jdosantos.gratitudewavev1.app.usecase.notes.GetMyNotesByDateUseCase
-import com.jdosantos.gratitudewavev1.app.usecase.notes.GetNotesByCurrentUserUseCase
+import com.jdosantos.gratitudewavev1.domain.enums.TimeOfDay
+import com.jdosantos.gratitudewavev1.domain.models.Note
+import com.jdosantos.gratitudewavev1.domain.models.User
+import com.jdosantos.gratitudewavev1.domain.usecase.auth.GetCurrentUserUseCase
+import com.jdosantos.gratitudewavev1.domain.usecase.notes.GetMyNotesByDateUseCase
+import com.jdosantos.gratitudewavev1.domain.usecase.notes.GetNotesByCurrentUserUseCase
+import com.jdosantos.gratitudewavev1.utils.getCurrentDate
+import com.jdosantos.gratitudewavev1.utils.getTimeOfDay
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,16 +34,12 @@ class HomeViewModel @Inject constructor(
     private val getNotesByCurrentUserUseCase: GetNotesByCurrentUserUseCase
 ) :
     ViewModel() {
-
+    private val tag = this::class.java.simpleName
     var user by mutableStateOf(User())
         private set
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
-/*
-    var showMessageFirstNote by mutableStateOf(true)
-
-    var noNoteOfTheDay by mutableStateOf(false)*/
 
     private val _notesData = MutableStateFlow<List<Note>>(emptyList())
     val notesData: StateFlow<List<Note>> = _notesData
@@ -50,17 +47,23 @@ class HomeViewModel @Inject constructor(
     fun fetchNotes() {
         _isLoading.value = true
         viewModelScope.launch(Dispatchers.IO) {
-            getMyNotesByDateUseCase.execute(getCurrentDate()) { notes ->
-                _notesData.value = notes
-                /*
-            noNoteOfTheDay = notes[0].date != getCurrentDate()*/
 
-                _isLoading.value = false
-            }
+            getMyNotesByDateUseCase.execute(
+                date = getCurrentDate(),
+                callback = { notes ->
+                    _notesData.value = notes
+                    _isLoading.value = false
+                },
+                onError = {
+                    Log.e(tag, "fetchNotes - getMyNotesByDateUseCase")
+                }
+            )
 
             getCurrentUserUseCase.execute({
                 user = it
-            }) {}
+            }) {
+                Log.e(tag, "fetchNotes - getCurrentUserUseCase")
+            }
         }
     }
 
@@ -85,19 +88,5 @@ class HomeViewModel @Inject constructor(
         }
 
     }
-/*
-
-    fun hideIsNoteOfTheDay() {
-        noNoteOfTheDay = false
-    }
-
-    fun saveFlagShowMessage(context: Context, value: Boolean) {
-  */
-/*      viewModelScope.launch(Dispatchers.IO) {
-            FlagStore(context).saveFirstNote(if (value) 1 else 0)
-        }*//*
-
-    }
-*/
 
 }

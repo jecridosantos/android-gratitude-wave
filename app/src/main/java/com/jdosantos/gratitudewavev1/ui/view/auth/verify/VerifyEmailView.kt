@@ -40,10 +40,10 @@ import androidx.navigation.NavController
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.jdosantos.gratitudewavev1.R
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.VERIFY_EMAIL_OPTION_GO_TO_EMAIL
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.VERIFY_EMAIL_OPTION_GO_TO_LOGIN
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.VERIFY_EMAIL_OPTION_RESEND_LINK
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.VERIFY_EMAIL_OPTION_GO_TO_EMAIL
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.VERIFY_EMAIL_OPTION_GO_TO_LOGIN
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.VERIFY_EMAIL_OPTION_RESEND_LINK
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -217,16 +217,12 @@ private fun handleGoToLogin(
 }
 
 private fun handleResendLink(verifyEmailViewModel: VerifyEmailViewModel, context: Context) {
-    verifyEmailViewModel.resendLink(
-        onSuccess = {
-            Toast.makeText(context,
-                context.getString(R.string.label_resend_link_success), Toast.LENGTH_LONG)
-                .show()
-        },
-        onError = {
-            Toast.makeText(context,
-                context.getString(R.string.label_resend_link_error), Toast.LENGTH_LONG).show()
+    verifyEmailViewModel.resendLink { success ->
+        val message =
+            context.getString(if (success) R.string.label_resend_link_success else R.string.label_resend_link_error)
+        Toast.makeText(
+            context, message, Toast.LENGTH_LONG
+        ).show()
 
-        }
-    )
+    }
 }

@@ -50,18 +50,17 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jdosantos.gratitudewavev1.R
-import com.jdosantos.gratitudewavev1.core.common.confignote.NoteEmotionConfig
-import com.jdosantos.gratitudewavev1.core.common.util.noteEmotionConfigLists
-import com.jdosantos.gratitudewavev1.core.common.util.darkColors
-import com.jdosantos.gratitudewavev1.core.common.util.getFormattedDate
-import com.jdosantos.gratitudewavev1.core.common.util.lightColors
-import com.jdosantos.gratitudewavev1.app.model.Note
-import com.jdosantos.gratitudewavev1.app.model.Tag
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT_MAX
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT_MID
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT_MIN
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.VALUE_INT_EMPTY
+import com.jdosantos.gratitudewavev1.utils.emotionLists
+import com.jdosantos.gratitudewavev1.utils.darkColors
+import com.jdosantos.gratitudewavev1.utils.getFormattedDate
+import com.jdosantos.gratitudewavev1.utils.lightColors
+import com.jdosantos.gratitudewavev1.domain.models.Note
+import com.jdosantos.gratitudewavev1.domain.models.NoteTag
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT_MID
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT_MIN
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.VALUE_INT_EMPTY
+import com.jdosantos.gratitudewavev1.domain.enums.Emotion
 import com.jdosantos.gratitudewavev1.ui.widget.CardNote
 import java.util.Date
 import java.util.Locale
@@ -77,15 +76,15 @@ fun CurrentDateView(modifier: Modifier, onClick: () -> Unit) {
 
 @Composable
 fun ChipEmotionChoose(
-    noteEmotionConfig: NoteEmotionConfig,
+    emotion: Emotion,
     onClick: () -> Unit,
     onClean: () -> Unit
 ) {
     ElevatedAssistChip(
         onClick = { onClick() },
-        label = { Text(stringResource(id = noteEmotionConfig.message)) },
+        label = { Text(stringResource(id = emotion.message)) },
         leadingIcon = {
-            Text(stringResource(id = noteEmotionConfig.icon))
+            Text(stringResource(id = emotion.icon))
         },
         trailingIcon = {
             Icon(
@@ -99,10 +98,10 @@ fun ChipEmotionChoose(
 }
 
 @Composable
-fun ChipTagChoose(tag: Tag, onClick: () -> Unit?, onClean: () -> Unit) {
+fun ChipTagChoose(noteTag: NoteTag, onClick: () -> Unit?, onClean: () -> Unit) {
     ElevatedAssistChip(
         onClick = { onClick() },
-        label = { Text(tag.esTag) },
+        label = { Text(noteTag.esTag) },
         trailingIcon = {
             Icon(
                 imageVector = Icons.Default.Close,
@@ -118,7 +117,7 @@ fun ChipTagChoose(tag: Tag, onClick: () -> Unit?, onClean: () -> Unit) {
 @Composable
 fun DisplayEmotion(emotionIndex: Int?, size: TextUnit) {
     if (emotionIndex != VALUE_INT_EMPTY) {
-        val noteEmotionConfig = noteEmotionConfigLists[emotionIndex!!]
+        val noteEmotionConfig = emotionLists[emotionIndex!!]
         Text(
             text = "${stringResource(id = noteEmotionConfig.message)} ${stringResource(id = noteEmotionConfig.icon)}",
             color = MaterialTheme.colorScheme.primary,
@@ -132,10 +131,10 @@ fun DisplayEmotion(emotionIndex: Int?, size: TextUnit) {
 }
 
 @Composable
-fun DisplayTag(tag: Tag?, size: TextUnit) {
-    if (tag != null) {
+fun DisplayTag(noteTag: NoteTag?, size: TextUnit) {
+    if (noteTag != null) {
         Text(
-            text = tag.esTag,
+            text = noteTag.esTag,
             overflow = TextOverflow.Ellipsis,
             color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight.Medium,

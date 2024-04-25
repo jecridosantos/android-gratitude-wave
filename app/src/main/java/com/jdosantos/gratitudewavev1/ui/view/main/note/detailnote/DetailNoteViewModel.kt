@@ -6,9 +6,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jdosantos.gratitudewavev1.app.model.Note
-import com.jdosantos.gratitudewavev1.app.usecase.notes.DeleteNoteByIdUseCase
-import com.jdosantos.gratitudewavev1.app.usecase.notes.GetNoteByIdUseCase
+import com.jdosantos.gratitudewavev1.domain.models.Note
+import com.jdosantos.gratitudewavev1.domain.usecase.notes.DeleteNoteByIdUseCase
+import com.jdosantos.gratitudewavev1.domain.usecase.notes.GetNoteByIdUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,18 +20,23 @@ class DetailNoteViewModel @Inject constructor(
     private val deleteNoteByIdUseCase: DeleteNoteByIdUseCase?
 ) :
     ViewModel() {
+
+    private val tag = this::class.java.simpleName
+
     var showAlert by mutableStateOf(false)
 
     var note by mutableStateOf(Note())
         private set
 
     fun getNoteById(id: String, reload: (Int?) -> Unit) {
-        getNoteByIdUseCase!!.execute(id, { note: Note ->
-            this.note = note
-            reload(note.color)
-        }) { it ->
-            Log.d("Error", it)
-        }
+        getNoteByIdUseCase!!.execute(
+            id,
+            callback = { note: Note ->
+                this.note = note
+                reload(note.color)
+            }, onError = {
+                Log.e(tag, "getNoteById - getNoteByIdUseCase")
+            })
     }
 
     fun clean() {
@@ -40,9 +45,14 @@ class DetailNoteViewModel @Inject constructor(
 
     fun delete(id: String, onSuccess: () -> Unit) {
         viewModelScope.launch(Dispatchers.Main) {
-            deleteNoteByIdUseCase!!.execute(id, onSuccess) {
-                Log.d("Error", it)
-            }
+            deleteNoteByIdUseCase!!.execute(id,
+                callback = { success ->
+                    if (success) {
+                        onSuccess.invoke()
+                    } else {
+                        Log.e(tag, "delete - deleteNoteByIdUseCase")
+                    }
+                })
         }
     }
 

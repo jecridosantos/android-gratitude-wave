@@ -1,15 +1,14 @@
 package com.jdosantos.gratitudewavev1.ui.view.auth.verify
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
-import com.jdosantos.gratitudewavev1.app.store.CredentialStore
-import com.jdosantos.gratitudewavev1.app.usecase.LogoutUseCase
-import com.jdosantos.gratitudewavev1.app.usecase.SendEmailVerificationUseCase
+import com.jdosantos.gratitudewavev1.data.local.CredentialStore
+import com.jdosantos.gratitudewavev1.domain.usecase.auth.LogoutUseCase
+import com.jdosantos.gratitudewavev1.domain.usecase.auth.SendEmailVerificationUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -42,15 +41,13 @@ class VerifyEmailViewModel @Inject constructor(
         }
     }
 
-    fun resendLink(onSuccess: () -> Unit, onError: () -> Unit) {
-        sendEmailVerificationUseCase.execute(onSuccess, onError)
+    fun resendLink(callback: (success: Boolean) -> Unit) {
+        sendEmailVerificationUseCase.execute(callback)
     }
 
-    fun logout(onSuccess: () -> Unit) {
+    fun logout(callback: (success: Boolean) -> Unit) {
         viewModelScope.launch {
-            logoutUseCase.execute(onSuccess) {
-                Log.d("Error logout", "Error logout")
-            }
+            logoutUseCase.execute(callback)
         }
     }
 

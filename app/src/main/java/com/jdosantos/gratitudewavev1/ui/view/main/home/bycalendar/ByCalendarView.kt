@@ -25,8 +25,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
-import com.jdosantos.gratitudewavev1.core.common.util.getFormattedDateSimple
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.utils.getFormattedDateSimple
 import com.jdosantos.gratitudewavev1.ui.widget.CardNote
 import com.jdosantos.gratitudewavev1.ui.widget.EmptyMessage
 import com.jdosantos.gratitudewavev1.ui.widget.Loader

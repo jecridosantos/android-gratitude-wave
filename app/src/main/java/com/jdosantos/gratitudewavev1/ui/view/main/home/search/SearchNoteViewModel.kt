@@ -1,10 +1,11 @@
 package com.jdosantos.gratitudewavev1.ui.view.main.home.search
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
-import com.jdosantos.gratitudewavev1.app.model.Note
-import com.jdosantos.gratitudewavev1.app.model.Tag
-import com.jdosantos.gratitudewavev1.app.usecase.notes.GetNotesByCurrentUserUseCase
-import com.jdosantos.gratitudewavev1.app.usecase.GetTagsUseCase
+import com.jdosantos.gratitudewavev1.domain.models.Note
+import com.jdosantos.gratitudewavev1.domain.models.NoteTag
+import com.jdosantos.gratitudewavev1.domain.usecase.notes.GetNotesByCurrentUserUseCase
+import com.jdosantos.gratitudewavev1.domain.usecase.tags.GetTagsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,9 +17,9 @@ class SearchNoteViewModel @Inject constructor(
     private val getTagsUseCase: GetTagsUseCase?
 ) :
     ViewModel() {
-
-    private val _tags = MutableStateFlow<List<Tag>>(emptyList())
-    val tags: StateFlow<List<Tag>> = _tags
+    private val tag = this::class.java.simpleName
+    private val _tags = MutableStateFlow<List<NoteTag>>(emptyList())
+    val tags: StateFlow<List<NoteTag>> = _tags
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
@@ -28,15 +29,19 @@ class SearchNoteViewModel @Inject constructor(
 
     init {
 
-        getTagsUseCase!!.execute() { tags ->
+        getTagsUseCase!!.execute(callback = { tags ->
             _tags.value = tags
-        }
+        }, onError = {
+            Log.e(tag, "init - getTagsUseCase")
+        })
 
         _isLoading.value = true
-        getNotesByCurrentUserUseCase.execute() { notes ->
+        getNotesByCurrentUserUseCase.execute(callback = { notes ->
             _notesData.value = notes
             _isLoading.value = false
-        }
+        }, onError = {
+            Log.e(tag, "init - getNotesByCurrentUserUseCase")
+        })
 
     }
 }

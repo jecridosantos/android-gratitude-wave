@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -28,14 +29,14 @@ import androidx.compose.ui.unit.sp
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import com.jdosantos.gratitudewavev1.app.model.CalendarToShow
-import com.jdosantos.gratitudewavev1.app.model.DaysOfCalendar
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT_MID
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT_MIN
-import com.jdosantos.gratitudewavev1.core.common.util.compareDatesWithoutTime
-import com.jdosantos.gratitudewavev1.core.common.util.getDayOfMonth
-import com.jdosantos.gratitudewavev1.core.common.util.getWeekDaysByLocale
+import com.jdosantos.gratitudewavev1.domain.models.CalendarToShow
+import com.jdosantos.gratitudewavev1.domain.models.DaysOfCalendar
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT_MID
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT_MIN
+import com.jdosantos.gratitudewavev1.utils.compareDatesWithoutTime
+import com.jdosantos.gratitudewavev1.utils.getDayOfMonth
+import com.jdosantos.gratitudewavev1.utils.getWeekDays
 import java.util.Date
 import java.util.Locale
 
@@ -56,7 +57,7 @@ fun CalendarView(
 
     val currentPage = remember { pagerState.currentPage }
 
-    val daysOfWeek = remember { getWeekDaysByLocale(false) }
+    val daysOfWeek = getWeekDays(LocalContext.current.resources, false)
 
     Card {
         Column(

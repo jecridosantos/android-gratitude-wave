@@ -6,9 +6,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jdosantos.gratitudewavev1.app.model.Goals
-import com.jdosantos.gratitudewavev1.app.usecase.goals.GetGoalsByUser
-import com.jdosantos.gratitudewavev1.app.usecase.goals.SaveGoalsByUser
+import com.jdosantos.gratitudewavev1.domain.models.Goals
+import com.jdosantos.gratitudewavev1.domain.usecase.goals.GetGoalsByUserUseCase
+import com.jdosantos.gratitudewavev1.domain.usecase.goals.SaveGoalsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -16,19 +16,24 @@ import javax.inject.Inject
 
 @HiltViewModel
 class GoalsViewModel @Inject constructor(
-    private val getGoalsByUser: GetGoalsByUser,
-    private val saveGoalsByUser: SaveGoalsByUser
+    private val getGoalsByUserUseCase: GetGoalsByUserUseCase,
+    private val saveGoalsUseCase: SaveGoalsUseCase
 ) : ViewModel() {
+
+    private val tag = this::class.java.simpleName
     var goals by mutableStateOf(Goals())
         private set
 
     fun getGoals() {
-        getGoalsByUser.execute {
-            goals = it
-        }
+        getGoalsByUserUseCase.execute(
+            callback = { goals = it },
+            onError = {
+                Log.e(tag, "getGoals - getGoalsByUserUseCase")
+            }
+        )
     }
 
-    fun saveChallenge(challenge: String, onSuccess: () -> Unit, onError: () -> Unit) {
+    fun saveChallenge(challenge: String, callback: (Boolean) -> Unit) {
         goals = goals.copy(challenge = challenge)
         if (challenge.isNotBlank()) {
             viewModelScope.launch(Dispatchers.IO) {
@@ -40,20 +45,13 @@ class GoalsViewModel @Inject constructor(
                         challenge = challenge,
                     )
 
-                    saveGoalsByUser.execute(goalsToSave, {
-                        Log.d("SUCCESS SAVE", "Se guardo exitosamente")
-                        onSuccess()
-                    }) { error ->
-                        Log.d("ERROR SAVE", error)
-                    }
+                    saveGoalsUseCase.execute(goalsToSave, callback)
 
 
                 } catch (e: Exception) {
-                    Log.d("ERROR SAVE", "Error at save new note ${e.localizedMessage}")
+                    Log.e(tag, "saveChallenge - saveGoalsUseCase - error ${e.localizedMessage}")
                 }
             }
-        } else {
-            onError()
         }
     }
 

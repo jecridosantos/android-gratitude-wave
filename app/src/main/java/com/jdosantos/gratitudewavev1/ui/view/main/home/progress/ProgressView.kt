@@ -30,8 +30,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
-import com.jdosantos.gratitudewavev1.core.common.util.challengesList
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.utils.challengesList
 import com.jdosantos.gratitudewavev1.ui.view.main.note.getColors
 import com.jdosantos.gratitudewavev1.ui.widget.CardGoal
 import com.jdosantos.gratitudewavev1.ui.widget.CardProgress
@@ -120,6 +120,7 @@ private fun ContentProgressView(
         if (!goals.challenge.isNullOrEmpty()) {
 
             val goalsSelected = challengesList.firstOrNull { it.id == goals.challenge }
+
             Spacer(modifier = Modifier.height(16.dp))
             LazyColumn {
                 item {

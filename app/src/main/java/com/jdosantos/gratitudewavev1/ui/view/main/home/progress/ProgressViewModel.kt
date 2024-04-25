@@ -1,13 +1,14 @@
 package com.jdosantos.gratitudewavev1.ui.view.main.home.progress
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.jdosantos.gratitudewavev1.app.model.Goals
-import com.jdosantos.gratitudewavev1.app.model.ProgressState
-import com.jdosantos.gratitudewavev1.app.usecase.goals.GetGoalsByUser
-import com.jdosantos.gratitudewavev1.app.usecase.notes.GetNoteCreationDatesByEmailUseCase
+import com.jdosantos.gratitudewavev1.domain.models.Goals
+import com.jdosantos.gratitudewavev1.domain.states.ProgressState
+import com.jdosantos.gratitudewavev1.domain.usecase.goals.GetGoalsByUserUseCase
+import com.jdosantos.gratitudewavev1.domain.usecase.notes.GetNoteCreationDatesByEmailUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.text.SimpleDateFormat
@@ -18,10 +19,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProgressViewModel @Inject constructor(
-    val getNoteCreationDatesByEmailUseCase: GetNoteCreationDatesByEmailUseCase,
-    val getGoalsByUser: GetGoalsByUser
+    private val getNoteCreationDatesByEmailUseCase: GetNoteCreationDatesByEmailUseCase,
+    private val getGoalsByUserUseCase: GetGoalsByUserUseCase
 ) : ViewModel() {
-
+    private val tag = this::class.java.simpleName
     private val _dates = MutableStateFlow(listOf(Date()))
 
     val goals = MutableStateFlow(Goals())
@@ -30,12 +31,23 @@ class ProgressViewModel @Inject constructor(
         private set
 
     fun initialize() {
-        getNoteCreationDatesByEmailUseCase.execute { dates ->
-            _dates.value = dates
-            calculateStreaks()
-        }
+        getNoteCreationDatesByEmailUseCase
+            .execute(
+                callback = { dates ->
+                    _dates.value = dates
+                    calculateStreaks()
+                },
+                onError = {
+                    Log.e(tag, "initialize - getNoteCreationDatesByEmailUseCase")
+                }
+            )
 
-        getGoalsByUser.execute { goals.value = it  }
+        getGoalsByUserUseCase.execute(
+            callback = { goals.value = it },
+            onError = {
+                Log.e(tag, "initialize - getGoalsByUserUseCase")
+            }
+        )
     }
 
     private fun uniqueDates(dates: List<Date>): List<Date> {

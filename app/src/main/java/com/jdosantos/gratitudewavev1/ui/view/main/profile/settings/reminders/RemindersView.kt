@@ -30,21 +30,22 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
-import com.jdosantos.gratitudewavev1.app.enums.getFirstLetters
-import com.jdosantos.gratitudewavev1.app.model.ConfigUserReminder
-import com.jdosantos.gratitudewavev1.core.common.confignote.RepeatConfig
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT_MID
-import com.jdosantos.gratitudewavev1.core.common.util.hourFormat
-import com.jdosantos.gratitudewavev1.core.common.util.repeatListOptions
+import com.jdosantos.gratitudewavev1.domain.models.UserSettingReminders
+import com.jdosantos.gratitudewavev1.domain.handles.ReminderRepetitions
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT_MID
+import com.jdosantos.gratitudewavev1.utils.hourFormat
 import com.jdosantos.gratitudewavev1.ui.view.main.profile.settings.SettingsViewModel
 import com.jdosantos.gratitudewavev1.ui.widget.EmptyMessage
 import com.jdosantos.gratitudewavev1.ui.widget.Loader
+import com.jdosantos.gratitudewavev1.utils.getFirstLetters
+import com.jdosantos.gratitudewavev1.utils.getRepeatDescription
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -94,7 +95,7 @@ private fun ContentRemindersView(
 ) {
     val isLoading by settingsViewModel.isLoading.collectAsState()
     // val data by settingsViewModel.reminders.collectAsState()
-    val configUser by settingsViewModel.configUser.collectAsState()
+    val configUser by settingsViewModel.userSettings.collectAsState()
     val data = configUser.reminders
     Column(
         modifier = Modifier
@@ -111,8 +112,11 @@ private fun ContentRemindersView(
                         ItemReminder(item, {
                             navController.navigate("SaveRemindersView/$index")
                         }) {
-                            settingsViewModel.updateReminderState(index, it)
+                            checked ->
+                            settingsViewModel.updateReminderState(index, checked) {}
                         }
+
+
                     }
                 }
             } else {
@@ -124,18 +128,18 @@ private fun ContentRemindersView(
 
 @Composable
 private fun ItemReminder(
-    configUserReminder: ConfigUserReminder,
+    userSettingReminders: UserSettingReminders,
     onClick: () -> Unit,
     onCheckedChange: (Boolean) -> Unit
 ) {
-    val repeatConfigSelect = configUserReminder.repeat
-    val selectedDays = configUserReminder.repeatDays
-    var subtitleRepeat = stringResource(id = repeatListOptions[repeatConfigSelect].title)
+    val repeatConfigSelect = userSettingReminders.repeat
+    val selectedDays = userSettingReminders.repeatDays
+    var subtitleRepeat = stringResource(id =  getRepeatDescription(repeatConfigSelect))
 
-    if (repeatConfigSelect == RepeatConfig.Custom.id && selectedDays!!.size > 0) {
-        subtitleRepeat = getFirstLetters(selectedDays)
+    if (repeatConfigSelect == ReminderRepetitions.Custom.id && selectedDays!!.size > 0) {
+        subtitleRepeat = getFirstLetters(selectedDays, LocalContext.current.resources)
     }
-    var isChecked by remember { mutableStateOf(configUserReminder.active) }
+    var isChecked by remember { mutableStateOf(userSettingReminders.active) }
     Card(
 
         modifier = Modifier
@@ -150,7 +154,7 @@ private fun ItemReminder(
 
             Column {
                 Text(
-                    text = hourFormat(configUserReminder.hour!!, configUserReminder.minute!!),
+                    text = hourFormat(userSettingReminders.hour!!, userSettingReminders.minute!!),
                     fontSize = 24.sp
                 )
                 Text(

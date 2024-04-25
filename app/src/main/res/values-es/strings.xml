@@ -122,7 +122,7 @@
 
     <string name="label_exit_to_app">Retroceder para salir de la aplicación</string>
 
-    <string name="placeholder_feeback">Envíanos tus comentarios</string>
+    <string name="placeholder_feeback">Envíanos tus comentarios o reporta algún error</string>
 
     <string name="label_feedback">Gracias por tomarte un momento para dejarnos tu opinión. Tu feedback es esencial para mejorar nuestra aplicación en esta fase inicial de exploración. Agradecemos mucho tu participación.</string>
 
@@ -203,4 +203,23 @@
     <string name="label_back_to_top">Volver al inicio</string>
     <string name="label_resend_link_success">Link de verificacion enviado</string>
     <string name="label_resend_link_error">No se pudo enviar link</string>
+    <string name="label_success_feedback">Gracias!!</string>
+    <string name="label_error_feedback">Hubo un error :(</string>
+
+    <string name="monday">Lunes</string>
+    <string name="tuesday">Martes</string>
+    <string name="wednesday">Miércoles</string>
+    <string name="thursday">Jueves</string>
+    <string name="friday">Viernes</string>
+    <string name="saturday">Sábado</string>
+    <string name="sunday">Domingo</string>
+
+    <string name="mon">Lun</string>
+    <string name="tue">Mar</string>
+    <string name="wed">Mié</string>
+    <string name="thu">Jue</string>
+    <string name="fri">Vie</string>
+    <string name="sat">Sáb</string>
+    <string name="sun">Dom</string>
+
 </resources>

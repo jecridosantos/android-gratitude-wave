@@ -1,4 +1,4 @@
-package com.jdosantos.gratitudewavev1.ui.view.main.home
+ package com.jdosantos.gratitudewavev1.ui.view.main.home
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -48,9 +48,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.MAX_LENGHT_TITLE_TOP_BAR
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
-import com.jdosantos.gratitudewavev1.core.theme.ChangeStatusBarColor
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.MAX_LENGHT_TITLE_TOP_BAR
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.ui.theme.ChangeStatusBarColor
 import com.jdosantos.gratitudewavev1.ui.view.main.note.CardItems
 import com.jdosantos.gratitudewavev1.ui.view.main.note.ShowListNotes
 import com.jdosantos.gratitudewavev1.ui.view.main.note.getColors

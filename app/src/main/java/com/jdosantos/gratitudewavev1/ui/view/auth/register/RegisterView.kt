@@ -30,8 +30,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
-import com.jdosantos.gratitudewavev1.app.store.CredentialStore
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.data.local.CredentialStore
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
 import com.jdosantos.gratitudewavev1.ui.widget.AlertComponent
 import com.jdosantos.gratitudewavev1.ui.widget.InputRound
 import com.jdosantos.gratitudewavev1.ui.widget.Loader
@@ -79,11 +79,13 @@ fun RegisterView(navController: NavController, registerViewModel: RegisterViewMo
                     state.email.value,
                     state.name.value,
                     state.password.value
-                ) {
-                    scope.launch {
-                        dataStore.savePassword(state.password.value)
+                ) { success ->
+                    if (success) {
+                        scope.launch {
+                            dataStore.savePassword(state.password.value)
+                        }
+                        navController.navigate("VerifyEmailView")
                     }
-                    navController.navigate("VerifyEmailView")
                 }
             }
         )

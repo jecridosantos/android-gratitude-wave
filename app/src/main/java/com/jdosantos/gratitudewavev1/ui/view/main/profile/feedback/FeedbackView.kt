@@ -1,5 +1,6 @@
 package com.jdosantos.gratitudewavev1.ui.view.main.profile.feedback
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -30,19 +31,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.MAX_LENGHT_COMMENT_FEEDBACK
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT_MID
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.MAX_LENGHT_COMMENT_FEEDBACK
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT_MID
 import com.jdosantos.gratitudewavev1.ui.widget.Title
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FeedbackView(navController: NavController) {
+fun FeedbackView(navController: NavController, feedbackViewModel: FeedbackViewModel) {
 
     Scaffold(
         topBar = {
@@ -64,15 +66,19 @@ fun FeedbackView(navController: NavController) {
         }
 
     ) { paddingValues ->
-        ContentFeedbackView(paddingValues = paddingValues)
+        ContentFeedbackView(paddingValues, feedbackViewModel, navController)
     }
 
 }
 
 @Composable
-private fun ContentFeedbackView(paddingValues: PaddingValues) {
-
-    var content by remember { mutableStateOf("") }
+private fun ContentFeedbackView(
+    paddingValues: PaddingValues,
+    feedbackViewModel: FeedbackViewModel,
+    navController: NavController
+) {
+    val context = LocalContext.current
+    var message by remember { mutableStateOf("") }
     Column(
         modifier = Modifier
             .padding(paddingValues)
@@ -85,18 +91,20 @@ private fun ContentFeedbackView(paddingValues: PaddingValues) {
             text = stringResource(R.string.label_send_feedback_title_one),
             modifier = Modifier.padding(bottom = SPACE_DEFAULT.dp)
         )
-        ItemCheck(stringResource(R.string.label_send_feedback_item_one))
-        ItemCheck(stringResource(R.string.label_send_feedback_item_two))
-        ItemCheck(stringResource(R.string.label_send_feedback_item_three))
-        ItemCheck(stringResource(R.string.label_send_feedback_item_four))
+
+
+        ItemCheck(stringResource(R.string.label_send_feedback_item_one), feedbackViewModel)
+        ItemCheck(stringResource(R.string.label_send_feedback_item_two), feedbackViewModel)
+        ItemCheck(stringResource(R.string.label_send_feedback_item_three), feedbackViewModel)
+        ItemCheck(stringResource(R.string.label_send_feedback_item_four), feedbackViewModel)
         Spacer(modifier = Modifier.height(32.dp))
         Title(
             text = stringResource(R.string.label_send_feedback_title_two),
             modifier = Modifier.padding(bottom = SPACE_DEFAULT.dp)
         )
         OutlinedTextField(
-            value = content,
-            onValueChange = { content = it },
+            value = message,
+            onValueChange = { message = it },
             placeholder = {
                 Text(
                     text = stringResource(id = R.string.placeholder_feeback),
@@ -115,7 +123,19 @@ private fun ContentFeedbackView(paddingValues: PaddingValues) {
         Spacer(modifier = Modifier.height(16.dp))
         Spacer(modifier = Modifier.weight(1f))
         ElevatedButton(
-            onClick = { /*TODO*/ },
+            onClick = {
+                feedbackViewModel.save(
+                    message,
+                    callback = { success ->
+                        Toast.makeText(
+                            context,
+                            context.getString(if (success) R.string.label_success_feedback else R.string.label_error_feedback),
+                            Toast.LENGTH_LONG
+                        ).show()
+                        if (success) navController.popBackStack()
+
+                    })
+            },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(text = stringResource(R.string.label_send))
@@ -124,7 +144,7 @@ private fun ContentFeedbackView(paddingValues: PaddingValues) {
 }
 
 @Composable
-private fun ItemCheck(text: String) {
+private fun ItemCheck(text: String, viewModel: FeedbackViewModel) {
     Row(
         modifier = Modifier,
         verticalAlignment = Alignment.CenterVertically
@@ -132,7 +152,10 @@ private fun ItemCheck(text: String) {
         var checked by remember { mutableStateOf(false) }
         Checkbox(
             checked = checked,
-            onCheckedChange = { checked = it }
+            onCheckedChange = {
+                checked = it
+                viewModel.addCheck(text, checked)
+            }
         )
         Text(text = text, modifier = Modifier.padding(start = SPACE_DEFAULT_MID.dp))
     }

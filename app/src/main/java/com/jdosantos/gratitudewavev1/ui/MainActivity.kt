@@ -8,8 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.jdosantos.gratitudewavev1.core.navigation.MainNavigation
-import com.jdosantos.gratitudewavev1.core.theme.GratitudeWaveV1Theme
+import com.jdosantos.gratitudewavev1.ui.navigation.MainNavigation
+import com.jdosantos.gratitudewavev1.ui.theme.GratitudeWaveV1Theme
 import com.jdosantos.gratitudewavev1.ui.view.auth.login.LoginViewModel
 import com.jdosantos.gratitudewavev1.ui.view.auth.register.RegisterViewModel
 import com.jdosantos.gratitudewavev1.ui.view.auth.verify.VerifyEmailViewModel
@@ -25,6 +25,7 @@ import com.jdosantos.gratitudewavev1.ui.view.main.note.updatenote.UpdateNoteView
 import com.jdosantos.gratitudewavev1.ui.view.main.note.writenote.WriteNoteViewModel
 import com.jdosantos.gratitudewavev1.ui.view.main.notifications.NotificationsViewModel
 import com.jdosantos.gratitudewavev1.ui.view.main.profile.ProfileViewModel
+import com.jdosantos.gratitudewavev1.ui.view.main.profile.feedback.FeedbackViewModel
 import com.jdosantos.gratitudewavev1.ui.view.main.profile.settings.SettingsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -51,6 +52,7 @@ class MainActivity : ComponentActivity() {
         val goalsViewModel: GoalsViewModel by viewModels()
         val notificationsViewModel: NotificationsViewModel by viewModels()
         val settingsViewModel: SettingsViewModel by viewModels()
+        val feedbackViewModel: FeedbackViewModel by viewModels()
         /*    val userAuthState = mutableStateOf(UserAuthState.UNKNOWN)
 
 
@@ -90,7 +92,8 @@ class MainActivity : ComponentActivity() {
                         progressViewModel,
                         goalsViewModel,
                         notificationsViewModel,
-                        settingsViewModel
+                        settingsViewModel,
+                        feedbackViewModel
                     )
                 }
             }

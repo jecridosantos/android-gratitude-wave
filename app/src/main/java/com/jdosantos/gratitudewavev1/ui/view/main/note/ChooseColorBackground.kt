@@ -36,9 +36,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jdosantos.gratitudewavev1.R
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
-import com.jdosantos.gratitudewavev1.core.common.util.darkColors
-import com.jdosantos.gratitudewavev1.core.common.util.lightColors
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.utils.darkColors
+import com.jdosantos.gratitudewavev1.utils.lightColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

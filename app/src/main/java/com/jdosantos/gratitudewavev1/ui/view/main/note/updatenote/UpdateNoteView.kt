@@ -34,12 +34,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
-import com.jdosantos.gratitudewavev1.app.model.Note
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT_MIN
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.VALUE_INT_EMPTY
-import com.jdosantos.gratitudewavev1.core.common.util.getSafeColor
-import com.jdosantos.gratitudewavev1.core.common.util.noteEmotionConfigLists
+import com.jdosantos.gratitudewavev1.domain.models.Note
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT_MIN
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.VALUE_INT_EMPTY
+import com.jdosantos.gratitudewavev1.utils.getSafeColor
+import com.jdosantos.gratitudewavev1.utils.emotionLists
 import com.jdosantos.gratitudewavev1.ui.view.main.note.ChipEmotionChoose
 import com.jdosantos.gratitudewavev1.ui.view.main.note.ChipTagChoose
 import com.jdosantos.gratitudewavev1.ui.view.main.note.ChooseColorBackground
@@ -86,8 +86,8 @@ fun UpdateNoteView(
     ) {
         Column() {
             Header({
-                updateNoteViewModel.updateNote({ cleanView() }) {
-
+                updateNoteViewModel.updateNote { success ->
+                    if (success) cleanView()
                 }
             }) {
                 cleanView()
@@ -114,9 +114,13 @@ fun UpdateNoteView(
         updateNoteViewModel.onEmotion(it)
     }
 
-    ChooseNoteTag(note.tag?.id, updateNoteViewModel.showDialogTag, updateNoteViewModel.tags.value, {
-        updateNoteViewModel.hideDialogTag()
-    }) {
+    ChooseNoteTag(
+        note.noteTag?.id,
+        updateNoteViewModel.showDialogTag,
+        updateNoteViewModel.tags.value,
+        {
+            updateNoteViewModel.hideDialogTag()
+        }) {
         updateNoteViewModel.onTag(it)
     }
 
@@ -185,9 +189,9 @@ private fun Tags(note: Note, updateNoteViewModel: UpdateNoteViewModel) {
         modifier = Modifier.padding(start = SPACE_DEFAULT.dp, end = SPACE_DEFAULT.dp)
     ) {
 
-        if (note.tag != null) {
+        if (note.noteTag != null) {
             Row {
-                ChipTagChoose(note.tag, {
+                ChipTagChoose(note.noteTag, {
                     updateNoteViewModel.showDialogTag()
                 }) {
                     updateNoteViewModel.onTag(null)
@@ -197,7 +201,7 @@ private fun Tags(note: Note, updateNoteViewModel: UpdateNoteViewModel) {
 
         if (note.emotion != VALUE_INT_EMPTY) {
             Row {
-                ChipEmotionChoose(noteEmotionConfigLists[note.emotion!!], {
+                ChipEmotionChoose(emotionLists[note.emotion!!], {
                     updateNoteViewModel.showDialogEmotion()
                 }) {
                     updateNoteViewModel.onEmotion(VALUE_INT_EMPTY)

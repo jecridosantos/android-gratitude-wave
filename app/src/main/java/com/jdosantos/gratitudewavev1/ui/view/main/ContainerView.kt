@@ -21,7 +21,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.jdosantos.gratitudewavev1.core.navigation.BottomRoutes
+import com.jdosantos.gratitudewavev1.ui.navigation.BottomRoutes
 import com.jdosantos.gratitudewavev1.ui.view.main.home.HomeView
 import com.jdosantos.gratitudewavev1.ui.view.main.home.HomeViewModel
 import com.jdosantos.gratitudewavev1.ui.view.main.profile.ProfileView

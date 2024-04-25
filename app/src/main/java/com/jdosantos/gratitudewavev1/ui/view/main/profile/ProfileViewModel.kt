@@ -6,9 +6,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jdosantos.gratitudewavev1.app.model.User
-import com.jdosantos.gratitudewavev1.app.usecase.GetCurrentUserUseCase
-import com.jdosantos.gratitudewavev1.app.usecase.LogoutUseCase
+import com.jdosantos.gratitudewavev1.domain.models.User
+import com.jdosantos.gratitudewavev1.domain.usecase.auth.GetCurrentUserUseCase
+import com.jdosantos.gratitudewavev1.domain.usecase.auth.LogoutUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -18,20 +18,20 @@ class ProfileViewModel @Inject constructor(
     private val logoutUseCase: LogoutUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase
 ) : ViewModel() {
-
+    private val tag = this::class.java.simpleName
     var user by mutableStateOf(User())
         private set
     fun getCuurrentUser() {
         getCurrentUserUseCase.execute({
             user = it
-        }) {}
+        }) {
+            Log.e(tag, "getCuurrentUser - getCurrentUserUseCase")
+        }
     }
 
-    fun logout(onSuccess: () -> Unit) {
+    fun logout(callback: (Boolean) -> Unit) {
         viewModelScope.launch {
-            logoutUseCase.execute(onSuccess) {
-                Log.d("Error logout", "Error logout")
-            }
+            logoutUseCase.execute(callback)
         }
     }
 }

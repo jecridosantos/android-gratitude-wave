@@ -33,8 +33,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
-import com.jdosantos.gratitudewavev1.core.common.util.getSafeColor
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.utils.getSafeColor
 import com.jdosantos.gratitudewavev1.ui.view.main.note.CurrentDateView
 import com.jdosantos.gratitudewavev1.ui.view.main.note.DisplayEmotion
 import com.jdosantos.gratitudewavev1.ui.view.main.note.DisplayTag
@@ -84,7 +84,7 @@ fun DetailNoteView(
 
             DisplayNote(note.note)
 
-            DisplayTag(note.tag, 14.sp)
+            DisplayTag(note.noteTag, 14.sp)
 
             DisplayEmotion(note.emotion, 14.sp)
 

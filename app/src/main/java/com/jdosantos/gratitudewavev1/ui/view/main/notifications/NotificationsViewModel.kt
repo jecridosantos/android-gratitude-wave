@@ -1,7 +1,7 @@
 package com.jdosantos.gratitudewavev1.ui.view.main.notifications
 
 import androidx.lifecycle.ViewModel
-import com.jdosantos.gratitudewavev1.app.model.Notification
+import com.jdosantos.gratitudewavev1.domain.models.Notification
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

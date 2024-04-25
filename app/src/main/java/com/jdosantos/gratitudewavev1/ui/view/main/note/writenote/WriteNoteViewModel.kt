@@ -8,14 +8,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jdosantos.gratitudewavev1.core.common.util.noteTypeConfigLists
-import com.jdosantos.gratitudewavev1.core.common.util.convertToInt
-import com.jdosantos.gratitudewavev1.app.model.Note
-import com.jdosantos.gratitudewavev1.app.model.Tag
-import com.jdosantos.gratitudewavev1.app.store.NoteTypeStore
-import com.jdosantos.gratitudewavev1.app.usecase.GetTagsUseCase
-import com.jdosantos.gratitudewavev1.app.usecase.notes.SaveNoteUseCase
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.VALUE_INT_EMPTY
+import com.jdosantos.gratitudewavev1.domain.models.Note
+import com.jdosantos.gratitudewavev1.domain.models.NoteTag
+import com.jdosantos.gratitudewavev1.data.local.NoteTypeStore
+import com.jdosantos.gratitudewavev1.domain.usecase.tags.GetTagsUseCase
+import com.jdosantos.gratitudewavev1.domain.usecase.notes.SaveNoteUseCase
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.VALUE_INT_EMPTY
+import com.jdosantos.gratitudewavev1.utils.convertToInt
+import com.jdosantos.gratitudewavev1.utils.publishingOptionLists
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,15 +30,17 @@ class WriteNoteViewModel @Inject constructor(
 ) :
     ViewModel() {
 
-    private val _tags = MutableStateFlow<List<Tag>>(emptyList())
-    val tags: StateFlow<List<Tag>> = _tags
+    private val tag = this::class.java.simpleName
+
+    private val _noteTags = MutableStateFlow<List<NoteTag>>(emptyList())
+    val noteTags: StateFlow<List<NoteTag>> = _noteTags
 
     var note by mutableStateOf(Note())
         private set
 
     private var noteTypeDefault by mutableIntStateOf(0)
 
-    private var currentNoteType by mutableStateOf(noteTypeConfigLists[0])
+    private var currentNoteType by mutableStateOf(publishingOptionLists[0])
 
     private var showModalType by mutableStateOf(false)
 
@@ -49,48 +51,34 @@ class WriteNoteViewModel @Inject constructor(
     var showDialogTag by mutableStateOf(false)
     var showErrorForm by mutableStateOf(false)
     suspend fun init(context: Context) {
-
-        getTagsUseCase!!.execute() { tags ->
-            _tags.value = tags
-        }
+        getTagsUseCase!!.execute(callback = { tags ->
+            _noteTags.value = tags
+        }, onError = {
+            Log.e(tag, "init - getTagsUseCase")
+        })
 
         val dataStore = NoteTypeStore(context)
         dataStore.getValue().collect { value ->
             noteTypeDefault = convertToInt(value)
-            currentNoteType = noteTypeConfigLists[noteTypeDefault]
+            currentNoteType = publishingOptionLists[noteTypeDefault]
             onType(noteTypeDefault)
         }
-
 
     }
 
 
-    fun saveNewNote(onSuccess: () -> Unit, onError: () -> Unit) {
+    fun saveNewNote(callback: (success: Boolean) -> Unit) {
         showErrorForm = false
         if (note.note.isNotBlank()) {
             viewModelScope.launch(Dispatchers.IO) {
                 try {
-                    /*              val newNote: Note = Note().copy(
-                    note = note.note,
-                    type = note.type,
-                    emotion = note.emotion
-                )
-*/
-
-                    saveNoteUseCase!!.execute(note, {
-                        Log.d("SUCCESS SAVE", "Se guardo exitosamente")
-                        onSuccess()
-                    }) { error ->
-                        Log.d("ERROR SAVE", error)
-                    }
-
-
+                    saveNoteUseCase!!.execute(note, callback)
                 } catch (e: Exception) {
-                    Log.d("ERROR SAVE", "Error at save new note ${e.localizedMessage}")
+                    Log.e(tag, "saveNewNote - saveNoteUseCase - error ${e.localizedMessage}")
                 }
             }
         } else {
-            onError()
+            callback.invoke(false)
             showErrorForm = true
         }
     }
@@ -103,12 +91,12 @@ class WriteNoteViewModel @Inject constructor(
         if (value != null) {
             note = note.copy(emotion = value)
         }
-      //  hideDialogEmotion()
+        //  hideDialogEmotion()
     }
 
-    fun onTag(value: Tag?) {
+    fun onTag(value: NoteTag?) {
         if (value?.id != "") {
-            note = note.copy(tag = value)
+            note = note.copy(noteTag = value)
         }
         //    hideDialogTag()
 
@@ -117,9 +105,9 @@ class WriteNoteViewModel @Inject constructor(
     fun onType(value: Int) {
         if (value != VALUE_INT_EMPTY) {
             note = note.copy(type = value)
-            currentNoteType = noteTypeConfigLists[value]
+            currentNoteType = publishingOptionLists[value]
         }
-   //     hideModalType()
+        //     hideModalType()
     }
 
     fun clean() {
@@ -153,7 +141,6 @@ class WriteNoteViewModel @Inject constructor(
     }
 
 
-
     fun showDialogColor() {
         showDialogColor = true
     }
@@ -164,9 +151,9 @@ class WriteNoteViewModel @Inject constructor(
 
     fun onColor(value: Int?) {
 
-            note = note.copy(color = value)
+        note = note.copy(color = value)
 
-      //  hideDialogColor()
+        //  hideDialogColor()
     }
 
 

@@ -9,7 +9,7 @@ import androidx.navigation.NavController
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.jdosantos.gratitudewavev1.app.store.CredentialStore
+import com.jdosantos.gratitudewavev1.data.local.CredentialStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch

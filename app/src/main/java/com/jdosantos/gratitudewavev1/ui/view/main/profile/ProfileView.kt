@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.jdosantos.gratitudewavev1.R
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
 import com.jdosantos.gratitudewavev1.ui.widget.ConfigItem
 import com.jdosantos.gratitudewavev1.ui.widget.TextItem
 import com.jdosantos.gratitudewavev1.ui.widget.Title
@@ -121,18 +121,15 @@ fun ContentProfileView(
                     ElevatedButton(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = {
-                            profileViewModel.logout {
+                            profileViewModel.logout { success ->
+                                if (success) {
+                                    navController.navigate("LoginView") {
 
-                                // navController.navigate("LoginView")
-
-                                navController.navigate("LoginView") {
-
-                                    popUpTo("SplashView") { inclusive = true }
+                                        popUpTo("SplashView") { inclusive = true }
+                                    }
                                 }
                             }
                         },
-                        // shape = MaterialTheme.shapes.extraSmall,
-                        // border = ButtonDefaults.outlinedButtonBorder
                     ) {
                         Text(text = stringResource(R.string.label_log_out))
                     }

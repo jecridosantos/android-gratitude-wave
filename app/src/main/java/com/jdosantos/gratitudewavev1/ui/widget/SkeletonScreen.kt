@@ -15,9 +15,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
-import com.jdosantos.gratitudewavev1.core.theme.skeleton
-import com.jdosantos.gratitudewavev1.core.theme.skeleton2
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.ui.theme.skeleton
+import com.jdosantos.gratitudewavev1.ui.theme.skeleton2
 
 
 @Preview

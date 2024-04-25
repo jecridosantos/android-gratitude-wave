@@ -19,10 +19,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.jdosantos.gratitudewavev1.app.model.Note
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT_MID
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.VALUE_INT_EMPTY
+import com.jdosantos.gratitudewavev1.domain.models.Note
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT_MID
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.VALUE_INT_EMPTY
 import com.jdosantos.gratitudewavev1.ui.view.main.note.DisplayDate
 import com.jdosantos.gratitudewavev1.ui.view.main.note.DisplayEmotion
 import com.jdosantos.gratitudewavev1.ui.view.main.note.DisplayTag
@@ -53,7 +53,7 @@ fun CardNote(note: Note, onClick: () -> Unit) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            DisplayTag(note.tag, 12.sp)
+            DisplayTag(note.noteTag, 12.sp)
 
             DisplayEmotion(note.emotion, 12.sp)
 

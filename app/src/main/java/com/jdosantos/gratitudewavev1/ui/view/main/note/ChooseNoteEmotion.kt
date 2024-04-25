@@ -25,9 +25,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jdosantos.gratitudewavev1.R
-import com.jdosantos.gratitudewavev1.core.common.confignote.NoteEmotionConfig
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
-import com.jdosantos.gratitudewavev1.core.common.util.noteEmotionConfigLists
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.domain.enums.Emotion
+import com.jdosantos.gratitudewavev1.utils.emotionLists
 import com.jdosantos.gratitudewavev1.ui.widget.ItemSelectedOptions
 
 
@@ -49,7 +49,7 @@ fun ChooseNoteEmotion(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 LazyColumn {
-                    itemsIndexed(noteEmotionConfigLists) { index, emotion ->
+                    itemsIndexed(emotionLists) { index, emotion ->
 
                       /*  EmotionItem(index == indexSelected, emotion) {
                             onSelected(index)
@@ -83,7 +83,7 @@ fun TitleModal() {
 }
 
 @Composable
-fun EmotionItem(selected: Boolean, item: NoteEmotionConfig, onClick: () -> Unit) {
+fun EmotionItem(selected: Boolean, item: Emotion, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()

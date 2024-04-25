@@ -41,11 +41,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
-import com.jdosantos.gratitudewavev1.app.model.Tag
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT_MID
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT_MIN
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.VALUE_INT_EMPTY
+import com.jdosantos.gratitudewavev1.domain.models.NoteTag
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT_MID
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT_MIN
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.VALUE_INT_EMPTY
 import com.jdosantos.gratitudewavev1.ui.widget.Title
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -180,7 +180,7 @@ fun HighlightedText(searchText: String, content: String, onClick: () -> Unit) {
 }
 
 @Composable
-fun Tags(tags: List<Tag>, onSearch: (tag: Tag) -> Unit, onClick: () -> Unit) {
+fun Tags(noteTags: List<NoteTag>, onSearch: (noteTag: NoteTag) -> Unit, onClick: () -> Unit) {
     Column(modifier = Modifier.padding(SPACE_DEFAULT_MIN.dp)) {
 
         Title(
@@ -192,7 +192,7 @@ fun Tags(tags: List<Tag>, onSearch: (tag: Tag) -> Unit, onClick: () -> Unit) {
             columns = GridCells.Fixed(2),
             contentPadding = PaddingValues(SPACE_DEFAULT_MID.dp)
         ) {
-            items(tags.take(8)) {
+            items(noteTags.take(8)) {
                 Card(modifier = Modifier
                     .padding(SPACE_DEFAULT_MIN.dp)
                     .clickable {

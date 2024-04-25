@@ -1,15 +1,16 @@
 package com.jdosantos.gratitudewavev1.ui.view.main.home.bycalendar
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jdosantos.gratitudewavev1.core.common.util.convertMillisToDate
-import com.jdosantos.gratitudewavev1.core.common.util.getFormattedDateToSearch
-import com.jdosantos.gratitudewavev1.app.model.CalendarToShow
-import com.jdosantos.gratitudewavev1.app.model.Note
-import com.jdosantos.gratitudewavev1.app.usecase.notes.GetMyNotesByDateUseCase
-import com.jdosantos.gratitudewavev1.app.usecase.notes.GetNoteCreationDatesByEmailUseCase
+import com.jdosantos.gratitudewavev1.domain.models.CalendarToShow
+import com.jdosantos.gratitudewavev1.domain.models.Note
+import com.jdosantos.gratitudewavev1.domain.usecase.notes.GetMyNotesByDateUseCase
+import com.jdosantos.gratitudewavev1.domain.usecase.notes.GetNoteCreationDatesByEmailUseCase
+import com.jdosantos.gratitudewavev1.utils.convertMillisToDate
+import com.jdosantos.gratitudewavev1.utils.getFormattedDateToSearch
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,6 +24,9 @@ class ByCalendarViewModel @Inject constructor(
     private val getNoteCreationDatesByEmailUseCase: GetNoteCreationDatesByEmailUseCase
 ) :
     ViewModel() {
+
+    private val tag = this::class.java.simpleName
+
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
@@ -44,13 +48,12 @@ class ByCalendarViewModel @Inject constructor(
     }
 
     init {
-
         viewModelScope.launch {
-           // searchTodayNotes()
-            getNoteCreationDatesByEmailUseCase.generateCalendar { months ->
+            getNoteCreationDatesByEmailUseCase.generateCalendar(callback = { months ->
                 _calendar.value = months
-
-            }
+            }, onError = {
+                Log.e(tag, "init - getNoteCreationDatesByEmailUseCase")
+            })
         }
     }
 
@@ -59,12 +62,12 @@ class ByCalendarViewModel @Inject constructor(
         _isLoading.value = true
         _notesData.value = emptyList()
 
-        getMyNotesByDateUseCase.execute(searchDate) { notes ->
-
+        getMyNotesByDateUseCase.execute(searchDate, callback = { notes ->
             _notesData.value = notes
             _isLoading.value = false
-        }
-
+        }, onError = {
+            Log.e(tag, "fetchNotes - getMyNotesByDateUseCase")
+        })
     }
 
     fun selectDate(date: Date) {

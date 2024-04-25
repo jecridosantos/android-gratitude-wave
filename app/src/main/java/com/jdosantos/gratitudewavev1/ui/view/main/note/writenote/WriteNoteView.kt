@@ -38,10 +38,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
-import com.jdosantos.gratitudewavev1.app.model.Note
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.VALUE_INT_EMPTY
-import com.jdosantos.gratitudewavev1.core.common.util.noteEmotionConfigLists
+import com.jdosantos.gratitudewavev1.domain.models.Note
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.VALUE_INT_EMPTY
+import com.jdosantos.gratitudewavev1.utils.emotionLists
 import com.jdosantos.gratitudewavev1.ui.view.main.note.ChipEmotionChoose
 import com.jdosantos.gratitudewavev1.ui.view.main.note.ChipTagChoose
 import com.jdosantos.gratitudewavev1.ui.view.main.note.ChooseColorBackground
@@ -57,7 +57,6 @@ import com.jdosantos.gratitudewavev1.ui.view.main.note.getColors
 fun WriteNoteView(writeNoteViewModel: WriteNoteViewModel, navController: NavController) {
 
     val context = LocalContext.current
-
 
     val colors = getColors()
 
@@ -81,19 +80,20 @@ fun WriteNoteView(writeNoteViewModel: WriteNoteViewModel, navController: NavCont
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
-
                 .background(selectedColor, RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)),
 
             ) {
 
             Column() {
-                Header({
-                    writeNoteViewModel.saveNewNote({ cleanView() }) {
-
+                Header(
+                    onSave = {
+                        writeNoteViewModel.saveNewNote { success ->
+                            if (success) cleanView()
+                        }
+                    }, onCleanView = {
+                        cleanView()
                     }
-                }) {
-                    cleanView()
-                }
+                )
 
                 NoteInput(note, {
                     writeNoteViewModel.onNote(it)
@@ -135,9 +135,9 @@ fun WriteNoteView(writeNoteViewModel: WriteNoteViewModel, navController: NavCont
     }
 
     ChooseNoteTag(
-        note.tag?.id,
+        note.noteTag?.id,
         writeNoteViewModel.showDialogTag,
-        writeNoteViewModel.tags.value,
+        writeNoteViewModel.noteTags.value,
         {
             writeNoteViewModel.hideDialogTag()
         }
@@ -200,9 +200,9 @@ private fun Tags(note: Note, writeNoteViewModel: WriteNoteViewModel) {
         modifier = Modifier.padding(start = SPACE_DEFAULT.dp, end = SPACE_DEFAULT.dp)
     ) {
 
-        if (note.tag != null) {
+        if (note.noteTag != null) {
             Row {
-                ChipTagChoose(note.tag, {
+                ChipTagChoose(note.noteTag, {
                     writeNoteViewModel.showDialogTag()
                 }) {
                     writeNoteViewModel.onTag(null)
@@ -212,7 +212,7 @@ private fun Tags(note: Note, writeNoteViewModel: WriteNoteViewModel) {
 
         if (note.emotion != VALUE_INT_EMPTY) {
             Row {
-                ChipEmotionChoose(noteEmotionConfigLists[note.emotion!!], {
+                ChipEmotionChoose(emotionLists[note.emotion!!], {
                     writeNoteViewModel.showDialogEmotion()
                 }) {
                     writeNoteViewModel.onEmotion(VALUE_INT_EMPTY)

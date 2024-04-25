@@ -19,8 +19,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jdosantos.gratitudewavev1.R
-import com.jdosantos.gratitudewavev1.app.model.Tag
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.domain.models.NoteTag
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
 import com.jdosantos.gratitudewavev1.ui.widget.ItemSelectedOptions
 
 
@@ -29,9 +29,9 @@ import com.jdosantos.gratitudewavev1.ui.widget.ItemSelectedOptions
 fun ChooseNoteTag(
     tagSelected: String?,
     isOpen: Boolean,
-    tags: List<Tag>,
+    noteTags: List<NoteTag>,
     onHide: () -> Unit,
-    onSelected: (Tag?) -> Unit) {
+    onSelected: (NoteTag?) -> Unit) {
     if (isOpen) {
     ModalBottomSheet(onDismissRequest = { onHide() }) {
 
@@ -42,7 +42,7 @@ fun ChooseNoteTag(
             Spacer(modifier = Modifier.height(16.dp))
 
             LazyColumn {
-                itemsIndexed(tags) { index, tag ->
+                itemsIndexed(noteTags) { index, tag ->
 
                     ItemSelectedOptions(tagSelected == tag.id, tag.esTag) {
                         onSelected(tag)

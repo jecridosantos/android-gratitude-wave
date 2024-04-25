@@ -17,10 +17,11 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.jdosantos.gratitudewavev1.R
-import com.jdosantos.gratitudewavev1.core.common.util.getWeekDaysByLocale
+import com.jdosantos.gratitudewavev1.utils.getWeekDays
 
 @SuppressLint("MutableCollectionMutableState")
 @Composable
@@ -31,7 +32,7 @@ fun DaysOfWeekDialog(
     onConfirm: (MutableList<Int>) -> Unit
 ) {
     if (visible) {
-        val daysOfWeek = getWeekDaysByLocale()
+        val daysOfWeek = getWeekDays(LocalContext.current.resources)
         val updatedSelection = remember { mutableStateListOf<Int>() }
         LaunchedEffect(selectedDays) {
             updatedSelection.clear()

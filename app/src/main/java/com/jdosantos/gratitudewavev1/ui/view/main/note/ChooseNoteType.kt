@@ -30,12 +30,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.jdosantos.gratitudewavev1.R
-import com.jdosantos.gratitudewavev1.core.common.confignote.NoteTypeConfig
-import com.jdosantos.gratitudewavev1.core.common.util.noteTypeConfigLists
-import com.jdosantos.gratitudewavev1.app.store.NoteTypeStore
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT_MID
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.VALUE_INT_EMPTY
+import com.jdosantos.gratitudewavev1.domain.handles.PublishingOption
+import com.jdosantos.gratitudewavev1.utils.publishingOptionLists
+import com.jdosantos.gratitudewavev1.data.local.NoteTypeStore
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT_MID
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.VALUE_INT_EMPTY
 import kotlinx.coroutines.launch
 
 @Composable
@@ -62,7 +62,7 @@ fun ChooseNoteType(
                 Column {
 
                     LazyColumn {
-                        itemsIndexed(noteTypeConfigLists) { index, item ->
+                        itemsIndexed(publishingOptionLists) { index, item ->
                             NoteTypeItem(indexSelected.intValue == index, item) {
                                 indexSelected.intValue = index
                             }
@@ -100,7 +100,7 @@ fun ChooseNoteType(
 
 
 @Composable
-private fun NoteTypeItem(selected: Boolean, item: NoteTypeConfig, onClick: () -> Unit) {
+private fun NoteTypeItem(selected: Boolean, item: PublishingOption, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()

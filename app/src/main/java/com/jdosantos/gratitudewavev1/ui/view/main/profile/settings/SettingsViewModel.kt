@@ -5,35 +5,57 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.jdosantos.gratitudewavev1.app.model.ConfigUser
-import com.jdosantos.gratitudewavev1.app.model.ConfigUserReminder
+import androidx.lifecycle.viewModelScope
+import com.jdosantos.gratitudewavev1.domain.models.UserSettings
+import com.jdosantos.gratitudewavev1.domain.models.UserSettingReminders
+import com.jdosantos.gratitudewavev1.domain.usecase.settings.GetSettingsByUserUseCase
+import com.jdosantos.gratitudewavev1.domain.usecase.settings.SaveSettingsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SettingsViewModel @Inject constructor() : ViewModel() {
+class SettingsViewModel @Inject constructor(
+    private val getSettingsByUserUseCase: GetSettingsByUserUseCase,
+    private val saveSettingsUseCase: SaveSettingsUseCase
+) : ViewModel() {
+    private val tag = this::class.java.simpleName
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
-    /*  var configUser by mutableStateOf(ConfigUser())
-          private set*/
 
-    private val _configUser = MutableStateFlow(ConfigUser())
-    val configUser: StateFlow<ConfigUser> = _configUser
+    private val _UserSettings = MutableStateFlow(UserSettings())
+    val userSettings: StateFlow<UserSettings> = _UserSettings
 
-
-    private val _reminders = MutableStateFlow<List<ConfigUserReminder>>(emptyList())
-    val reminders: StateFlow<List<ConfigUserReminder>> = _reminders
-
-
-    var currentReminder by mutableStateOf(ConfigUserReminder())
+    var currentReminder by mutableStateOf(UserSettingReminders())
         private set
 
+    fun getSettings() {
+        getSettingsByUserUseCase.execute(callback = {
+            _UserSettings.value = it
+        }, onError = {
+            Log.e(tag, "getSettings - getSettingsByUserUseCase")
+        })
+    }
+
+    private fun saveSettings(callback: (Boolean) -> Unit) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                saveSettingsUseCase.execute(_UserSettings.value, callback)
+            } catch (e: Exception) {
+                Log.e(tag, "saveSettings - error ${e.localizedMessage}")
+            }
+        }
+
+    }
+
     // Función para guardar el estado de notificaciones silenciadas
-    fun saveMuteNotifications(mute: Boolean) {
-        _configUser.value = _configUser.value.copy(muteNotifications = mute)
+    fun saveMuteNotifications(mute: Boolean, callback: (Boolean) -> Unit) {
+        _UserSettings.value = _UserSettings.value.copy(muteNotifications = mute)
+        saveSettings(callback);
     }
 
     // Función para agregar un recordatorio a la lista
@@ -46,7 +68,6 @@ class SettingsViewModel @Inject constructor() : ViewModel() {
         currentReminder = currentReminder.copy(label = label)
     }
 
-
     fun fillReminderRepeat(repeatConfig: Int) {
         currentReminder = currentReminder.copy(repeat = repeatConfig)
     }
@@ -55,12 +76,11 @@ class SettingsViewModel @Inject constructor() : ViewModel() {
         currentReminder = currentReminder.copy(repeatDays = repeatDays)
     }
 
-
-    fun addReminder() {
-        _configUser.value.reminders.add(currentReminder)
-        _configUser.value =
-            _configUser.value.copy(reminders = _configUser.value.reminders.toMutableList())
-
+    fun addReminder(callback: (Boolean) -> Unit) {
+        _UserSettings.value.reminders.add(currentReminder)
+        _UserSettings.value =
+            _UserSettings.value.copy(reminders = _UserSettings.value.reminders.toMutableList())
+        saveSettings(callback);
         cleanReminder()
     }
 
@@ -77,7 +97,7 @@ class SettingsViewModel @Inject constructor() : ViewModel() {
 
     fun fillReminder(index: Int) {
 
-        val reminderToEdit = _configUser.value.reminders[index]
+        val reminderToEdit = _UserSettings.value.reminders[index]
 
         Log.d("CURRENT REMINDER", "reminderToEdit: $reminderToEdit")
 
@@ -93,25 +113,30 @@ class SettingsViewModel @Inject constructor() : ViewModel() {
 
     // Función para actualizar un elemento de la lista de recordatorios
     fun updateReminder(
-        index: Int
+        index: Int,
+        callback: (Boolean) -> Unit
     ) {
-        if (index in 0 until _configUser.value.reminders.size) {
-            _configUser.value.reminders[index] = currentReminder
-            _configUser.value =
-                _configUser.value.copy(reminders = _configUser.value.reminders.toMutableList())
+        if (index in 0 until _UserSettings.value.reminders.size) {
+            _UserSettings.value.reminders[index] = currentReminder
+            _UserSettings.value =
+                _UserSettings.value.copy(reminders = _UserSettings.value.reminders.toMutableList())
         }
+
+        saveSettings(callback);
     }
 
     // Función para actualizar el estado de un elemento de la lista de recordatorios
-    fun updateReminderState(index: Int, active: Boolean) {
+    fun updateReminderState(index: Int, active: Boolean, callback: (Boolean) -> Unit) {
 
         Log.d("REMINDER UPDATE", "index: $index, active: $active")
 
-        if (index in 0 until _configUser.value.reminders.size) {
-            _configUser.value.reminders[index] =
-                _configUser.value.reminders[index].copy(active = active)
-            _configUser.value =
-                _configUser.value.copy(reminders = _configUser.value.reminders.toMutableList())
+        if (index in 0 until _UserSettings.value.reminders.size) {
+            _UserSettings.value.reminders[index] =
+                _UserSettings.value.reminders[index].copy(active = active)
+            _UserSettings.value =
+                _UserSettings.value.copy(reminders = _UserSettings.value.reminders.toMutableList())
         }
+
+        saveSettings(callback);
     }
 }

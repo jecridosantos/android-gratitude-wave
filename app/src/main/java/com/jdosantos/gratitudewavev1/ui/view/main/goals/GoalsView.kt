@@ -21,8 +21,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
-import com.jdosantos.gratitudewavev1.core.common.util.challengesList
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.utils.challengesList
 import com.jdosantos.gratitudewavev1.ui.widget.CardGoal
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -90,9 +90,7 @@ private fun ContentGoalsView(
                 true,
                 selected
                 ) {
-                goalsViewModel.saveChallenge(challenge.id, {
-                 //   navController.popBackStack()
-                }) {}
+                goalsViewModel.saveChallenge(challenge.id) {}
             }
         }
     }

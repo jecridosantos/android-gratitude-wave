@@ -20,11 +20,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -39,7 +36,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -48,9 +44,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.GoogleAuthProvider
 import com.jdosantos.gratitudewavev1.R
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.GOOGLE_TOKEN
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT
-import com.jdosantos.gratitudewavev1.core.common.constants.Constants.Companion.SPACE_DEFAULT_MAX
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.GOOGLE_TOKEN
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT_MAX
 import com.jdosantos.gratitudewavev1.ui.widget.AlertComponent
 import com.jdosantos.gratitudewavev1.ui.widget.InputRound
 import com.jdosantos.gratitudewavev1.ui.widget.Loader
@@ -84,8 +80,8 @@ fun LoginView(navController: NavController, loginViewModel: LoginViewModel) {
 
             val account = task.getResult(ApiException::class.java)
             val credential = GoogleAuthProvider.getCredential(account.idToken, null)
-            loginViewModel.signInWithGoogle(credential) {
-                handleGoogleSignInResult(navController)
+            loginViewModel.signInWithGoogle(credential) { success ->
+                if (success) handleGoogleSignInResult(navController)
             }
         } catch (e: Exception) {
             Log.d("Login google error", "error: $e")
@@ -114,7 +110,9 @@ private fun ContentLoginView(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
-        modifier = Modifier.fillMaxSize().padding(SPACE_DEFAULT.dp)
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(SPACE_DEFAULT.dp)
     ) {
 
         val isLoading by loginViewModel.isLoading.collectAsState()
