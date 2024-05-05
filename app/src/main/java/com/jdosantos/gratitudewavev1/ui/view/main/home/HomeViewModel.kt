@@ -14,7 +14,7 @@ import coil.compose.rememberImagePainter
 import com.jdosantos.gratitudewavev1.R
 import com.jdosantos.gratitudewavev1.domain.enums.TimeOfDay
 import com.jdosantos.gratitudewavev1.domain.models.Note
-import com.jdosantos.gratitudewavev1.domain.models.User
+import com.jdosantos.gratitudewavev1.domain.models.UserData
 import com.jdosantos.gratitudewavev1.domain.usecase.auth.GetCurrentUserUseCase
 import com.jdosantos.gratitudewavev1.domain.usecase.notes.GetMyNotesByDateUseCase
 import com.jdosantos.gratitudewavev1.domain.usecase.notes.GetNotesByCurrentUserUseCase
@@ -35,7 +35,7 @@ class HomeViewModel @Inject constructor(
 ) :
     ViewModel() {
     private val tag = this::class.java.simpleName
-    var user by mutableStateOf(User())
+    var userData by mutableStateOf(UserData())
         private set
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
@@ -60,7 +60,7 @@ class HomeViewModel @Inject constructor(
             )
 
             getCurrentUserUseCase.execute({
-                user = it
+                userData = it
             }) {
                 Log.e(tag, "fetchNotes - getCurrentUserUseCase")
             }
@@ -75,14 +75,14 @@ class HomeViewModel @Inject constructor(
             TimeOfDay.GOOD_NIGHT -> R.string.label_welcome_good_night
         }
 
-        return "${stringResource(id = welcomeGretting)}, ${user.name.split(" ")[0]}"
+        return "${stringResource(id = welcomeGretting)}, ${userData.name.split(" ")[0]}"
 
     }
 
     @Composable
     fun getUserAvatar(): Painter {
-        return if (user.photoUrl != null) {
-            rememberImagePainter(data = user.photoUrl)
+        return if (userData.photoUrl != null) {
+            rememberImagePainter(data = userData.photoUrl)
         } else {
             painterResource(id = R.drawable.hombre)
         }

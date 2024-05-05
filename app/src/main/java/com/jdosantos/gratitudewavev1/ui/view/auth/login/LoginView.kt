@@ -42,6 +42,7 @@ import androidx.navigation.NavController
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.GoogleAuthProvider
 import com.jdosantos.gratitudewavev1.R
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.GOOGLE_TOKEN
@@ -58,7 +59,12 @@ data class LoginViewState(
 )
 
 @Composable
-fun LoginView(navController: NavController, loginViewModel: LoginViewModel) {
+fun LoginView(
+    onBackClick: () -> Unit,
+    onLoginClick: (email: String, password: String) -> Unit,
+    onLoginWithGoogleClick: (credential: AuthCredential, callback: (Boolean) -> Unit)  -> Unit,
+    onRegisterClick: () -> Unit,
+) {
 
     val context = LocalContext.current
 
@@ -80,8 +86,11 @@ fun LoginView(navController: NavController, loginViewModel: LoginViewModel) {
 
             val account = task.getResult(ApiException::class.java)
             val credential = GoogleAuthProvider.getCredential(account.idToken, null)
-            loginViewModel.signInWithGoogle(credential) { success ->
+        /*    loginViewModel.signInWithGoogle(credential) { success ->
                 if (success) handleGoogleSignInResult(navController)
+            }*/
+            onLoginWithGoogleClick(credential) { success ->
+             //   if (success) handleGoogleSignInResult(navController)
             }
         } catch (e: Exception) {
             Log.d("Login google error", "error: $e")
@@ -90,22 +99,27 @@ fun LoginView(navController: NavController, loginViewModel: LoginViewModel) {
 
     ContentLoginView(
         state = state,
-        loginViewModel,
+       // loginViewModel,
         onLoginClick = { email, password ->
-            handleLoginClick(navController, loginViewModel, email, password)
+        //    handleLoginClick(navController, loginViewModel, email, password)
+                       onLoginClick(email, password)
         },
         onGoogleSignInClick = { launcher.launch(googleSignInIntent(context)) },
-        onRegisterClick = { navController.navigate("RegisterView") }
+        onRegisterClick = {
+         //   navController.navigate("RegisterView")
+            onRegisterClick()
+        }
     )
 }
 
 @Composable
 private fun ContentLoginView(
     state: LoginViewState,
-    loginViewModel: LoginViewModel,
+    //loginViewModel: LoginViewModel,
     onLoginClick: (String, String) -> Unit,
     onGoogleSignInClick: () -> Unit,
-    onRegisterClick: () -> Unit
+    onRegisterClick: () -> Unit,
+
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -115,7 +129,7 @@ private fun ContentLoginView(
             .padding(SPACE_DEFAULT.dp)
     ) {
 
-        val isLoading by loginViewModel.isLoading.collectAsState()
+      //  val isLoading by loginViewModel.isLoading.collectAsState()
         Text(
             text = stringResource(id = R.string.login_welcome),
             fontSize = 36.sp,
@@ -193,7 +207,7 @@ private fun ContentLoginView(
             }
         }
 
-        if (isLoading) {
+ /*       if (isLoading) {
             Loader()
         }
 
@@ -205,7 +219,7 @@ private fun ContentLoginView(
                 onConfirmClick = { loginViewModel.closeAlert() }) {
 
             }
-        }
+        }*/
 
     }
 }
@@ -246,7 +260,7 @@ private fun handleLoginClick(
     password: String
 ) {
     if (email.isNotEmpty() && password.isNotEmpty()) {
-        loginViewModel.login(email, password) { isEmailVerified ->
+        loginViewModel.signInWithEmailAndPassword(email, password) { isEmailVerified ->
             if (isEmailVerified) {
                 navController.navigate("ContainerView") {
                     popUpTo("SplashView") { inclusive = true }

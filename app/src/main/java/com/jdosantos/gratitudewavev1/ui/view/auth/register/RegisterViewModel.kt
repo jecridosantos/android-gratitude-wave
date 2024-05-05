@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jdosantos.gratitudewavev1.domain.models.User
+import com.jdosantos.gratitudewavev1.domain.models.UserData
 import com.jdosantos.gratitudewavev1.domain.usecase.auth.SignUpUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,9 +23,9 @@ class RegisterViewModel @Inject constructor(private val signUpUseCase: SignUpUse
         _isLoading.value = true
         viewModelScope.launch {
 
-            val user: User = User().copy(email = email, name = name)
+            val userData: UserData = UserData().copy(email = email, name = name)
 
-            signUpUseCase.execute(user, password) { success ->
+            signUpUseCase.execute(userData, password) { success ->
                 callback.invoke(success)
                 _isLoading.value = !success
             }

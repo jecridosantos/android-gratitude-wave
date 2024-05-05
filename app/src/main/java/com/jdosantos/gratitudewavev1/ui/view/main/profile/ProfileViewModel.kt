@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.jdosantos.gratitudewavev1.domain.models.User
+import com.jdosantos.gratitudewavev1.domain.models.UserData
 import com.jdosantos.gratitudewavev1.domain.usecase.auth.GetCurrentUserUseCase
 import com.jdosantos.gratitudewavev1.domain.usecase.auth.LogoutUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,13 +19,13 @@ class ProfileViewModel @Inject constructor(
     private val getCurrentUserUseCase: GetCurrentUserUseCase
 ) : ViewModel() {
     private val tag = this::class.java.simpleName
-    var user by mutableStateOf(User())
+    var userData by mutableStateOf(UserData())
         private set
-    fun getCuurrentUser() {
+    fun getCurrentUser() {
         getCurrentUserUseCase.execute({
-            user = it
+            userData = it
         }) {
-            Log.e(tag, "getCuurrentUser - getCurrentUserUseCase")
+            Log.e(tag, "getCurrentUser - getCurrentUserUseCase")
         }
     }
 

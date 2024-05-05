@@ -3,25 +3,39 @@ package com.jdosantos.gratitudewavev1.data.firebase
 import android.util.Log
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
-import com.jdosantos.gratitudewavev1.domain.models.LoggedUser
 import com.jdosantos.gratitudewavev1.domain.models.User
+import com.jdosantos.gratitudewavev1.domain.models.UserData
 import com.jdosantos.gratitudewavev1.domain.repository.AuthRepository
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
+import javax.inject.Singleton
 
-class AuthFirebaseImpl @Inject constructor(private val auth: FirebaseAuth) : AuthRepository {
+@OptIn(DelicateCoroutinesApi::class)
+@Singleton
+internal class AuthFirebaseImpl @Inject constructor(private val auth: FirebaseAuth) : AuthRepository {
     private val tag = this::class.java.simpleName
-    override fun getCurrentUser(callback: (User) -> Unit, onError: () -> Unit) {
+
+    private val user = MutableStateFlow<User>(User.LoggedOut)
+    override fun get(): Flow<User> {
+        return user
+    }
+
+    override fun getCurrentUser(callback: (UserData) -> Unit, onError: () -> Unit) {
         Log.d(tag, "getCurrentUser")
         try {
             val userLogged = auth.currentUser
-            val userFound = User(
+            val userDataFound = UserData(
                 uid = userLogged!!.uid,
                 email = userLogged.email.toString(),
                 name = userLogged.displayName.toString(),
                 photoUrl = userLogged.photoUrl,
                 provider = userLogged.providerId
             )
-            callback.invoke(userFound)
+            callback.invoke(userDataFound)
         } catch (e: Exception) {
             onError.invoke()
             Log.e(tag, "getCurrentUser - error: ${e.message}")
@@ -30,7 +44,32 @@ class AuthFirebaseImpl @Inject constructor(private val auth: FirebaseAuth) : Aut
 
     }
 
-    override suspend fun login(
+    override suspend fun login(email: String, password: String) {
+
+        try {
+            auth.signInWithEmailAndPassword(email, password).addOnCompleteListener {
+                if (it.isSuccessful) {
+                    val isEmailVerified = auth.currentUser!!.isEmailVerified
+                    GlobalScope.launch {
+                        user.emit(
+                            value = User.LoggedIn(
+                                data = UserData(
+                                    uid = it.result.user!!.uid,
+                                    email = it.result.user!!.email.toString()
+                                )
+                            )
+                        )
+                    }
+                } else {
+                    Log.d(tag, "login - fail ${it.exception?.message}")
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(tag, "login - error: ${e.message}")
+        }
+    }
+
+    override suspend fun signInWithEmailAndPassword(
         email: String,
         password: String,
         callback: (isEmailVerified: Boolean) -> Unit,
@@ -42,12 +81,12 @@ class AuthFirebaseImpl @Inject constructor(private val auth: FirebaseAuth) : Aut
                     val isEmailVerified = auth.currentUser!!.isEmailVerified
                     callback.invoke(isEmailVerified)
                 } else {
-                    Log.d(tag, "login - fail ${it.exception?.message}")
+                    Log.d(tag, "signInWithEmailAndPassword - fail ${it.exception?.message}")
                     onError.invoke()
                 }
             }
         } catch (e: Exception) {
-            Log.e(tag, "login - error: ${e.message}")
+            Log.e(tag, "signInWithEmailAndPassword - error: ${e.message}")
             onError.invoke()
 
         }
@@ -64,25 +103,9 @@ class AuthFirebaseImpl @Inject constructor(private val auth: FirebaseAuth) : Aut
 
     }
 
-    override fun loggedUser(): LoggedUser {
-        return try {
-            val uid = auth.currentUser?.uid
-            val email = auth.currentUser?.email
-            Log.d(tag, "loggedUser - user logged with uid: $uid")
-            if (uid!!.isNotEmpty()) {
-                LoggedUser(uid.toString(), email.toString())
-            } else {
-                LoggedUser()
-            }
-        } catch (e: Exception) {
-            Log.e(tag, "loggedUser - error: ${e.message}")
-            LoggedUser()
-        }
-    }
-
-    override suspend fun loginGoogle(
+    override suspend fun signInWithGoogle(
         credential: AuthCredential,
-        callback: (User) -> Unit,
+        callback: (UserData) -> Unit,
         onError: () -> Unit
     ) {
         try {
@@ -91,26 +114,26 @@ class AuthFirebaseImpl @Inject constructor(private val auth: FirebaseAuth) : Aut
                 if (it.isSuccessful) {
                     val userLogged = it.result.user
 
-                    val userFound = User(
+                    val userDataFound = UserData(
                         uid = userLogged!!.uid,
                         email = userLogged.email.toString(),
                         name = userLogged.displayName.toString(),
                         photoUrl = userLogged.photoUrl,
                         provider = userLogged.providerId
                     )
-                    callback.invoke(userFound)
+                    callback.invoke(userDataFound)
                 } else {
-                    Log.d(tag, "loginGoogle - fail ${it.exception?.message}")
+                    Log.d(tag, "signInWithGoogle - fail ${it.exception?.message}")
                     onError.invoke()
                 }
             }
         } catch (e: Exception) {
-            Log.e(tag, "loginGoogle - error: ${e.message}")
+            Log.e(tag, "signInWithGoogle - error: ${e.message}")
             onError.invoke()
         }
     }
 
-    override suspend fun signUp(
+    override suspend fun createUserWithEmailAndPassword(
         email: String,
         password: String,
         callback: (success: Boolean) -> Unit
@@ -134,12 +157,11 @@ class AuthFirebaseImpl @Inject constructor(private val auth: FirebaseAuth) : Aut
         try {
             auth.currentUser?.sendEmailVerification()
                 ?.addOnCompleteListener {
+                    callback.invoke(it.isSuccessful)
                     if (it.isSuccessful) {
                         Log.i(tag, "sendEmailVerification - email verification sent ${auth.currentUser!!.email}")
-                        callback.invoke(true)
                     } else {
                         Log.d(tag, "sendEmailVerification - fail ${it.exception?.message}")
-                        callback.invoke(false)
                     }
                 }
         } catch (e: Exception) {
