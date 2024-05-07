@@ -23,4 +23,8 @@ class GetCurrentUserUseCase @Inject constructor(
             }, onError
         )
     }
+
+    fun getCurrentUser(): Result<User> {
+        return authRepository.getCurrentUser()
+    }
 }

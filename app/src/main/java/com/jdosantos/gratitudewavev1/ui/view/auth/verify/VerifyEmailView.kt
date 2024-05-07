@@ -3,6 +3,7 @@ package com.jdosantos.gratitudewavev1.ui.view.auth.verify
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
+import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
@@ -23,40 +24,82 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Observer
+import androidx.lifecycle.asFlow
 import androidx.navigation.NavController
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import com.jdosantos.gratitudewavev1.R
+import com.jdosantos.gratitudewavev1.domain.exceptions.AuthenticationException
+import com.jdosantos.gratitudewavev1.domain.models.User
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.VERIFY_EMAIL_OPTION_GO_TO_EMAIL
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.VERIFY_EMAIL_OPTION_GO_TO_LOGIN
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.VERIFY_EMAIL_OPTION_RESEND_LINK
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VerifyEmailView(navController: NavController, verifyEmailViewModel: VerifyEmailViewModel) {
 
     val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val scope = rememberCoroutineScope()
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { //Do something when user comes back in app
         }
     )
+
     LaunchedEffect(Unit) {
-        verifyEmailViewModel.init(context, navController)
+        verifyEmailViewModel.getCurrentUser()
+    }
+
+    val emailCurrentUser = verifyEmailViewModel.emailCurrentUser.collectAsState()
+
+    DisposableEffect(key1 = verifyEmailViewModel.reauthenticateResult) {
+        val observer = Observer<Result<User>> { result ->
+
+            result.onSuccess {
+                navController.navigate("ContainerView") {
+                    popUpTo("VerifyEmailView") { inclusive = true }
+                }
+            }.onFailure { exception ->
+                val errorMessage = when (exception) {
+                    is AuthenticationException.EmailNotVerifiedException -> exception.message
+                    else ->
+                        "Ha ocurrido un error. Por favor, intenta de nuevo más tarde."
+                }
+                errorMessage?.let {
+                    Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                }
+            }
+
+
+        }
+        verifyEmailViewModel.reauthenticateResult.observe(lifecycleOwner, observer)
+
+        onDispose {
+            verifyEmailViewModel.reauthenticateResult.removeObserver(observer)
+        }
     }
 
     Scaffold(
@@ -68,9 +111,11 @@ fun VerifyEmailView(navController: NavController, verifyEmailViewModel: VerifyEm
 
     ) { paddingValues ->
         ContentVerifyEmailView(
+            emailCurrentUser.value,
             paddingValues,
-            navController,
-            verifyEmailViewModel,
+            onUpdate = {
+                handleReauthenticate(verifyEmailViewModel, context, scope)
+            },
             onGoToEmail = {
                 launcher.launch(handleGoToEmail())
             },
@@ -86,15 +131,14 @@ fun VerifyEmailView(navController: NavController, verifyEmailViewModel: VerifyEm
 
 @Composable
 fun ContentVerifyEmailView(
+    emailCurrentUser: String,
     paddingValues: PaddingValues,
-    navController: NavController,
-    verifyEmailViewModel: VerifyEmailViewModel,
+    onUpdate: () -> Unit,
     onGoToEmail: () -> Unit,
     onResendLink: () -> Unit,
     onGoToLogin: () -> Unit,
 ) {
     var taskMenuOpen by remember { mutableStateOf(false) }
-
 
     Column(
         modifier = Modifier
@@ -102,15 +146,16 @@ fun ContentVerifyEmailView(
             .padding(SPACE_DEFAULT.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val email = Firebase.auth.currentUser?.email
         Text(
-            text = stringResource(R.string.label_message_verify_email_with_current_email, email!!),
+            text = stringResource(
+                R.string.label_message_verify_email_with_current_email,
+                emailCurrentUser
+            ),
             fontWeight = FontWeight.Medium,
             textAlign = TextAlign.Center,
             fontSize = 14.sp,
             modifier = Modifier.padding(start = 50.dp, end = 50.dp)
         )
-
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -134,7 +179,7 @@ fun ContentVerifyEmailView(
         )
         Button(
             onClick = {
-                navController.navigate("SplashView")
+                onUpdate()
             }, modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = SPACE_DEFAULT.dp, end = SPACE_DEFAULT.dp, top = SPACE_DEFAULT.dp)
@@ -211,7 +256,7 @@ private fun handleGoToLogin(
 
         navController.navigate("LoginView") {
 
-            popUpTo("SplashView") { inclusive = true }
+            popUpTo("VerifyEmailView") { inclusive = true }
         }
     }
 }
@@ -224,5 +269,11 @@ private fun handleResendLink(verifyEmailViewModel: VerifyEmailViewModel, context
             context, message, Toast.LENGTH_LONG
         ).show()
 
+    }
+}
+
+private fun handleReauthenticate(verifyEmailViewModel: VerifyEmailViewModel, context: Context, scope: CoroutineScope) {
+    scope.launch {
+        verifyEmailViewModel.reauthenticate(context)
     }
 }

@@ -1,35 +1,24 @@
 package com.jdosantos.gratitudewavev1.ui.view.splash
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.jdosantos.gratitudewavev1.domain.usecase.auth.LoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SplashViewModel @Inject constructor(
-    private val authenticateUseCase: LoginUseCase
+    private val loginUseCase: LoginUseCase
 ) : ViewModel() {
+    private val _isAuthenticated = MutableLiveData<Result<Boolean>>()
+    val isAuthenticated: LiveData<Result<Boolean>> = _isAuthenticated
 
-/*    private val _isAuthenticated = MutableStateFlow<UserAuthState>(value = UserAuthState.UNKNOWN)
-    val isAuthenticated: StateFlow<UserAuthState> = _isAuthenticated.asStateFlow()
-
-    fun onEvent(event: SplashEvent) {
-        when (event) {
-            is SplashEvent.CheckAuthentication -> {
-                viewModelScope.launch {
-                    val result = authenticateUseCase.isLogged()
-                    when (result) {
-                        true -> {
-                            _isAuthenticated.emit(UserAuthState.AUTHENTICATED)
-                        }
-
-                        false -> {
-                            _isAuthenticated.emit(UserAuthState.UNAUTHENTICATED)
-                        }
-                    }
-                }
-            }
+    fun checkSession() {
+        viewModelScope.launch {
+            _isAuthenticated.value = loginUseCase.isUserLoggedIn()
         }
-    }*/
-
+    }
 }

@@ -6,6 +6,7 @@ import com.jdosantos.gratitudewavev1.domain.repository.NoteRepository
 import com.jdosantos.gratitudewavev1.utils.compareDatesWithoutTime
 import com.jdosantos.gratitudewavev1.utils.getMonthsBetweenDates
 import java.util.Calendar
+import java.util.Collections
 import java.util.Date
 import javax.inject.Inject
 
@@ -27,7 +28,7 @@ class GetNoteCreationDatesByEmailUseCase @Inject constructor(
     }
 
     private fun generateMonths(dates: List<Date>): List<CalendarToShow> {
-
+        if (dates.isEmpty()) return Collections.emptyList()
         val startDate = dates[0]
         val endDate = Date()
         val months = getMonthsBetweenDates(startDate, endDate)

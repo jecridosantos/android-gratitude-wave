@@ -3,9 +3,12 @@ package com.jdosantos.gratitudewavev1.ui.view.auth.login
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.AuthCredential
+import com.jdosantos.gratitudewavev1.domain.models.User
 import com.jdosantos.gratitudewavev1.domain.usecase.auth.LoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,16 +20,15 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(private val loginUseCase: LoginUseCase) : ViewModel() {
     var showAlert by mutableStateOf(false)
     private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading
-    fun login(email: String, password: String, onSuccess: (isEmailVerified: Boolean) -> Unit) {
-        viewModelScope.launch {
 
-            loginUseCase.execute(
-                email,
-                password,
-                callback = { onSuccess(it) },
-                onError = { showAlert = true }
-            )
+    private val _loginResult = MutableLiveData<Result<User>>()
+    val loginResult: LiveData<Result<User>> = _loginResult
+
+    val isLoading: StateFlow<Boolean> = _isLoading
+
+    fun signInWithEmailAndPassword(email: String, password: String) {
+        viewModelScope.launch {
+            _loginResult.value = loginUseCase.login(email, password)
         }
     }
 

@@ -36,7 +36,6 @@ class MainActivity : ComponentActivity() {
 
 //        val splashViewModel: SplashViewModel by viewModels()
 
-        val loginViewModel: LoginViewModel by viewModels()
         val writeNoteViewModel: WriteNoteViewModel by viewModels()
         val profileViewModel: ProfileViewModel by viewModels()
         val homeViewModel: HomeViewModel by viewModels()
@@ -77,7 +76,6 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     MainNavigation(
-                        loginViewModel,
                         writeNoteViewModel,
                         profileViewModel,
                         homeViewModel,

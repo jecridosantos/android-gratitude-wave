@@ -2,6 +2,7 @@ package com.jdosantos.gratitudewavev1.domain.usecase.auth
 
 import android.util.Log
 import com.google.firebase.auth.AuthCredential
+import com.jdosantos.gratitudewavev1.domain.models.User
 import com.jdosantos.gratitudewavev1.domain.repository.AuthRepository
 import com.jdosantos.gratitudewavev1.domain.repository.UserRepository
 import javax.inject.Inject
@@ -26,6 +27,11 @@ class LoginUseCase @Inject constructor(
             onError
         )
     }
+
+    suspend fun login(email: String, password: String): Result<User> {
+        return authRepository.signInWithEmailAndPassword(email, password)
+    }
+
 
     suspend fun signInWithGoogle(
         credential: AuthCredential,
@@ -60,5 +66,9 @@ class LoginUseCase @Inject constructor(
             Log.e(tag, "isLogged - error: ${e.message}")
             false
         }
+    }
+
+    fun isUserLoggedIn(): Result<Boolean> {
+        return authRepository.isUserLoggedIn();
     }
 }

@@ -46,7 +46,6 @@ import com.jdosantos.gratitudewavev1.ui.view.splash.SplashView
 
 @Composable
 fun MainNavigation(
-    loginViewModel: LoginViewModel,
     writeNoteViewModel: WriteNoteViewModel,
     profileViewModel: ProfileViewModel,
     homeViewModel: HomeViewModel,
@@ -74,7 +73,7 @@ fun MainNavigation(
 
 
         composable("LoginView") {
-            LoginView(navController, loginViewModel)
+            LoginView(navController)
         }
 
 
