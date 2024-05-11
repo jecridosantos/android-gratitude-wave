@@ -64,14 +64,11 @@ import com.jdosantos.gratitudewavev1.utils.repeatListOptions
 @Composable
 fun SaveRemindersScreen(
     navController: NavController,
-    settingsViewModel: SettingsViewModel = hiltViewModel()
+    settingsViewModel: SettingsViewModel
 ) {
     val currentReminder = settingsViewModel.currentReminder
-    LaunchedEffect(Unit) {
-        if (settingsViewModel.index.toInt() != VALUE_INT_EMPTY) {
-            settingsViewModel.fillReminder(settingsViewModel.index.toInt())
-        }
-    }
+    val context = LocalContext.current
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -90,17 +87,17 @@ fun SaveRemindersScreen(
                 },
                 actions = {
                     IconButton(onClick = {
-                        if (settingsViewModel.index.toInt() != VALUE_INT_EMPTY) {
-                            settingsViewModel.updateReminder(settingsViewModel.index.toInt()) {
+                        if (settingsViewModel.index != "") {
+                            settingsViewModel.updateReminder(context, settingsViewModel.index.toInt()) {
 
                             }
                         } else {
-                            settingsViewModel.addReminder() {
+                            settingsViewModel.addReminder(context) {
 
                             }
                         }
-
                         navController.popBackStack()
+
                     }) {
                         Icon(imageVector = Icons.Default.Check, contentDescription = "")
                     }

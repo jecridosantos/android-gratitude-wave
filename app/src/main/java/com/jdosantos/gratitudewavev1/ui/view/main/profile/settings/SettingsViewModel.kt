@@ -1,12 +1,16 @@
 package com.jdosantos.gratitudewavev1.ui.view.main.profile.settings
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jdosantos.gratitudewavev1.data.local.RemindersStore
 import com.jdosantos.gratitudewavev1.domain.models.UserSettings
 import com.jdosantos.gratitudewavev1.domain.models.UserSettingReminders
 import com.jdosantos.gratitudewavev1.domain.usecase.settings.GetSettingsByUserUseCase
@@ -31,15 +35,19 @@ class SettingsViewModel @Inject constructor(
     val isLoading: StateFlow<Boolean> = _isLoading
 
 
-    private val _UserSettings = MutableStateFlow(UserSettings())
-    val userSettings: StateFlow<UserSettings> = _UserSettings
+    private val _userSettings = MutableStateFlow(UserSettings())
+    val userSettings: StateFlow<UserSettings> = _userSettings
 
     var currentReminder by mutableStateOf(UserSettingReminders())
         private set
 
     fun getSettings() {
         getSettingsByUserUseCase.execute(callback = {
-            _UserSettings.value = it
+            _userSettings.value = it
+            if (index != "" && index.toInt() != -1) {
+                fillReminder(index.toInt())
+            }
+
         }, onError = {
             Log.e(tag, "getSettings - getSettingsByUserUseCase")
         })
@@ -48,7 +56,7 @@ class SettingsViewModel @Inject constructor(
     private fun saveSettings(callback: (Boolean) -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                saveSettingsUseCase.execute(_UserSettings.value, callback)
+                saveSettingsUseCase.execute(_userSettings.value, callback)
             } catch (e: Exception) {
                 Log.e(tag, "saveSettings - error ${e.localizedMessage}")
             }
@@ -58,7 +66,7 @@ class SettingsViewModel @Inject constructor(
 
     // Función para guardar el estado de notificaciones silenciadas
     fun saveMuteNotifications(mute: Boolean, callback: (Boolean) -> Unit) {
-        _UserSettings.value = _UserSettings.value.copy(muteNotifications = mute)
+        _userSettings.value = _userSettings.value!!.copy(muteNotifications = mute)
         saveSettings(callback);
     }
 
@@ -80,12 +88,31 @@ class SettingsViewModel @Inject constructor(
         currentReminder = currentReminder.copy(repeatDays = repeatDays)
     }
 
-    fun addReminder(callback: (Boolean) -> Unit) {
-        _UserSettings.value.reminders.add(currentReminder)
-        _UserSettings.value =
-            _UserSettings.value.copy(reminders = _UserSettings.value.reminders.toMutableList())
-        saveSettings(callback);
+    fun addReminder(context: Context, callback: (Boolean) -> Unit) {
+        Log.d("REMINDERS", "addReminder ${_userSettings.value.reminders}")
+        _userSettings.value.reminders.add(currentReminder)
+        Log.d("REMINDERS", "addReminder ${_userSettings.value.reminders}")
+        _userSettings.value = _userSettings.value.copy(reminders =_userSettings.value.reminders.toMutableList())
+        saveSettings(callback = {
+            storeReminders(context)
+            callback(it)
+        });
         cleanReminder()
+    }
+
+    private fun storeReminders(context: Context) {
+        val remindersSet: Set<String> = _userSettings.value!!.reminders.toSetOfString()
+
+        val store = RemindersStore(context)
+        viewModelScope.launch(Dispatchers.IO) {
+            store.saveRemindersSet(remindersSet)
+        }
+    }
+
+    fun List<UserSettingReminders>.toSetOfString(): Set<String> {
+        return this.map { reminder ->
+            reminder.toString() // Utiliza el método toString() que definimos anteriormente
+        }.toSet()
     }
 
     fun cleanReminder() {
@@ -99,9 +126,9 @@ class SettingsViewModel @Inject constructor(
         )
     }
 
-    fun fillReminder(index: Int) {
+    private fun fillReminder(index: Int) {
 
-        val reminderToEdit = _UserSettings.value.reminders[index]
+        val reminderToEdit = _userSettings.value.reminders[index]
 
         Log.d("CURRENT REMINDER", "reminderToEdit: $reminderToEdit")
 
@@ -117,30 +144,37 @@ class SettingsViewModel @Inject constructor(
 
     // Función para actualizar un elemento de la lista de recordatorios
     fun updateReminder(
+        context: Context,
         index: Int,
         callback: (Boolean) -> Unit
     ) {
-        if (index in 0 until _UserSettings.value.reminders.size) {
-            _UserSettings.value.reminders[index] = currentReminder
-            _UserSettings.value =
-                _UserSettings.value.copy(reminders = _UserSettings.value.reminders.toMutableList())
+        if (index in 0 until _userSettings.value.reminders.size) {
+            _userSettings.value.reminders[index] = currentReminder
+            _userSettings.value =
+                _userSettings.value.copy(reminders = _userSettings.value.reminders.toMutableList())
         }
 
-        saveSettings(callback);
+        saveSettings(callback = {
+            storeReminders(context)
+            callback(it)
+        });
     }
 
     // Función para actualizar el estado de un elemento de la lista de recordatorios
-    fun updateReminderState(index: Int, active: Boolean, callback: (Boolean) -> Unit) {
+    fun updateReminderState(context: Context, index: Int, active: Boolean, callback: (Boolean) -> Unit) {
 
         Log.d("REMINDER UPDATE", "index: $index, active: $active")
 
-        if (index in 0 until _UserSettings.value.reminders.size) {
-            _UserSettings.value.reminders[index] =
-                _UserSettings.value.reminders[index].copy(active = active)
-            _UserSettings.value =
-                _UserSettings.value.copy(reminders = _UserSettings.value.reminders.toMutableList())
+        if (index in 0 until _userSettings.value.reminders.size) {
+            _userSettings.value.reminders[index] =
+                _userSettings.value.reminders[index].copy(active = active)
+            _userSettings.value =
+                _userSettings.value.copy(reminders = _userSettings.value.reminders.toMutableList())
         }
 
-        saveSettings(callback);
+        saveSettings(callback = {
+            storeReminders(context)
+            callback(it)
+        });
     }
 }

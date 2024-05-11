@@ -1,6 +1,7 @@
 package com.jdosantos.gratitudewavev1.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.jdosantos.gratitudewavev1.ui.view.auth.login.loginScreenRoute
@@ -19,13 +20,13 @@ import com.jdosantos.gratitudewavev1.ui.view.main.note.writenote.writeNoteScreen
 import com.jdosantos.gratitudewavev1.ui.view.main.notifications.notificationsScreenRoute
 import com.jdosantos.gratitudewavev1.ui.view.main.profile.feedback.feedbackScreenRoute
 import com.jdosantos.gratitudewavev1.ui.view.main.profile.help.helpScreenRoute
-import com.jdosantos.gratitudewavev1.ui.view.main.profile.settings.remindersScreenRoute
-import com.jdosantos.gratitudewavev1.ui.view.main.profile.settings.saveRemindersScreenRoute
+import com.jdosantos.gratitudewavev1.ui.view.main.profile.settings.SettingsViewModel
 import com.jdosantos.gratitudewavev1.ui.view.main.profile.settings.settingsScreenRoute
 import com.jdosantos.gratitudewavev1.ui.view.splash.splashScreenRoute
 
 @Composable
 fun MainNavigation(
+    settingsViewModel: SettingsViewModel
 ) {
 
     val navController = rememberNavController()
@@ -59,7 +60,9 @@ fun MainNavigation(
 
         notesByTagScreenRoute(navController)
 
-        settingsScreenRoute(navController)
+
+
+        settingsScreenRoute(navController, settingsViewModel)
 
         helpScreenRoute(navController)
 
@@ -69,9 +72,6 @@ fun MainNavigation(
 
         goalsScreenRoute(navController)
 
-        remindersScreenRoute(navController)
-
-        saveRemindersScreenRoute(navController)
     }
 
 }

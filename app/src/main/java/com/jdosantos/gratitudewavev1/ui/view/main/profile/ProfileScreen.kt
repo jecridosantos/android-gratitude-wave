@@ -29,6 +29,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,6 +47,7 @@ import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_D
 import com.jdosantos.gratitudewavev1.ui.widget.ConfigItem
 import com.jdosantos.gratitudewavev1.ui.widget.TextItem
 import com.jdosantos.gratitudewavev1.ui.widget.Title
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,7 +67,7 @@ fun ContentProfileView(
     profileViewModel: ProfileViewModel,
     navController: NavController
 ) {
-
+    val scope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
         profileViewModel.getCuurrentUser()
     }
@@ -122,11 +124,13 @@ fun ContentProfileView(
                     ElevatedButton(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = {
-                            profileViewModel.logout { success ->
-                                if (success) {
-                                    navController.navigate(Screen.LoginScreen.route) {
+                            scope.launch {
+                                profileViewModel.logout().onSuccess { success ->
+                                    if (success) {
+                                        navController.navigate(Screen.LoginScreen.route) {
 
-                                        popUpTo(Screen.SplashScreen.route) { inclusive = true }
+                                            popUpTo(Screen.SplashScreen.route) { inclusive = true }
+                                        }
                                     }
                                 }
                             }

@@ -1,5 +1,6 @@
 package com.jdosantos.gratitudewavev1.ui.view.main.profile.settings
 
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -7,20 +8,16 @@ import com.jdosantos.gratitudewavev1.ui.navigation.Screen
 import com.jdosantos.gratitudewavev1.ui.view.main.profile.settings.reminders.RemindersScreen
 import com.jdosantos.gratitudewavev1.ui.view.main.profile.settings.reminders.SaveRemindersScreen
 
-fun NavGraphBuilder.settingsScreenRoute(navController: NavController) {
+fun NavGraphBuilder.settingsScreenRoute(navController: NavController, settingsViewModel: SettingsViewModel) {
     composable(Screen.SettingsScreen.route) {
-        SettingsScreen(navController = navController)
+        SettingsScreen(navController = navController, settingsViewModel)
     }
-}
 
-fun NavGraphBuilder.remindersScreenRoute(navController: NavController) {
     composable(Screen.RemindersScreen.route) {
-        RemindersScreen(navController = navController)
+        RemindersScreen(navController = navController,settingsViewModel)
     }
-}
 
-fun NavGraphBuilder.saveRemindersScreenRoute(navController: NavController) {
     composable(Screen.SaveRemindersScreen.route) {
-        SaveRemindersScreen(navController = navController)
+        SaveRemindersScreen(navController = navController, settingsViewModel)
     }
 }

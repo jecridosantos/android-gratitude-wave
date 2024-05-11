@@ -31,10 +31,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.asFlow
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
 import com.jdosantos.gratitudewavev1.domain.models.UserSettingReminders
@@ -51,7 +53,7 @@ import com.jdosantos.gratitudewavev1.utils.getRepeatDescription
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RemindersScreen(navController: NavController, settingsViewModel: SettingsViewModel = hiltViewModel()) {
+fun RemindersScreen(navController: NavController, settingsViewModel: SettingsViewModel) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -99,6 +101,7 @@ private fun ContentRemindersView(
     // val data by settingsViewModel.reminders.collectAsState()
     val configUser by settingsViewModel.userSettings.collectAsState()
     val data = configUser.reminders
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .padding(paddingValues)
@@ -115,7 +118,7 @@ private fun ContentRemindersView(
                             navController.navigate(Screen.SaveRemindersScreen.params(index))
                         }) {
                             checked ->
-                            settingsViewModel.updateReminderState(index, checked) {}
+                            settingsViewModel.updateReminderState(context, index, checked) {}
                         }
 
 

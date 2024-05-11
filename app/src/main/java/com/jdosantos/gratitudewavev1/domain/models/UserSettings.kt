@@ -14,4 +14,9 @@ data class UserSettingReminders(
     val repeat: Int = 0,
     val active: Boolean = true,
     val repeatDays: MutableList<Int>? = mutableListOf()
-)
+){
+    override fun toString(): String {
+        return "$hour,$minute|$label|$repeat|$active|${repeatDays?.joinToString(",")}"
+    }
+
+}

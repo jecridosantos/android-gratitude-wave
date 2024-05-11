@@ -36,7 +36,7 @@ import com.jdosantos.gratitudewavev1.ui.widget.TextItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(navController: NavController, settingsViewModel: SettingsViewModel= hiltViewModel()) {
+fun SettingsScreen(navController: NavController, settingsViewModel: SettingsViewModel) {
 
     LaunchedEffect(Unit) {
         settingsViewModel.getSettings()
