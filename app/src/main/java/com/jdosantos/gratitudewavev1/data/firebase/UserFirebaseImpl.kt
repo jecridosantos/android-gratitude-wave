@@ -4,9 +4,13 @@ import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
-import com.jdosantos.gratitudewavev1.domain.models.UserData
+import com.jdosantos.gratitudewavev1.domain.exceptions.GenericException
+import com.jdosantos.gratitudewavev1.domain.exceptions.UserException
+import com.jdosantos.gratitudewavev1.domain.models.User
 import com.jdosantos.gratitudewavev1.domain.repository.UserRepository
+import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
+import kotlin.coroutines.resume
 
 class UserFirebaseImpl @Inject constructor(
     private val auth: FirebaseAuth?,
@@ -18,75 +22,63 @@ class UserFirebaseImpl @Inject constructor(
 
     private val collection: CollectionReference = db.collection("Users")
 
-    override fun saveUser(userData: UserData, callback: (success: Boolean) -> Unit) {
+    override suspend fun saveUser(user: User): Result<User> {
         Log.d(tag, "saveUser")
-        try {
-
-            val newNote = hashMapOf(
-                "uid" to uid,
-                "email" to userData.email,
-                "name" to userData.name,
-                "photoUrl" to userData.photoUrl,
-                "provider" to userData.provider,
-                "createAt" to com.google.firebase.firestore.FieldValue.serverTimestamp()
-            )
-            collection.add(newNote)
-                .addOnSuccessListener { callback.invoke(true) }
-                .addOnFailureListener {
-                    Log.e(tag, "saveUser - error: ${it.message}")
-                    callback.invoke(false)
-                }
-
-
-        } catch (e: Exception) {
-            Log.e(tag, "saveUser - error: ${e.message}")
-            callback.invoke(false)
-        }
-    }
-
-    override fun getUserById(
-        id: String,
-        callback: (userData: UserData) -> Unit, onError: () -> Unit
-    ) {
-        Log.d(tag, "getUserById")
-
-        try {
-            collection
-                .document(id)
-                .addSnapshotListener { snapshot, _ ->
-                    if (snapshot != null && snapshot.exists()) {
-                        callback.invoke(snapshot.toObject(UserData::class.java)!!)
+        return suspendCancellableCoroutine { continuation ->
+            try {
+                val newNote = hashMapOf(
+                    "uid" to uid,
+                    "email" to user.email,
+                    "name" to user.name,
+                    "photoUrl" to user.photoUrl,
+                    "provider" to user.provider,
+                    "createAt" to com.google.firebase.firestore.FieldValue.serverTimestamp()
+                )
+                collection.add(newNote)
+                    .addOnSuccessListener { documentReference ->
+                        val savedUser = user.copy(id = documentReference.id)
+                        continuation.resume(Result.success(savedUser))
                     }
-                }
-        } catch (e: Exception) {
-            Log.e(tag, "getUserById - error: ${e.message}")
-            onError.invoke()
+                    .addOnFailureListener { exception ->
+                        Log.e(tag, "saveUser - error: ${exception.message}")
+                        continuation.resume(Result.failure(exception))
+                    }
+            } catch (e: Exception) {
+                Log.e(tag, "saveUser - error: ${e.message}")
+                continuation.resume(Result.failure(e))
+            }
         }
     }
 
-    override fun getUserByUid(
-        uid: String,
-        callback: (userData: UserData?) -> Unit, onError: () -> Unit
-    ) {
+    override suspend fun getUserByUid(
+        uid: String
+
+    ): Result<User> {
         Log.d(tag, "getUserByUid")
-        collection
-            .whereEqualTo("uid", uid)
-            .get()
-            .addOnSuccessListener { querySnapshot ->
-                var userData = UserData()
-                if (querySnapshot != null) {
-                    for (document in querySnapshot) {
-                        val myDocument = document.toObject(UserData::class.java).copy(id = document.id)
-                        userData = myDocument
 
+        return suspendCancellableCoroutine { continuation ->
+            collection
+                .whereEqualTo("uid", uid)
+                .get()
+                .addOnSuccessListener { querySnapshot ->
+                    var user: User? = null
+                    if (!querySnapshot.isEmpty) {
+                        for (document in querySnapshot) {
+                            val myDocument =
+                                document.toObject(User::class.java).copy(id = document.id)
+                            user = myDocument
+                        }
+                        user?.let {
+                            continuation.resume(Result.success(it))
+                        }
+                    } else {
+                        continuation.resume(Result.failure(UserException.UserNotFound()))
                     }
-                    callback.invoke(userData)
                 }
-
-            }
-            .addOnFailureListener {
-                Log.e(tag, "getUserByUid - error: ${it.message}")
-                onError.invoke()
-            }
+                .addOnFailureListener { e ->
+                    Log.e(tag, "getUserByUid - error: ${e.message}")
+                    continuation.resume(Result.failure(GenericException.ClientException()))
+                }
+        }
     }
 }

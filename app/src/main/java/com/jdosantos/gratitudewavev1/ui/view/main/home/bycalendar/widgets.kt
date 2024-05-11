@@ -50,7 +50,7 @@ fun CalendarView(
 
     val pagerState = rememberPagerState(
         pageCount = monthsWithNotes.size,
-        //     initialOffscreenLimit = months.size - 1,
+       //      initialOffscreenLimit = monthsWithNotes.size - 1,
         infiniteLoop = false,
         initialPage = monthsWithNotes.size - 1
     )
@@ -64,7 +64,7 @@ fun CalendarView(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val currentMonth = monthsWithNotes[currentPage].display
+            val currentMonth = monthsWithNotes[pagerState.currentPage].display
             Text(
                 text = currentMonth.capitalize(Locale.ROOT),
                 fontSize = 16.sp,

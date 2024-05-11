@@ -221,5 +221,6 @@
     <string name="fri">Vie</string>
     <string name="sat">Sáb</string>
     <string name="sun">Dom</string>
+    <string name="label_register_error">Ha ocurrido un error.</string>
 
 </resources>

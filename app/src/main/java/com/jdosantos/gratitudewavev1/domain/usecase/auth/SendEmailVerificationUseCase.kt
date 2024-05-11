@@ -6,7 +6,7 @@ import javax.inject.Inject
 class SendEmailVerificationUseCase @Inject constructor(
     private val authRepository: AuthRepository
 ) {
-    fun execute(callback: (success: Boolean) -> Unit) {
-        authRepository.sendEmailVerification(callback)
+    suspend fun execute(): Result<Boolean> {
+        return authRepository.sendEmailVerification()
     }
 }

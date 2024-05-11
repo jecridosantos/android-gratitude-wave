@@ -2,23 +2,21 @@ package com.jdosantos.gratitudewavev1.domain.repository
 
 import com.google.firebase.auth.AuthCredential
 import com.jdosantos.gratitudewavev1.domain.models.User
-import com.jdosantos.gratitudewavev1.domain.models.UserData
-import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {
-    fun get(): Flow<User>
 
-    fun getCurrentUser(callback: (UserData) -> Unit, onError: () -> Unit)
+    suspend fun loginGoogle(credential: AuthCredential): Result<User>
 
-    suspend fun login(email: String, password: String)
+    suspend fun sendEmailVerification(): Result<Boolean>
 
-    suspend fun signInWithEmailAndPassword(email: String, password: String, callback: (isEmailVerified: Boolean) -> Unit, onError: () -> Unit)
+    suspend fun signInWithEmailAndPassword(email: String, password: String): Result<User>
 
-    fun logout(callback: (success: Boolean) -> Unit)
+    suspend fun register(email: String, password: String): Result<User>
 
-    suspend fun signInWithGoogle(credential: AuthCredential, callback: (UserData) -> Unit, onError: () -> Unit)
+    suspend fun reauthenticate(password: String): Result<User>
 
-    suspend fun createUserWithEmailAndPassword(email: String, password: String, callback: (success: Boolean) -> Unit)
+    fun isUserLoggedIn(): Result<Boolean>
 
-    fun sendEmailVerification(callback: (success: Boolean) -> Unit)
+    fun getCurrentUser(): Result<User>
+    suspend fun signOut(): Result<Boolean>
 }

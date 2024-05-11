@@ -2,173 +2,183 @@ package com.jdosantos.gratitudewavev1.data.firebase
 
 import android.util.Log
 import com.google.firebase.auth.AuthCredential
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.jdosantos.gratitudewavev1.domain.exceptions.AuthenticationException
 import com.jdosantos.gratitudewavev1.domain.models.User
-import com.jdosantos.gratitudewavev1.domain.models.UserData
 import com.jdosantos.gratitudewavev1.domain.repository.AuthRepository
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@OptIn(DelicateCoroutinesApi::class)
-@Singleton
-internal class AuthFirebaseImpl @Inject constructor(private val auth: FirebaseAuth) : AuthRepository {
+class AuthFirebaseImpl @Inject constructor(private val auth: FirebaseAuth) : AuthRepository {
     private val tag = this::class.java.simpleName
 
-    private val user = MutableStateFlow<User>(User.LoggedOut)
-    override fun get(): Flow<User> {
-        return user
-    }
+    override suspend fun loginGoogle(
+        credential: AuthCredential
+    ): Result<User> {
 
-    override fun getCurrentUser(callback: (UserData) -> Unit, onError: () -> Unit) {
-        Log.d(tag, "getCurrentUser")
-        try {
-            val userLogged = auth.currentUser
-            val userDataFound = UserData(
-                uid = userLogged!!.uid,
-                email = userLogged.email.toString(),
-                name = userLogged.displayName.toString(),
-                photoUrl = userLogged.photoUrl,
-                provider = userLogged.providerId
+        return try {
+            auth.signInWithCredential(credential).await()
+            val userLogged = auth.currentUser!!
+            Result.success(
+                User(
+                    uid = userLogged.uid,
+                    email = userLogged.email.toString(),
+                    name = userLogged.displayName.toString(),
+                    photoUrl = userLogged.photoUrl,
+                    provider = userLogged.providerId
+                )
             )
-            callback.invoke(userDataFound)
+        } catch (e: FirebaseAuthInvalidUserException) {
+            Result.failure(AuthenticationException.InvalidCredentialsException())
+        } catch (e: FirebaseAuthInvalidCredentialsException) {
+            Result.failure(AuthenticationException.InvalidCredentialsException())
         } catch (e: Exception) {
-            onError.invoke()
-            Log.e(tag, "getCurrentUser - error: ${e.message}")
-        }
-
-
-    }
-
-    override suspend fun login(email: String, password: String) {
-
-        try {
-            auth.signInWithEmailAndPassword(email, password).addOnCompleteListener {
-                if (it.isSuccessful) {
-                    val isEmailVerified = auth.currentUser!!.isEmailVerified
-                    GlobalScope.launch {
-                        user.emit(
-                            value = User.LoggedIn(
-                                data = UserData(
-                                    uid = it.result.user!!.uid,
-                                    email = it.result.user!!.email.toString()
-                                )
-                            )
-                        )
-                    }
-                } else {
-                    Log.d(tag, "login - fail ${it.exception?.message}")
-                }
-            }
-        } catch (e: Exception) {
-            Log.e(tag, "login - error: ${e.message}")
+            Result.failure(AuthenticationException.GenericAuthenticationException())
         }
     }
 
-    override suspend fun signInWithEmailAndPassword(
-        email: String,
-        password: String,
-        callback: (isEmailVerified: Boolean) -> Unit,
-        onError: () -> Unit
-    ) {
-        try {
-            auth.signInWithEmailAndPassword(email, password).addOnCompleteListener {
-                if (it.isSuccessful) {
-                    val isEmailVerified = auth.currentUser!!.isEmailVerified
-                    callback.invoke(isEmailVerified)
-                } else {
-                    Log.d(tag, "signInWithEmailAndPassword - fail ${it.exception?.message}")
-                    onError.invoke()
-                }
-            }
-        } catch (e: Exception) {
-            Log.e(tag, "signInWithEmailAndPassword - error: ${e.message}")
-            onError.invoke()
 
+    override suspend fun sendEmailVerification(): Result<Boolean> {
+        return try {
+            auth.currentUser?.sendEmailVerification()!!.await()
+            Log.i(
+                tag,
+                "sendEmailVerification - email verification sent ${auth.currentUser!!.email}"
+            )
+            Result.success(true)
+        } catch (e: Exception) {
+            Log.e(tag, "sendEmailVerification - error: ${e.message}")
+            Result.success(false)
         }
     }
 
-    override fun logout(callback: (success: Boolean) -> Unit) {
-        try {
-            auth.signOut()
-            callback.invoke(true)
-        } catch (e: Exception) {
-            callback.invoke(false)
-            Log.e(tag, "logout - error: ${e.message}")
-        }
+    override suspend fun signInWithEmailAndPassword(email: String, password: String): Result<User> {
+        return try {
+            val userCredential = auth.signInWithEmailAndPassword(email, password).await()
+            val isEmailVerified = userCredential.user!!.isEmailVerified
+            if (isEmailVerified) {
 
-    }
-
-    override suspend fun signInWithGoogle(
-        credential: AuthCredential,
-        callback: (UserData) -> Unit,
-        onError: () -> Unit
-    ) {
-        try {
-            auth.signInWithCredential(credential).addOnCompleteListener {
-
-                if (it.isSuccessful) {
-                    val userLogged = it.result.user
-
-                    val userDataFound = UserData(
-                        uid = userLogged!!.uid,
+                val userLogged = auth.currentUser!!
+                Result.success(
+                    User(
+                        uid = userLogged.uid,
                         email = userLogged.email.toString(),
                         name = userLogged.displayName.toString(),
                         photoUrl = userLogged.photoUrl,
                         provider = userLogged.providerId
                     )
-                    callback.invoke(userDataFound)
+                )
+            } else {
+                Result.failure(AuthenticationException.EmailNotVerifiedException())
+            }
+        } catch (e: FirebaseAuthInvalidUserException) {
+            Log.e(tag, "signInWithEmailAndPassword - error: ${e.message}")
+            Result.failure(AuthenticationException.InvalidCredentialsException())
+        } catch (e: FirebaseAuthInvalidCredentialsException) {
+            Log.e(tag, "signInWithEmailAndPassword - error: ${e.message}")
+            Result.failure(AuthenticationException.InvalidCredentialsException())
+        } catch (e: Exception) {
+            Log.e(tag, "signInWithEmailAndPassword - error: ${e.message}")
+            Result.failure(AuthenticationException.GenericAuthenticationException())
+        }
+    }
+
+    override suspend fun register(email: String, password: String): Result<User> {
+        return try {
+
+            auth.createUserWithEmailAndPassword(email, password).await()
+
+            return sendEmailVerification().map { success ->
+                return if (success) {
+                    val userLogged = auth.currentUser!!
+                    return Result.success(
+                        User(
+                            uid = userLogged.uid,
+                            email = userLogged.email.toString(),
+                            name = userLogged.displayName.toString(),
+                            photoUrl = userLogged.photoUrl,
+                            provider = userLogged.providerId
+                        )
+                    )
                 } else {
-                    Log.d(tag, "signInWithGoogle - fail ${it.exception?.message}")
-                    onError.invoke()
+                    Result.failure(AuthenticationException.InvalidCredentialsException())
                 }
             }
+        } catch (e: FirebaseAuthUserCollisionException) {
+            Result.failure(AuthenticationException.AuthUserCollisionException())
         } catch (e: Exception) {
-            Log.e(tag, "signInWithGoogle - error: ${e.message}")
-            onError.invoke()
+            Log.e(tag, "register - error: ${e.message}")
+            Result.failure(AuthenticationException.GenericAuthenticationException())
         }
     }
 
-    override suspend fun createUserWithEmailAndPassword(
-        email: String,
-        password: String,
-        callback: (success: Boolean) -> Unit
-    ) {
-        try {
-            auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener {
-                if (it.isSuccessful) {
-                    sendEmailVerification(callback)
-                } else {
-                    Log.d(tag, "loginGoogle - fail ${it.exception?.message}")
-                    callback.invoke(false)
-                }
+    override suspend fun reauthenticate(password: String): Result<User> {
+        return try {
+            Log.d(tag, "reauthenticate - password: $password")
+            val credential = EmailAuthProvider.getCredential(auth.currentUser!!.email!!, password)
+            auth.currentUser!!.reauthenticate(credential).await()
+
+            val userCredential = auth.currentUser
+            val isEmailVerified = userCredential!!.isEmailVerified
+            if (isEmailVerified) {
+                Result.success(User(userCredential.email ?: ""))
+            } else {
+                Result.failure(AuthenticationException.EmailNotVerifiedException())
             }
+        } catch (e: FirebaseAuthInvalidUserException) {
+            Result.failure(AuthenticationException.InvalidCredentialsException())
+        } catch (e: FirebaseAuthInvalidCredentialsException) {
+            Result.failure(AuthenticationException.InvalidCredentialsException())
         } catch (e: Exception) {
-            Log.e(tag, "signUp - error: ${e.message}")
-            callback.invoke(false)
+            Log.e(tag, "reauthenticate - error: ${e.message}")
+            Result.failure(AuthenticationException.GenericAuthenticationException())
         }
     }
 
-    override fun sendEmailVerification(callback: (success: Boolean) -> Unit) {
-        try {
-            auth.currentUser?.sendEmailVerification()
-                ?.addOnCompleteListener {
-                    callback.invoke(it.isSuccessful)
-                    if (it.isSuccessful) {
-                        Log.i(tag, "sendEmailVerification - email verification sent ${auth.currentUser!!.email}")
-                    } else {
-                        Log.d(tag, "sendEmailVerification - fail ${it.exception?.message}")
-                    }
-                }
-        } catch (e: Exception) {
-            Log.e(tag, "sendEmailVerification - error: ${e.message}")
-            callback.invoke(false)
+    override fun isUserLoggedIn(): Result<Boolean> {
+        val userCredential = auth.currentUser
+        return if (userCredential != null) {
+            val isEmailVerified = userCredential.isEmailVerified
+            if (isEmailVerified) {
+                Result.success(true)
+            } else {
+                Result.failure(AuthenticationException.EmailNotVerifiedException())
+            }
+        } else {
+            Result.failure(AuthenticationException.UserNotLogged())
         }
     }
 
+    override suspend fun signOut(): Result<Boolean> {
+        return try {
+            auth.signOut()
+            Result.success(true)
+        } catch (e: Exception) {
+            Log.e(tag, "logout - error: ${e.message}")
+            Result.success(false)
+        }
+    }
+
+
+    override fun getCurrentUser(): Result<User> {
+        val userLogged = auth.currentUser
+        return if (userLogged != null) {
+            Result.success(
+                User(
+                    uid = userLogged.uid,
+                    email = userLogged.email.toString(),
+                    name = userLogged.displayName.toString(),
+                    photoUrl = userLogged.photoUrl,
+                    provider = userLogged.providerId
+                )
+            )
+        } else {
+            Result.failure(AuthenticationException.UserNotLogged())
+        }
+    }
 
 }
