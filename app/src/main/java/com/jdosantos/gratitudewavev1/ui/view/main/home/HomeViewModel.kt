@@ -59,10 +59,8 @@ class HomeViewModel @Inject constructor(
                 }
             )
 
-            getCurrentUserUseCase.execute({
-                user = it
-            }) {
-                Log.e(tag, "fetchNotes - getCurrentUserUseCase")
+            getCurrentUserUseCase.execute().onSuccess { value: User ->
+                user = value
             }
         }
     }

@@ -4,11 +4,13 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.jdosantos.gratitudewavev1.domain.models.Note
 import com.jdosantos.gratitudewavev1.domain.models.NoteTag
 import com.jdosantos.gratitudewavev1.domain.usecase.tags.GetTagByIdUseCase
 import com.jdosantos.gratitudewavev1.domain.usecase.notes.GetMyNotesByTagUseCase
+import com.jdosantos.gratitudewavev1.utils.constants.ConstantsRouteParams
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,11 +18,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NotesByTagViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val getMyNotesByTagUseCase: GetMyNotesByTagUseCase,
     private val getTagByIdUseCase: GetTagByIdUseCase
 ) :
     ViewModel() {
     private val tag = this::class.java.simpleName
+
+    private val tagId: String = checkNotNull(savedStateHandle[ConstantsRouteParams.TAG_DETAILS_ID]?:"")
+    val tagName: String = checkNotNull(savedStateHandle[ConstantsRouteParams.TAG_DETAILS_NAME]?:"")
+
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
@@ -29,6 +36,10 @@ class NotesByTagViewModel @Inject constructor(
 
     var noteTag by mutableStateOf(NoteTag())
         private set
+
+    init {
+        fetchNotes(tagId)
+    }
 
     fun fetchNotes(tagId: String) {
         _isLoading.value = true

@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jdosantos.gratitudewavev1.domain.models.Note
@@ -12,6 +13,7 @@ import com.jdosantos.gratitudewavev1.domain.usecase.tags.GetTagsUseCase
 import com.jdosantos.gratitudewavev1.domain.usecase.notes.GetNoteByIdUseCase
 import com.jdosantos.gratitudewavev1.domain.usecase.notes.UpdateNoteUseCase
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.VALUE_INT_EMPTY
+import com.jdosantos.gratitudewavev1.utils.constants.ConstantsRouteParams
 import com.jdosantos.gratitudewavev1.utils.publishingOptionLists
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -22,11 +24,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class UpdateNoteViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val getNoteByIdUseCase: GetNoteByIdUseCase?,
     private val updateNoteUseCase: UpdateNoteUseCase?,
     private val getTagsUseCase: GetTagsUseCase?,
 ) :
     ViewModel() {
+    val id: String = checkNotNull(savedStateHandle[ConstantsRouteParams.NOTE_DETAILS_ID]?:"")
+
+    val color: String = checkNotNull(savedStateHandle[ConstantsRouteParams.NOTE_DETAILS_COLOR]?:"")
     private val tag = this::class.java.simpleName
     private val _tags = MutableStateFlow<List<NoteTag>>(emptyList())
     val tags: StateFlow<List<NoteTag>> = _tags

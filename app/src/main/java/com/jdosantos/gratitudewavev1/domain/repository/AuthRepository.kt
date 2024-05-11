@@ -1,22 +1,22 @@
 package com.jdosantos.gratitudewavev1.domain.repository
 
 import com.google.firebase.auth.AuthCredential
-import com.jdosantos.gratitudewavev1.domain.models.LoggedUser
 import com.jdosantos.gratitudewavev1.domain.models.User
 
 interface AuthRepository {
 
-    fun getCurrentUser(callback: (User) -> Unit, onError: () -> Unit)
+    suspend fun loginGoogle(credential: AuthCredential): Result<User>
 
-    suspend fun login(email: String, password: String, callback: (isEmailVerified: Boolean) -> Unit, onError: () -> Unit)
+    suspend fun sendEmailVerification(): Result<Boolean>
 
-    fun logout(callback: (success: Boolean) -> Unit)
+    suspend fun signInWithEmailAndPassword(email: String, password: String): Result<User>
 
-    fun loggedUser(): LoggedUser
+    suspend fun register(email: String, password: String): Result<User>
 
-    suspend fun loginGoogle(credential: AuthCredential, callback: (User) -> Unit, onError: () -> Unit)
+    suspend fun reauthenticate(password: String): Result<User>
 
-    suspend fun signUp(email: String, password: String, callback: (success: Boolean) -> Unit)
+    fun isUserLoggedIn(): Result<Boolean>
 
-    fun sendEmailVerification(callback: (success: Boolean) -> Unit)
+    fun getCurrentUser(): Result<User>
+    suspend fun signOut(): Result<Boolean>
 }

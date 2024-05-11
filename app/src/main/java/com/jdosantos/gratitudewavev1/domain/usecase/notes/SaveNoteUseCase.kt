@@ -1,9 +1,9 @@
 package com.jdosantos.gratitudewavev1.domain.usecase.notes
 
-import com.jdosantos.gratitudewavev1.utils.getCurrentDate
 import com.jdosantos.gratitudewavev1.domain.models.Note
 import com.jdosantos.gratitudewavev1.domain.repository.AuthRepository
 import com.jdosantos.gratitudewavev1.domain.repository.NoteRepository
+import com.jdosantos.gratitudewavev1.utils.getCurrentDate
 import javax.inject.Inject
 
 class SaveNoteUseCase @Inject constructor(
@@ -12,10 +12,13 @@ class SaveNoteUseCase @Inject constructor(
 ) {
 
     fun execute(note: Note, callback: (success: Boolean) -> Unit) {
-        val email = authRepository.loggedUser().email
 
-        val newNote = note.copy(email = email!!, date = getCurrentDate())
+        val email = authRepository.getCurrentUser().getOrNull()!!.email
 
-        noteRepository.saveNote(newNote, callback)
+        val newNote = note.copy(email = email, date = getCurrentDate())
+
+        return noteRepository.saveNote(newNote, callback)
+
+
     }
 }

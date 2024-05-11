@@ -43,5 +43,9 @@ class Constants {
         const val VERIFY_EMAIL_OPTION_GO_TO_EMAIL = 0
         const val VERIFY_EMAIL_OPTION_RESEND_LINK = 1
         const val VERIFY_EMAIL_OPTION_GO_TO_LOGIN = 2
+
+        const val NOTIFICATION_CHANNEL_ID = "gratitudeMainAppId"
+        const val NOTIFICATION_CHANNEL_NAME = "gratitudeMainAppName"
+        const val NOTIFICATION_CHANNEL_DESCRIPTION = "Canal de notificaciones"
     }
 }

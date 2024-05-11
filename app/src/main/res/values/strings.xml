@@ -224,6 +224,7 @@
     <string name="fri">Fri</string>
     <string name="sat">Sat</string>
     <string name="sun">Sun</string>
+    <string name="label_register_error">Ha ocurrido un error.</string>
 
 
 </resources>
