@@ -1,6 +1,5 @@
 package com.jdosantos.gratitudewavev1.ui.view.main.profile
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -22,10 +21,8 @@ class ProfileViewModel @Inject constructor(
     var user by mutableStateOf(User())
         private set
     fun getCuurrentUser() {
-        getCurrentUserUseCase.execute({
-            user = it
-        }) {
-            Log.e(tag, "getCuurrentUser - getCurrentUserUseCase")
+        getCurrentUserUseCase.execute().onSuccess { value: User ->
+            user = value
         }
     }
 

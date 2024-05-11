@@ -52,7 +52,7 @@ import com.jdosantos.gratitudewavev1.R
 import com.jdosantos.gratitudewavev1.data.local.CredentialStore
 import com.jdosantos.gratitudewavev1.domain.exceptions.AuthenticationException
 import com.jdosantos.gratitudewavev1.domain.models.User
-import com.jdosantos.gratitudewavev1.ui.widget.AlertComponent
+import com.jdosantos.gratitudewavev1.ui.navigation.Screen
 import com.jdosantos.gratitudewavev1.ui.widget.InputRound
 import com.jdosantos.gratitudewavev1.ui.widget.Loader
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.GOOGLE_TOKEN
@@ -68,9 +68,12 @@ data class LoginViewState(
 )
 
 @Composable
-fun LoginView(navController: NavController, loginViewModel: LoginViewModel = hiltViewModel()) {
+fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel = hiltViewModel()) {
 
     val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val dataStore = CredentialStore(context)
+    val scope = rememberCoroutineScope()
 
     val state = LoginViewState(
         backPressedOnce = remember { mutableStateOf(false) },
@@ -81,56 +84,27 @@ fun LoginView(navController: NavController, loginViewModel: LoginViewModel = hil
     BackHandler(enabled = true) {
         handleBackPressed(context, state.backPressedOnce)
     }
-
-    val launcher = rememberLauncherForActivityResult(
+    val isLoading by loginViewModel.isLoading.collectAsState()
+    val launcherIntentGoogle = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
         val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
         try {
-
             val account = task.getResult(ApiException::class.java)
             val credential = GoogleAuthProvider.getCredential(account.idToken, null)
             loginViewModel.signInWithGoogle(credential) { success ->
                 if (success) handleGoogleSignInResult(navController)
             }
         } catch (e: Exception) {
-            Log.d("Login google error", "error: $e")
+            Log.e("Login google error", "error: $e")
         }
     }
 
-    ContentLoginView(
-        context,
-        navController,
-        state = state,
-        loginViewModel,
-        onLoginClick = { email, password ->
-            handleLoginClick(loginViewModel, email, password)
-        },
-        onGoogleSignInClick = { launcher.launch(googleSignInIntent(context)) },
-        onRegisterClick = { navController.navigate("RegisterView") }
-    )
-}
-
-@Composable
-private fun ContentLoginView(
-    context: Context,
-    navController: NavController,
-    state: LoginViewState,
-    loginViewModel: LoginViewModel,
-    onLoginClick: (String, String) -> Unit,
-    onGoogleSignInClick: () -> Unit,
-    onRegisterClick: () -> Unit
-) {
-    val scope = rememberCoroutineScope()
-
-    val dataStore = CredentialStore(context)
-    val lifecycleOwner = LocalLifecycleOwner.current
-    // Observar el estado del inicio de sesión
-    DisposableEffect(key1 = loginViewModel.loginResult) {
+    DisposableEffect(loginViewModel.loginResult) {
         val observer = Observer<Result<User>> { result ->
 
             result.onSuccess {
-                navController.navigate("ContainerView") {
+                navController.navigate(Screen.ContainerScreen.route) {
                     popUpTo("LoginView") { inclusive = true }
                 }
             }.onFailure {exception ->
@@ -143,24 +117,19 @@ private fun ContentLoginView(
 
                             }.await()
 
-                            navController.navigate("VerifyEmailView"){
-                                popUpTo("LoginView") { inclusive = true }
+                            navController.navigate(Screen.VerifyEmailScreen.route){
+                                popUpTo(Screen.LoginScreen.route) { inclusive = true }
                             }
                         }
-
-
-                        null // No mostrar mensaje de error si es una excepción específica
+                        null
                     }
-                    is AuthenticationException.InvalidCredentialsException ->
-                        exception.message ?: "Credenciales incorrectas. Verifica tu email y contraseña e intenta de nuevo."
-                    is AuthenticationException.GenericAuthenticationException ->
-                        exception.message ?: "Ha ocurrido un error. Por favor, intenta de nuevo más tarde."
+                    is AuthenticationException.InvalidCredentialsException -> exception.message
+                    is AuthenticationException.GenericAuthenticationException -> exception.message
                     else ->
                         "Ha ocurrido un error. Por favor, intenta de nuevo más tarde."
                 }
 
                 errorMessage?.let {
-                    // Mostrar mensaje de error si no es una excepción específica
                     Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
                 }
             }
@@ -170,7 +139,6 @@ private fun ContentLoginView(
         loginViewModel.loginResult.observe(lifecycleOwner, observer)
 
         onDispose {
-            // Limpiar el observador al destruir el composable
             loginViewModel.loginResult.removeObserver(observer)
         }
     }
@@ -181,8 +149,6 @@ private fun ContentLoginView(
             .fillMaxSize()
             .padding(SPACE_DEFAULT.dp)
     ) {
-
-        val isLoading by loginViewModel.isLoading.collectAsState()
         Text(
             text = stringResource(id = R.string.login_welcome),
             fontSize = 36.sp,
@@ -190,7 +156,6 @@ private fun ContentLoginView(
         )
 
         Spacer(modifier = Modifier.height(SPACE_DEFAULT_MAX.dp))
-
 
         InputRound(
             stringResource(R.string.login_label_input_email), state.email.value,
@@ -207,8 +172,7 @@ private fun ContentLoginView(
 
         Button(
             onClick = {
-                onLoginClick(state.email.value, state.password.value)
-
+                handleLoginClick(loginViewModel, state.email.value, state.password.value)
             }, modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = SPACE_DEFAULT.dp, end = SPACE_DEFAULT.dp)
@@ -216,10 +180,9 @@ private fun ContentLoginView(
             Text(text = stringResource(id = R.string.login_button_login))
         }
 
-
         Button(
             onClick = {
-                onGoogleSignInClick()
+                launcherIntentGoogle.launch(googleSignInIntent(context))
             }, modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = SPACE_DEFAULT.dp, end = SPACE_DEFAULT.dp)
@@ -255,7 +218,7 @@ private fun ContentLoginView(
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.clickable {
-                        onRegisterClick()
+                        navController.navigate(Screen.RegisterScreen.route)
                     })
             }
         }
@@ -263,17 +226,6 @@ private fun ContentLoginView(
         if (isLoading) {
             Loader()
         }
-
-        if (loginViewModel.showAlert) {
-            AlertComponent(title = stringResource(id = R.string.login_alert_title),
-                message = stringResource(id = R.string.login_alert_message),
-                confirmText = stringResource(id = R.string.label_confirm),
-                cancelText = null,
-                onConfirmClick = { loginViewModel.closeAlert() }) {
-
-            }
-        }
-
     }
 
 }
@@ -290,9 +242,11 @@ private fun handleBackPressed(
     }
 }
 
+
+
 private fun handleGoogleSignInResult(navController: NavController) {
-    navController.navigate("ContainerView") {
-        popUpTo("SplashView") { inclusive = true }
+    navController.navigate(Screen.ContainerScreen.route) {
+        popUpTo(Screen.SplashScreen.route) { inclusive = true }
     }
 }
 

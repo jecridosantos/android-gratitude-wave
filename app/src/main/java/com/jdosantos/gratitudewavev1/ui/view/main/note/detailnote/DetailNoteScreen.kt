@@ -31,8 +31,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
+import com.jdosantos.gratitudewavev1.ui.navigation.Screen
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
 import com.jdosantos.gratitudewavev1.utils.getSafeColor
 import com.jdosantos.gratitudewavev1.ui.view.main.note.CurrentDateView
@@ -44,20 +46,18 @@ import com.jdosantos.gratitudewavev1.ui.widget.AlertComponent
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DetailNoteView(
-    id: String,
-    color: Int?,
-    detailNoteViewModel: DetailNoteViewModel,
-    navController: NavController
+fun DetailNoteScreen(
+    navController: NavController,
+    detailNoteViewModel: DetailNoteViewModel = hiltViewModel(),
 ) {
 
     val colors = getColors()
     val note = detailNoteViewModel.note
 
-    var selectedColor by remember { mutableStateOf(colors.getSafeColor(color)) }
+    var selectedColor by remember { mutableStateOf(colors.getSafeColor(detailNoteViewModel.color.toInt())) }
 
     LaunchedEffect(Unit) {
-        detailNoteViewModel.getNoteById(id) {noteColor->
+        detailNoteViewModel.getNoteById(detailNoteViewModel.id) {noteColor->
               selectedColor = colors.getSafeColor(noteColor)
         }
     }
@@ -71,7 +71,7 @@ fun DetailNoteView(
         Header({
             navController.popBackStack()
         }, {
-            navController.navigate("UpdateNoteView/${id}/${note.color}")
+            navController.navigate(Screen.UpdateNoteScreen.params(detailNoteViewModel.id, note.color!!))
         }) {
             detailNoteViewModel.showAlert()
         }
@@ -93,7 +93,7 @@ fun DetailNoteView(
 
     }
 
-    AlertDeleteNote(id, detailNoteViewModel, navController)
+    AlertDeleteNote(detailNoteViewModel.id, detailNoteViewModel, navController)
 
     DisposableEffect(Unit) {
         onDispose {
@@ -141,7 +141,9 @@ private fun AlertDeleteNote(
 @Composable
 private fun Header(onExit: () -> Unit, onEdit: () -> Unit, onDelete: () -> Unit) {
     Row(
-        modifier = Modifier.padding(4.dp).height(56.dp),
+        modifier = Modifier
+            .padding(4.dp)
+            .height(56.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(onClick = { onExit() }) {

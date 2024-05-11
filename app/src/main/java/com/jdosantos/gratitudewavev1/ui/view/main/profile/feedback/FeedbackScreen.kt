@@ -35,6 +35,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.MAX_LENGHT_COMMENT_FEEDBACK
@@ -44,7 +45,7 @@ import com.jdosantos.gratitudewavev1.ui.widget.Title
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FeedbackView(navController: NavController, feedbackViewModel: FeedbackViewModel) {
+fun FeedbackScreen(navController: NavController, feedbackViewModel: FeedbackViewModel = hiltViewModel()) {
 
     Scaffold(
         topBar = {

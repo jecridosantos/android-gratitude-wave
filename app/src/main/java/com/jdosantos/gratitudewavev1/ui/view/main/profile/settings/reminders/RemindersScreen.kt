@@ -34,10 +34,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
 import com.jdosantos.gratitudewavev1.domain.models.UserSettingReminders
 import com.jdosantos.gratitudewavev1.domain.handles.ReminderRepetitions
+import com.jdosantos.gratitudewavev1.ui.navigation.Screen
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT_MID
 import com.jdosantos.gratitudewavev1.utils.hourFormat
@@ -49,7 +51,7 @@ import com.jdosantos.gratitudewavev1.utils.getRepeatDescription
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RemindersView(navController: NavController, settingsViewModel: SettingsViewModel) {
+fun RemindersScreen(navController: NavController, settingsViewModel: SettingsViewModel = hiltViewModel()) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -70,7 +72,7 @@ fun RemindersView(navController: NavController, settingsViewModel: SettingsViewM
         },
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                navController.navigate("SaveRemindersView/${-1}")
+                navController.navigate(Screen.SaveRemindersScreen.params(-1))
             }) {
                 Icon(
                     imageVector = Icons.Default.Add,
@@ -110,7 +112,7 @@ private fun ContentRemindersView(
                     itemsIndexed(data) { index, item ->
 
                         ItemReminder(item, {
-                            navController.navigate("SaveRemindersView/$index")
+                            navController.navigate(Screen.SaveRemindersScreen.params(index))
                         }) {
                             checked ->
                             settingsViewModel.updateReminderState(index, checked) {}

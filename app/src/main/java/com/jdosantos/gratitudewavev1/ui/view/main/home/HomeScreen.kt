@@ -48,6 +48,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
+import com.jdosantos.gratitudewavev1.ui.navigation.Screen
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.MAX_LENGHT_TITLE_TOP_BAR
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
 import com.jdosantos.gratitudewavev1.ui.theme.ChangeStatusBarColor
@@ -63,14 +64,14 @@ import com.jdosantos.gratitudewavev1.ui.widget.Title
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeView(
+fun HomeScreen(
     navController: NavController,
     homeViewModel: HomeViewModel
 ) {
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
     val navigateToNewNote: () -> Unit = {
-        navController.navigate("WriteNoteView")
+        navController.navigate(Screen.WriteNoteScreen.route)
     }
     val backPressedOnce = remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -114,12 +115,12 @@ fun HomeView(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { navController.navigate("searchNoteView") }) {
+                    IconButton(onClick = { navController.navigate(Screen.SearchNoteScreen.route) }) {
                         Icon(imageVector = Icons.Default.Search, contentDescription = "")
                     }
 
                     IconButton(onClick = {
-                        navController.navigate("NotificationsView")
+                        navController.navigate(Screen.NotificationsScreen.route)
                     }) {
                         Icon(imageVector = Icons.Default.Notifications, contentDescription = "")
                     }
@@ -172,7 +173,7 @@ fun ContentHomeView(
                     R.drawable.progress,
                     stringResource(R.string.label_my_progress), getColors()[3]
                 ) {
-                    navController.navigate("ProgressView")
+                    navController.navigate(Screen.ProgressScreen.route)
                 }
             }
             item {
@@ -180,7 +181,7 @@ fun ContentHomeView(
                     R.drawable.calendario,
                     stringResource(R.string.label_all_my_notes), getColors()[4]
                 ) {
-                    navController.navigate("ByCalendarView")
+                    navController.navigate(Screen.ByCalendarScreen.route)
                 }
             }
         }
@@ -192,7 +193,7 @@ fun ContentHomeView(
             Loader()
         } else {
             if (notes.isNotEmpty()) {
-                ShowListNotes(notes) { navController.navigate("DetailNoteView/${it.idDoc}/${it.color}") }
+                ShowListNotes(notes) { navController.navigate(Screen.DetailNoteScreen.params(it.idDoc, it.color!!)) }
 
             } else {
                 // EmptyNotes()

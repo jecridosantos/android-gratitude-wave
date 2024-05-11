@@ -4,12 +4,14 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jdosantos.gratitudewavev1.domain.models.UserSettings
 import com.jdosantos.gratitudewavev1.domain.models.UserSettingReminders
 import com.jdosantos.gratitudewavev1.domain.usecase.settings.GetSettingsByUserUseCase
 import com.jdosantos.gratitudewavev1.domain.usecase.settings.SaveSettingsUseCase
+import com.jdosantos.gratitudewavev1.utils.constants.ConstantsRouteParams
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,9 +21,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val getSettingsByUserUseCase: GetSettingsByUserUseCase,
     private val saveSettingsUseCase: SaveSettingsUseCase
 ) : ViewModel() {
+    val index: String = checkNotNull(savedStateHandle[ConstantsRouteParams.REMINDER_INDEX]?:"")
     private val tag = this::class.java.simpleName
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading

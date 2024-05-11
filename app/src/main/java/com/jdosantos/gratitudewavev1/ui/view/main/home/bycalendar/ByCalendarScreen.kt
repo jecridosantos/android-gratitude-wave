@@ -23,19 +23,24 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
-import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
-import com.jdosantos.gratitudewavev1.utils.getFormattedDateSimple
+import com.jdosantos.gratitudewavev1.ui.navigation.Screen
 import com.jdosantos.gratitudewavev1.ui.widget.CardNote
 import com.jdosantos.gratitudewavev1.ui.widget.EmptyMessage
 import com.jdosantos.gratitudewavev1.ui.widget.Loader
 import com.jdosantos.gratitudewavev1.ui.widget.Title
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.utils.getFormattedDateSimple
 
 @OptIn(ExperimentalMaterial3Api::class)
 
 @Composable
-fun ByCalendarView(byCalendarViewModel: ByCalendarViewModel, navController: NavController) {
+fun ByCalendarScreen(
+    navController: NavController,
+    byCalendarViewModel: ByCalendarViewModel = hiltViewModel()
+) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -87,9 +92,12 @@ fun ContentByCalendarView(
     ) {
         val months by byCalendarViewModel.calendar.collectAsState()
 
-        CalendarView(months, byCalendarViewModel.selectedDate.value) {
-            byCalendarViewModel.selectDate(it)
+        if (months.isNotEmpty()) {
+            CalendarView(months, byCalendarViewModel.selectedDate.value) {
+                byCalendarViewModel.selectDate(it)
+            }
         }
+
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -106,12 +114,17 @@ fun ContentByCalendarView(
                     items(data) { item ->
                         CardNote(item) {
                             byCalendarViewModel.navigateToDetail(true)
-                            navController.navigate("DetailNoteView/${item.idDoc}/${item.color}")
+                            navController.navigate(
+                                Screen.DetailNoteScreen.params(
+                                    item.idDoc,
+                                    item.color!!
+                                )
+                            )
                         }
                     }
                 }
             } else {
-             //   EmptyMessage()
+                //   EmptyMessage()
                 EmptyMessage(null, stringResource(id = R.string.label_no_notes), null)
             }
         }

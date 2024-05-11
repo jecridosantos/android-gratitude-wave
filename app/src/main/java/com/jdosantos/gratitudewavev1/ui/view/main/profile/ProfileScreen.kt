@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.jdosantos.gratitudewavev1.R
+import com.jdosantos.gratitudewavev1.ui.navigation.Screen
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
 import com.jdosantos.gratitudewavev1.ui.widget.ConfigItem
 import com.jdosantos.gratitudewavev1.ui.widget.TextItem
@@ -48,7 +49,7 @@ import com.jdosantos.gratitudewavev1.ui.widget.Title
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileView(profileViewModel: ProfileViewModel, navController: NavController) {
+fun ProfileScreen(profileViewModel: ProfileViewModel, navController: NavController) {
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(title = { Text(text = stringResource(R.string.label_title_profile)) })
@@ -95,19 +96,19 @@ fun ContentProfileView(
                         null,
                         stringResource(id = R.string.label_settings)
                     ) {
-                        navController.navigate("SettingsView")
+                        navController.navigate(Screen.SettingsScreen.route)
                     }
                     ItemSettings(
                         Icons.Default.Email, null,
                         stringResource(R.string.label_send_feedback)
                     ) {
-                        navController.navigate("FeedbackView")
+                        navController.navigate(Screen.FeedbackScreen.route)
                     }
                     ItemSettings(
                         null, R.drawable.baseline_help_outline_24,
                         stringResource(R.string.label_help_center)
                     ) {
-                        navController.navigate("HelpView")
+                        navController.navigate(Screen.HelpScreen.route)
                     }
                     ItemSettings(null, null, stringResource(R.string.label_privacy_policy)) {}
                     ItemSettings(null, null, stringResource(R.string.label_terms_of_service)) {}
@@ -123,9 +124,9 @@ fun ContentProfileView(
                         onClick = {
                             profileViewModel.logout { success ->
                                 if (success) {
-                                    navController.navigate("LoginView") {
+                                    navController.navigate(Screen.LoginScreen.route) {
 
-                                        popUpTo("SplashView") { inclusive = true }
+                                        popUpTo(Screen.SplashScreen.route) { inclusive = true }
                                     }
                                 }
                             }

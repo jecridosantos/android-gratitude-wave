@@ -28,8 +28,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
+import com.jdosantos.gratitudewavev1.ui.navigation.Screen
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
 import com.jdosantos.gratitudewavev1.utils.challengesList
 import com.jdosantos.gratitudewavev1.ui.view.main.note.getColors
@@ -39,9 +41,9 @@ import com.jdosantos.gratitudewavev1.ui.widget.Title
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProgressView(
-    progressViewModel: ProgressViewModel,
-    navController: NavController
+fun ProgressScreen(
+    navController: NavController,
+    progressViewModel: ProgressViewModel = hiltViewModel(),
 ) {
     LaunchedEffect(Unit) {
         progressViewModel.initialize()
@@ -113,7 +115,7 @@ private fun ContentProgressView(
         ) {
             Title(text = stringResource(id = R.string.label_goals), modifier = Modifier)
             Spacer(modifier = Modifier.weight(1f))
-            TextButton(onClick = { navController.navigate("GoalsView") }) {
+            TextButton(onClick = { navController.navigate(Screen.GoalsScreen.route) }) {
                 Text(text = stringResource(id = R.string.label_select))
             }
         }

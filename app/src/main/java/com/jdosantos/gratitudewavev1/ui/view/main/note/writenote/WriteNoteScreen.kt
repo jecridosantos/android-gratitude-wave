@@ -36,6 +36,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
 import com.jdosantos.gratitudewavev1.domain.models.Note
@@ -54,7 +55,7 @@ import com.jdosantos.gratitudewavev1.ui.view.main.note.getColors
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun WriteNoteView(writeNoteViewModel: WriteNoteViewModel, navController: NavController) {
+fun WriteNoteScreen(navController: NavController, writeNoteViewModel: WriteNoteViewModel = hiltViewModel() ) {
 
     val context = LocalContext.current
 

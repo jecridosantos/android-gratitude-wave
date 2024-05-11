@@ -24,8 +24,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
+import com.jdosantos.gratitudewavev1.ui.navigation.Screen
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.HEIGHT_ITEMS_CONFIG
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT_MID
@@ -34,7 +36,7 @@ import com.jdosantos.gratitudewavev1.ui.widget.TextItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsView(navController: NavController, settingsViewModel: SettingsViewModel) {
+fun SettingsScreen(navController: NavController, settingsViewModel: SettingsViewModel= hiltViewModel()) {
 
     LaunchedEffect(Unit) {
         settingsViewModel.getSettings()
@@ -81,7 +83,7 @@ private fun ContentSettingsView(
             }
         }
         SettingItem(title = stringResource(R.string.label_customize_reminders)) {
-            navController.navigate("RemindersView")
+            navController.navigate(Screen.RemindersScreen.route)
         }
     }
 }

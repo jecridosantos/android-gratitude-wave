@@ -39,9 +39,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
 import com.jdosantos.gratitudewavev1.domain.models.NoteTag
+import com.jdosantos.gratitudewavev1.ui.navigation.Screen
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT_MID
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT_MIN
@@ -51,8 +53,9 @@ import com.jdosantos.gratitudewavev1.ui.widget.Title
 @SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchNoteView(
-    searchNoteViewModel: SearchNoteViewModel, navController: NavController
+fun SearchNoteScreen(
+   navController: NavController,
+   searchNoteViewModel: SearchNoteViewModel = hiltViewModel()
 ) {
     var query by remember { mutableStateOf("") }
     var active by remember { mutableStateOf(false) }
@@ -109,7 +112,7 @@ fun SearchNoteView(
                     ) {
 
                         HighlightedText(query, it.note) {
-                            navController.navigate("DetailNoteView/${it.idDoc}/${it.color}")
+                            navController.navigate(Screen.DetailNoteScreen.params(it.idDoc, it.color!!))
                         }
                     }
                 }
@@ -118,9 +121,9 @@ fun SearchNoteView(
 
         if (searchNoteViewModel.tags.value.isNotEmpty()) {
             Tags(searchNoteViewModel.tags.value, {
-                navController.navigate("NotesByTagView/${it.id}/${it.esTag}")
+                navController.navigate(Screen.NotesByTagScreen.params(it.id, it.esTag))
             }) {
-                navController.navigate("SearchByTagsView")
+                navController.navigate(Screen.SearchByTagsScreen.route)
             }
         }
     }
@@ -211,7 +214,12 @@ fun Tags(noteTags: List<NoteTag>, onSearch: (noteTag: NoteTag) -> Unit, onClick:
         ElevatedButton(
             onClick = { onClick() },
             modifier = Modifier
-                .padding(start = SPACE_DEFAULT.dp, bottom = SPACE_DEFAULT.dp, top = SPACE_DEFAULT_MID.dp, end = SPACE_DEFAULT.dp)
+                .padding(
+                    start = SPACE_DEFAULT.dp,
+                    bottom = SPACE_DEFAULT.dp,
+                    top = SPACE_DEFAULT_MID.dp,
+                    end = SPACE_DEFAULT.dp
+                )
                 .fillMaxWidth(),
 
             ) {

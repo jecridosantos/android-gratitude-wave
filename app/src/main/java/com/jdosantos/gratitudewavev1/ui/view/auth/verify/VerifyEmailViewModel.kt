@@ -5,9 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
-import com.google.firebase.auth.EmailAuthProvider
-import com.google.firebase.auth.FirebaseAuth
 import com.jdosantos.gratitudewavev1.data.local.CredentialStore
 import com.jdosantos.gratitudewavev1.domain.models.User
 import com.jdosantos.gratitudewavev1.domain.usecase.auth.GetCurrentUserUseCase
@@ -46,19 +43,17 @@ class VerifyEmailViewModel @Inject constructor(
         }
     }
 
-    fun resendLink(callback: (success: Boolean) -> Unit) {
-        sendEmailVerificationUseCase.execute(callback)
+    suspend fun resendLink(): Result<Boolean> {
+        return sendEmailVerificationUseCase.execute()
     }
 
-    fun logout(callback: (success: Boolean) -> Unit) {
-        viewModelScope.launch {
-            logoutUseCase.execute(callback)
-        }
+    suspend fun logout(): Result<Boolean> {
+        return logoutUseCase.execute()
     }
 
     fun getCurrentUser() {
         viewModelScope.launch {
-            getCurrentUserUseCase.getCurrentUser().onSuccess { value: User ->
+            getCurrentUserUseCase.execute().onSuccess { value: User ->
                 _emailCurrentUser.value = value.email
             }
         }

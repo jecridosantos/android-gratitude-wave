@@ -1,5 +1,6 @@
 package com.jdosantos.gratitudewavev1.ui.view.auth.register
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -28,13 +29,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
 import com.jdosantos.gratitudewavev1.data.local.CredentialStore
-import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
-import com.jdosantos.gratitudewavev1.ui.widget.AlertComponent
+import com.jdosantos.gratitudewavev1.ui.navigation.Screen
 import com.jdosantos.gratitudewavev1.ui.widget.InputRound
 import com.jdosantos.gratitudewavev1.ui.widget.Loader
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
 import kotlinx.coroutines.launch
 
 data class RegisterViewState(
@@ -45,7 +47,10 @@ data class RegisterViewState(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegisterView(navController: NavController, registerViewModel: RegisterViewModel) {
+fun RegisterScreen(
+    navController: NavController,
+    registerViewModel: RegisterViewModel = hiltViewModel()
+) {
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -75,31 +80,34 @@ fun RegisterView(navController: NavController, registerViewModel: RegisterViewMo
             paddingValues,
             state,
             onRegisterClick = {
-                registerViewModel.register(
-                    state.email.value,
-                    state.name.value,
-                    state.password.value
-                ) { success ->
-                    if (success) {
-                        scope.launch {
-                            dataStore.savePassword(state.password.value)
+                scope.launch {
+                    registerViewModel.register(
+                        state.email.value,
+                        state.name.value,
+                        state.password.value
+                    ).onSuccess { success ->
+                        if (success) {
+                            scope.launch {
+                                dataStore.savePassword(state.password.value)
+                            }
+                            navController.navigate(Screen.VerifyEmailScreen.route)
+                        } else {
+                            Toast.makeText(
+                                context, R.string.label_register_error, Toast.LENGTH_LONG
+                            ).show()
                         }
-                        navController.navigate("VerifyEmailView")
+                    }.onFailure {
+                        Toast.makeText(
+                            context, it.message, Toast.LENGTH_LONG
+                        ).show()
                     }
                 }
+
             }
         )
     }
     if (isLoading) {
         Loader()
-    }
-    if (registerViewModel.showAlert) {
-        AlertComponent(title = stringResource(R.string.label_error_register),
-            message = stringResource(R.string.label_error_register),
-            confirmText = stringResource(id = R.string.label_confirm),
-            cancelText = null,
-            onConfirmClick = { registerViewModel.closeAlert() }) {
-        }
     }
 }
 

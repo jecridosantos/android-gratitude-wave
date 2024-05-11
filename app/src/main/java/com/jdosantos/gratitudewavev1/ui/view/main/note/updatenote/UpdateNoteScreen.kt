@@ -32,14 +32,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
 import com.jdosantos.gratitudewavev1.domain.models.Note
-import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
-import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT_MIN
-import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.VALUE_INT_EMPTY
-import com.jdosantos.gratitudewavev1.utils.getSafeColor
-import com.jdosantos.gratitudewavev1.utils.emotionLists
 import com.jdosantos.gratitudewavev1.ui.view.main.note.ChipEmotionChoose
 import com.jdosantos.gratitudewavev1.ui.view.main.note.ChipTagChoose
 import com.jdosantos.gratitudewavev1.ui.view.main.note.ChooseColorBackground
@@ -49,15 +45,18 @@ import com.jdosantos.gratitudewavev1.ui.view.main.note.CurrentDateView
 import com.jdosantos.gratitudewavev1.ui.view.main.note.IconFloatingOption
 import com.jdosantos.gratitudewavev1.ui.view.main.note.NoteInput
 import com.jdosantos.gratitudewavev1.ui.view.main.note.getColors
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT_MIN
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.VALUE_INT_EMPTY
+import com.jdosantos.gratitudewavev1.utils.emotionLists
+import com.jdosantos.gratitudewavev1.utils.getSafeColor
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UpdateNoteView(
-    id: String,
-    color: Int?,
-    updateNoteViewModel: UpdateNoteViewModel,
-    navController: NavController
+fun UpdateNoteScreen(
+    navController: NavController,
+    updateNoteViewModel: UpdateNoteViewModel = hiltViewModel(),
 ) {
 
     val context = LocalContext.current
@@ -66,12 +65,12 @@ fun UpdateNoteView(
 
     val backgroundDefault = MaterialTheme.colorScheme.background
 
-    var selectedColor by remember { mutableStateOf(colors.getSafeColor(color)) }
+    var selectedColor by remember { mutableStateOf(colors.getSafeColor(updateNoteViewModel.color.toInt())) }
 
     val note = updateNoteViewModel.note
 
     LaunchedEffect(Unit) {
-        updateNoteViewModel.getNoteById(id)
+        updateNoteViewModel.getNoteById(updateNoteViewModel.id)
     }
 
 

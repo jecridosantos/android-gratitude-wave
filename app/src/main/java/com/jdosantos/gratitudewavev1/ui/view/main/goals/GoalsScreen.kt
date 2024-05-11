@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
@@ -27,7 +28,7 @@ import com.jdosantos.gratitudewavev1.ui.widget.CardGoal
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GoalsView(navController: NavController, goalsViewModel: GoalsViewModel) {
+fun GoalsScreen(navController: NavController, goalsViewModel: GoalsViewModel = hiltViewModel()) {
 
     LaunchedEffect(Unit) {
         goalsViewModel.getGoals()

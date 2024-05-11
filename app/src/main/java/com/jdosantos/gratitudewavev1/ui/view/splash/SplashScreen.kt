@@ -8,9 +8,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.domain.exceptions.AuthenticationException
+import com.jdosantos.gratitudewavev1.ui.navigation.Screen
 
 @Composable
-fun SplashView(navController: NavController, splashViewModel: SplashViewModel = hiltViewModel()) {
+fun SplashScreen(navController: NavController, splashViewModel: SplashViewModel = hiltViewModel()) {
 
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -22,18 +23,18 @@ fun SplashView(navController: NavController, splashViewModel: SplashViewModel = 
         val observer = Observer<Result<Boolean>> { result ->
 
             result.onSuccess {
-                navController.navigate("ContainerView") {
-                    popUpTo("SplashView") { inclusive = true }
+                navController.navigate(Screen.ContainerScreen.route) {
+                    popUpTo(Screen.SplashScreen.route) { inclusive = true }
                 }
             }.onFailure { exception ->
                 when (exception) {
                     is AuthenticationException.EmailNotVerifiedException -> {
-                        navController.navigate("VerifyEmailView")
+                        navController.navigate(Screen.VerifyEmailScreen.route)
                     }
 
                     is AuthenticationException.UserNotLogged -> {
-                        navController.navigate("LoginView") {
-                            popUpTo("SplashView") { inclusive = true }
+                        navController.navigate(Screen.LoginScreen.route) {
+                            popUpTo(Screen.SplashScreen.route) { inclusive = true }
                         }
                     }
                 }

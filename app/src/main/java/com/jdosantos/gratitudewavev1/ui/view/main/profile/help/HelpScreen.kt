@@ -19,7 +19,7 @@ import com.jdosantos.gratitudewavev1.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HelpView(navController: NavController) {
+fun HelpScreen(navController: NavController) {
 
     Scaffold(
         topBar = {

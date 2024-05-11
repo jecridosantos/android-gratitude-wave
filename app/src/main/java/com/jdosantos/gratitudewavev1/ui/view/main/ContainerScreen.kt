@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -22,17 +23,17 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.jdosantos.gratitudewavev1.ui.navigation.BottomRoutes
-import com.jdosantos.gratitudewavev1.ui.view.main.home.HomeView
+import com.jdosantos.gratitudewavev1.ui.view.main.home.HomeScreen
 import com.jdosantos.gratitudewavev1.ui.view.main.home.HomeViewModel
-import com.jdosantos.gratitudewavev1.ui.view.main.profile.ProfileView
+import com.jdosantos.gratitudewavev1.ui.view.main.profile.ProfileScreen
 import com.jdosantos.gratitudewavev1.ui.view.main.profile.ProfileViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun ContainerView(
+fun ContainerScreen(
     mainNavController: NavController,
-    profileViewModel: ProfileViewModel,
-    homeViewModel: HomeViewModel
+    profileViewModel: ProfileViewModel = hiltViewModel(),
+    homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     val navHostController = rememberNavController()
     val navigationRoutes = listOf(
@@ -79,9 +80,9 @@ fun ContainerView(
             startDestination = navigationRoutes[0].route,
             Modifier.padding(it)
         ) {
-            composable(navigationRoutes[0].route) { HomeView(mainNavController, homeViewModel) }
+            composable(navigationRoutes[0].route) { HomeScreen(mainNavController, homeViewModel) }
             composable(navigationRoutes[1].route) {
-                ProfileView(
+                ProfileScreen(
                     profileViewModel,
                     mainNavController
                 )

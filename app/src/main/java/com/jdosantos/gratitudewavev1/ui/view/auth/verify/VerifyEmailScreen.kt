@@ -3,7 +3,6 @@ package com.jdosantos.gratitudewavev1.ui.view.auth.verify
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
-import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
@@ -41,14 +40,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Observer
-import androidx.lifecycle.asFlow
 import androidx.navigation.NavController
-import com.google.firebase.Firebase
-import com.google.firebase.auth.auth
 import com.jdosantos.gratitudewavev1.R
 import com.jdosantos.gratitudewavev1.domain.exceptions.AuthenticationException
 import com.jdosantos.gratitudewavev1.domain.models.User
+import com.jdosantos.gratitudewavev1.ui.navigation.Screen
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.VERIFY_EMAIL_OPTION_GO_TO_EMAIL
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.VERIFY_EMAIL_OPTION_GO_TO_LOGIN
@@ -58,15 +56,17 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun VerifyEmailView(navController: NavController, verifyEmailViewModel: VerifyEmailViewModel) {
+fun VerifyEmailScreen(
+    navController: NavController,
+    verifyEmailViewModel: VerifyEmailViewModel = hiltViewModel()
+) {
 
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val scope = rememberCoroutineScope()
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
-        onResult = { //Do something when user comes back in app
-        }
+        onResult = { }
     )
 
     LaunchedEffect(Unit) {
@@ -75,11 +75,11 @@ fun VerifyEmailView(navController: NavController, verifyEmailViewModel: VerifyEm
 
     val emailCurrentUser = verifyEmailViewModel.emailCurrentUser.collectAsState()
 
-    DisposableEffect(key1 = verifyEmailViewModel.reauthenticateResult) {
+    DisposableEffect(verifyEmailViewModel.reauthenticateResult) {
         val observer = Observer<Result<User>> { result ->
 
             result.onSuccess {
-                navController.navigate("ContainerView") {
+                navController.navigate(Screen.ContainerScreen.route) {
                     popUpTo("VerifyEmailView") { inclusive = true }
                 }
             }.onFailure { exception ->
@@ -120,17 +120,17 @@ fun VerifyEmailView(navController: NavController, verifyEmailViewModel: VerifyEm
                 launcher.launch(handleGoToEmail())
             },
             onResendLink = {
-                handleResendLink(verifyEmailViewModel, context)
+                handleResendLink(verifyEmailViewModel, context, scope)
             },
             onGoToLogin = {
-                handleGoToLogin(verifyEmailViewModel, navController)
+                handleGoToLogin(verifyEmailViewModel, navController, scope)
             }
         )
     }
 }
 
 @Composable
-fun ContentVerifyEmailView(
+private fun ContentVerifyEmailView(
     emailCurrentUser: String,
     paddingValues: PaddingValues,
     onUpdate: () -> Unit,
@@ -214,7 +214,7 @@ fun ContentVerifyEmailView(
 }
 
 @Composable
-fun TaskMenu(
+private fun TaskMenu(
     expanded: Boolean,
     onItemClick: (Int) -> Unit,
     onDismiss: () -> Unit
@@ -250,29 +250,42 @@ private fun handleGoToEmail(): Intent {
 
 private fun handleGoToLogin(
     verifyEmailViewModel: VerifyEmailViewModel,
-    navController: NavController
+    navController: NavController,
+    scope: CoroutineScope
 ) {
-    verifyEmailViewModel.logout {
+    scope.launch {
+        verifyEmailViewModel.logout().onSuccess {
 
-        navController.navigate("LoginView") {
+            navController.navigate(Screen.LoginScreen.route) {
 
-            popUpTo("VerifyEmailView") { inclusive = true }
+                popUpTo(Screen.VerifyEmailScreen.route) { inclusive = true }
+            }
         }
     }
 }
 
-private fun handleResendLink(verifyEmailViewModel: VerifyEmailViewModel, context: Context) {
-    verifyEmailViewModel.resendLink { success ->
-        val message =
-            context.getString(if (success) R.string.label_resend_link_success else R.string.label_resend_link_error)
-        Toast.makeText(
-            context, message, Toast.LENGTH_LONG
-        ).show()
+private fun handleResendLink(
+    verifyEmailViewModel: VerifyEmailViewModel,
+    context: Context,
+    scope: CoroutineScope
+) {
+    scope.launch {
+        verifyEmailViewModel.resendLink().onSuccess { success ->
+            val message =
+                context.getString(if (success) R.string.label_resend_link_success else R.string.label_resend_link_error)
+            Toast.makeText(
+                context, message, Toast.LENGTH_LONG
+            ).show()
 
+        }
     }
 }
 
-private fun handleReauthenticate(verifyEmailViewModel: VerifyEmailViewModel, context: Context, scope: CoroutineScope) {
+private fun handleReauthenticate(
+    verifyEmailViewModel: VerifyEmailViewModel,
+    context: Context,
+    scope: CoroutineScope
+) {
     scope.launch {
         verifyEmailViewModel.reauthenticate(context)
     }

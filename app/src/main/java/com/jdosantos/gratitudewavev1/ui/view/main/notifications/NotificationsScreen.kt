@@ -1,16 +1,12 @@
-package com.jdosantos.gratitudewavev1.ui.view.main.home.tags
+package com.jdosantos.gratitudewavev1.ui.view.main.notifications
 
-import android.annotation.SuppressLint
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -18,23 +14,31 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.ui.widget.EmptyMessage
+import com.jdosantos.gratitudewavev1.ui.widget.Loader
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchByTagsView(searchByTagsViewModel: SearchByTagsViewModel, navController: NavController) {
+fun NotificationsScreen(
+    navController: NavController,
+    notificationsViewModel: NotificationsViewModel = hiltViewModel()
+) {
 
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        text = stringResource(R.string.label_search_by_tag),
+                        text = stringResource(R.string.label_notifications),
                     )
                 },
                 navigationIcon = {
@@ -44,45 +48,40 @@ fun SearchByTagsView(searchByTagsViewModel: SearchByTagsViewModel, navController
                         Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "")
                     }
 
-                }
+                },
             )
         }
 
     ) { paddingValues ->
-        ContentSearchByTagsView(paddingValues = paddingValues, searchByTagsViewModel, navController)
+        ContentNotificationsView(paddingValues, navController, notificationsViewModel)
     }
 
 }
 
-@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun ContentSearchByTagsView(
+fun ContentNotificationsView(
     paddingValues: PaddingValues,
-    searchByTagsViewModel: SearchByTagsViewModel,
-    navController: NavController
+    navController: NavController,
+    notificationsViewModel: NotificationsViewModel
 ) {
-
-    val tags = searchByTagsViewModel.tags.value
+    val isLoading by notificationsViewModel.isLoading.collectAsState()
+    val data by notificationsViewModel.data.collectAsState()
 
     Column(
         modifier = Modifier
             .padding(paddingValues)
+            .padding(SPACE_DEFAULT.dp)
     ) {
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(1),
-            contentPadding = PaddingValues(8.dp)
-        ) {
-            items(tags) {
-                Card(modifier = Modifier
-                    .padding(4.dp)
-                    .clickable {
-                        navController.navigate("NotesByTagView/${it.id}/${it.esTag}")
-                    }) {
-                    Text(
-                        text = it.esTag,
-                        modifier = Modifier.padding(SPACE_DEFAULT.dp)
-                    )
+        if (isLoading) {
+            Loader()
+        } else {
+            if (data.isNotEmpty()) {
+                LazyColumn {
+                    items(data) {
+                    }
                 }
+            } else {
+                EmptyMessage(null, stringResource(R.string.label_no_notifications), null)
             }
         }
     }

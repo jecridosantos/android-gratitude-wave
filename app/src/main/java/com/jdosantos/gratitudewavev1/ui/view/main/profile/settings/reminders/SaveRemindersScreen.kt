@@ -42,34 +42,34 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
-import com.jdosantos.gratitudewavev1.domain.models.UserSettingReminders
 import com.jdosantos.gratitudewavev1.domain.handles.ReminderRepetitions
-import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
-import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.VALUE_INT_EMPTY
-import com.jdosantos.gratitudewavev1.utils.hourFormat
+import com.jdosantos.gratitudewavev1.domain.models.UserSettingReminders
 import com.jdosantos.gratitudewavev1.ui.view.main.profile.settings.SettingsViewModel
 import com.jdosantos.gratitudewavev1.ui.widget.ConfigItem
 import com.jdosantos.gratitudewavev1.ui.widget.InputRound
 import com.jdosantos.gratitudewavev1.ui.widget.ItemSelectedOptions
 import com.jdosantos.gratitudewavev1.ui.widget.TimePickerDialog
 import com.jdosantos.gratitudewavev1.utils.checkSelectedDays
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.VALUE_INT_EMPTY
 import com.jdosantos.gratitudewavev1.utils.getFirstLetters
 import com.jdosantos.gratitudewavev1.utils.getRepeatDescription
+import com.jdosantos.gratitudewavev1.utils.hourFormat
 import com.jdosantos.gratitudewavev1.utils.repeatListOptions
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SaveRemindersView(
-    id: Int? = null,
+fun SaveRemindersScreen(
     navController: NavController,
-    settingsViewModel: SettingsViewModel
+    settingsViewModel: SettingsViewModel = hiltViewModel()
 ) {
     val currentReminder = settingsViewModel.currentReminder
     LaunchedEffect(Unit) {
-        if (id != null && id != VALUE_INT_EMPTY) {
-            settingsViewModel.fillReminder(id)
+        if (settingsViewModel.index.toInt() != VALUE_INT_EMPTY) {
+            settingsViewModel.fillReminder(settingsViewModel.index.toInt())
         }
     }
     Scaffold(
@@ -90,8 +90,8 @@ fun SaveRemindersView(
                 },
                 actions = {
                     IconButton(onClick = {
-                        if (id != null && id != VALUE_INT_EMPTY) {
-                            settingsViewModel.updateReminder(id) {
+                        if (settingsViewModel.index.toInt() != VALUE_INT_EMPTY) {
+                            settingsViewModel.updateReminder(settingsViewModel.index.toInt()) {
 
                             }
                         } else {
