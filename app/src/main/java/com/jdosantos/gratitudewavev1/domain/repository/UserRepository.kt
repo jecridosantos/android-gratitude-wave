@@ -1,11 +1,11 @@
 package com.jdosantos.gratitudewavev1.domain.repository
 
-import com.jdosantos.gratitudewavev1.domain.models.User
+import com.jdosantos.gratitudewavev1.domain.models.UserData
 
 interface UserRepository {
-    fun saveUser(user: User, callback: (success: Boolean) -> Unit)
+    fun saveUser(userData: UserData, callback: (success: Boolean) -> Unit)
 
-    fun getUserById(id: String, callback: (user: User) -> Unit, onError: () -> Unit)
+    fun getUserById(id: String, callback: (userData: UserData) -> Unit, onError: () -> Unit)
 
-    fun getUserByUid(uid: String, callback: (user: User?) -> Unit, onError: () -> Unit)
+    fun getUserByUid(uid: String, callback: (userData: UserData?) -> Unit, onError: () -> Unit)
 }

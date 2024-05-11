@@ -52,7 +52,7 @@ fun VerifyEmailView(navController: NavController, verifyEmailViewModel: VerifyEm
     val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
-        onResult = { //Do something when user comes back in app
+        onResult = { //Do something when userData comes back in app
         }
     )
     LaunchedEffect(Unit) {

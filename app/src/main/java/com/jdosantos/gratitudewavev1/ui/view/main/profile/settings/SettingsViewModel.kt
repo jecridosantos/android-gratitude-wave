@@ -1,11 +1,13 @@
 package com.jdosantos.gratitudewavev1.ui.view.main.profile.settings
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.jdosantos.gratitudewavev1.data.local.RemindersStore
 import com.jdosantos.gratitudewavev1.domain.models.UserSettings
 import com.jdosantos.gratitudewavev1.domain.models.UserSettingReminders
 import com.jdosantos.gratitudewavev1.domain.usecase.settings.GetSettingsByUserUseCase
@@ -76,12 +78,30 @@ class SettingsViewModel @Inject constructor(
         currentReminder = currentReminder.copy(repeatDays = repeatDays)
     }
 
-    fun addReminder(callback: (Boolean) -> Unit) {
+    fun addReminder(context: Context, callback: (Boolean) -> Unit) {
         _UserSettings.value.reminders.add(currentReminder)
         _UserSettings.value =
             _UserSettings.value.copy(reminders = _UserSettings.value.reminders.toMutableList())
-        saveSettings(callback);
+        saveSettings(callback = {
+            storeReminders(context)
+            callback(it)
+        });
         cleanReminder()
+    }
+
+    private fun storeReminders(context: Context) {
+        val remindersSet: Set<String> = _UserSettings.value.reminders.toSetOfString()
+
+        val store = RemindersStore(context)
+        viewModelScope.launch(Dispatchers.IO) {
+            store.saveRemindersSet(remindersSet)
+        }
+    }
+
+    fun List<UserSettingReminders>.toSetOfString(): Set<String> {
+        return this.map { reminder ->
+            reminder.toString() // Utiliza el método toString() que definimos anteriormente
+        }.toSet()
     }
 
     fun cleanReminder() {
@@ -113,6 +133,7 @@ class SettingsViewModel @Inject constructor(
 
     // Función para actualizar un elemento de la lista de recordatorios
     fun updateReminder(
+        context: Context,
         index: Int,
         callback: (Boolean) -> Unit
     ) {
@@ -122,11 +143,14 @@ class SettingsViewModel @Inject constructor(
                 _UserSettings.value.copy(reminders = _UserSettings.value.reminders.toMutableList())
         }
 
-        saveSettings(callback);
+        saveSettings(callback = {
+            storeReminders(context)
+            callback(it)
+        });
     }
 
     // Función para actualizar el estado de un elemento de la lista de recordatorios
-    fun updateReminderState(index: Int, active: Boolean, callback: (Boolean) -> Unit) {
+    fun updateReminderState(context: Context, index: Int, active: Boolean, callback: (Boolean) -> Unit) {
 
         Log.d("REMINDER UPDATE", "index: $index, active: $active")
 
@@ -137,6 +161,9 @@ class SettingsViewModel @Inject constructor(
                 _UserSettings.value.copy(reminders = _UserSettings.value.reminders.toMutableList())
         }
 
-        saveSettings(callback);
+        saveSettings(callback = {
+            storeReminders(context)
+            callback(it)
+        });
     }
 }

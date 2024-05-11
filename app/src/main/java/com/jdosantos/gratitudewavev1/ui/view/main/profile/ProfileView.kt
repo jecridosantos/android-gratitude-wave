@@ -66,7 +66,7 @@ fun ContentProfileView(
 ) {
 
     LaunchedEffect(Unit) {
-        profileViewModel.getCuurrentUser()
+        profileViewModel.getCurrentUser()
     }
 
     Column(
@@ -155,10 +155,10 @@ private fun HeaderProfile(profileViewModel: ProfileViewModel) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (profileViewModel.user.photoUrl != null) {
+            if (profileViewModel.userData.photoUrl != null) {
                 Image(
 
-                    painter = rememberImagePainter(data = profileViewModel.user.photoUrl),
+                    painter = rememberImagePainter(data = profileViewModel.userData.photoUrl),
                     contentDescription = null, // Add appropriate content description
                     modifier = Modifier
                         .size(120.dp)
@@ -184,12 +184,12 @@ private fun HeaderProfile(profileViewModel: ProfileViewModel) {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = profileViewModel.user.name,
+                        text = profileViewModel.userData.name,
                         fontWeight = FontWeight.Bold,
                         fontSize = 24.sp
                     )
                     Text(
-                        text = profileViewModel.user.email,
+                        text = profileViewModel.userData.email,
                         fontWeight = FontWeight.Light,
                         fontSize = 16.sp,
                         color = MaterialTheme.colorScheme.tertiary

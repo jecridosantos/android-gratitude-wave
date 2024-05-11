@@ -1,6 +1,5 @@
 package com.jdosantos.gratitudewavev1.domain.usecase.auth
 
-import android.util.Log
 import com.google.firebase.auth.AuthCredential
 import com.jdosantos.gratitudewavev1.domain.repository.AuthRepository
 import com.jdosantos.gratitudewavev1.domain.repository.UserRepository
@@ -11,13 +10,13 @@ class LoginUseCase @Inject constructor(
     private val userRepository: UserRepository
 ) {
     private val tag = this::class.java.simpleName
-    suspend fun execute(
+    suspend fun signInWithEmailAndPassword(
         email: String,
         password: String,
         callback: (isEmailVerified: Boolean) -> Unit,
         onError: () -> Unit
     ) {
-        authRepository.login(
+        authRepository.signInWithEmailAndPassword(
             email,
             password,
             callback = { isEmailVerified ->
@@ -27,11 +26,22 @@ class LoginUseCase @Inject constructor(
         )
     }
 
+    suspend fun login(
+        email: String,
+        password: String
+    ) {
+        authRepository.login(
+            email,
+            password
+        )
+    }
+
+
     suspend fun signInWithGoogle(
         credential: AuthCredential,
         callback: (success: Boolean) -> Unit
     ) {
-        authRepository.loginGoogle(
+        authRepository.signInWithGoogle(
             credential = credential,
             callback = { userLogged ->
                 userRepository.getUserByUid(
@@ -49,16 +59,5 @@ class LoginUseCase @Inject constructor(
             onError = {
                 callback.invoke(false)
             })
-    }
-
-    fun isLogged(): Boolean {
-        return try {
-            val loggedUser = authRepository.loggedUser()
-            Log.d(tag, "isLogged - uid: ${loggedUser.uid}")
-            loggedUser.uid!!.isNotEmpty()
-        } catch (e: Exception) {
-            Log.e(tag, "isLogged - error: ${e.message}")
-            false
-        }
     }
 }

@@ -4,7 +4,7 @@ import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
-import com.jdosantos.gratitudewavev1.domain.models.User
+import com.jdosantos.gratitudewavev1.domain.models.UserData
 import com.jdosantos.gratitudewavev1.domain.repository.UserRepository
 import javax.inject.Inject
 
@@ -18,16 +18,16 @@ class UserFirebaseImpl @Inject constructor(
 
     private val collection: CollectionReference = db.collection("Users")
 
-    override fun saveUser(user: User, callback: (success: Boolean) -> Unit) {
+    override fun saveUser(userData: UserData, callback: (success: Boolean) -> Unit) {
         Log.d(tag, "saveUser")
         try {
 
             val newNote = hashMapOf(
                 "uid" to uid,
-                "email" to user.email,
-                "name" to user.name,
-                "photoUrl" to user.photoUrl,
-                "provider" to user.provider,
+                "email" to userData.email,
+                "name" to userData.name,
+                "photoUrl" to userData.photoUrl,
+                "provider" to userData.provider,
                 "createAt" to com.google.firebase.firestore.FieldValue.serverTimestamp()
             )
             collection.add(newNote)
@@ -46,7 +46,7 @@ class UserFirebaseImpl @Inject constructor(
 
     override fun getUserById(
         id: String,
-        callback: (user: User) -> Unit, onError: () -> Unit
+        callback: (userData: UserData) -> Unit, onError: () -> Unit
     ) {
         Log.d(tag, "getUserById")
 
@@ -55,7 +55,7 @@ class UserFirebaseImpl @Inject constructor(
                 .document(id)
                 .addSnapshotListener { snapshot, _ ->
                     if (snapshot != null && snapshot.exists()) {
-                        callback.invoke(snapshot.toObject(User::class.java)!!)
+                        callback.invoke(snapshot.toObject(UserData::class.java)!!)
                     }
                 }
         } catch (e: Exception) {
@@ -66,21 +66,21 @@ class UserFirebaseImpl @Inject constructor(
 
     override fun getUserByUid(
         uid: String,
-        callback: (user: User?) -> Unit, onError: () -> Unit
+        callback: (userData: UserData?) -> Unit, onError: () -> Unit
     ) {
         Log.d(tag, "getUserByUid")
         collection
             .whereEqualTo("uid", uid)
             .get()
             .addOnSuccessListener { querySnapshot ->
-                var user = User()
+                var userData = UserData()
                 if (querySnapshot != null) {
                     for (document in querySnapshot) {
-                        val myDocument = document.toObject(User::class.java).copy(id = document.id)
-                        user = myDocument
+                        val myDocument = document.toObject(UserData::class.java).copy(id = document.id)
+                        userData = myDocument
 
                     }
-                    callback.invoke(user)
+                    callback.invoke(userData)
                 }
 
             }

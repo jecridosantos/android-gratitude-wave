@@ -67,6 +67,7 @@ fun SaveRemindersView(
     settingsViewModel: SettingsViewModel
 ) {
     val currentReminder = settingsViewModel.currentReminder
+    val context = LocalContext.current
     LaunchedEffect(Unit) {
         if (id != null && id != VALUE_INT_EMPTY) {
             settingsViewModel.fillReminder(id)
@@ -91,13 +92,11 @@ fun SaveRemindersView(
                 actions = {
                     IconButton(onClick = {
                         if (id != null && id != VALUE_INT_EMPTY) {
-                            settingsViewModel.updateReminder(id) {
+                            settingsViewModel.updateReminder(context, id) {
 
                             }
                         } else {
-                            settingsViewModel.addReminder() {
-
-                            }
+                            settingsViewModel.addReminder(context, callback = {})
                         }
 
                         navController.popBackStack()

@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.jdosantos.gratitudewavev1.ui.navigation.login.loginGraph
 import com.jdosantos.gratitudewavev1.ui.view.auth.login.LoginView
 import com.jdosantos.gratitudewavev1.ui.view.auth.login.LoginViewModel
 import com.jdosantos.gratitudewavev1.ui.view.auth.register.RegisterView
@@ -73,10 +74,17 @@ fun MainNavigation(
         }
 
 
+/*
         composable("LoginView") {
             LoginView(navController, loginViewModel)
         }
-
+*/
+        loginGraph(
+            navController = navController,
+            onRegisterClick = {
+                navController.navigate("RegisterView");
+            }
+        )
 
         composable("ContainerView") {
             ContainerView(

@@ -64,7 +64,7 @@ class NoteFirebaseImpl @Inject constructor(
                 "type" to note.type,
                 "emotion" to note.emotion,
                 "date" to note.date,
-                "email" to note.email,
+                "email" to email,
                 "noteTag" to note.noteTag,
                 "color" to note.color,
                 "createAt" to com.google.firebase.firestore.FieldValue.serverTimestamp()
@@ -88,11 +88,11 @@ class NoteFirebaseImpl @Inject constructor(
 
     private fun mapToState(document: DocumentSnapshot): Note {
         Log.d(tag, "mapToState")
-        val _updateAt = document.getTimestamp("updateAt")
-        val _createAt = document.getTimestamp("createAt")
+        val timestampUpdateAt = document.getTimestamp("updateAt")
+        val timestampCreateAt = document.getTimestamp("createAt")
 
-        val updateAt = _updateAt?.toDate()
-        val createAt = _createAt?.toDate()
+        val updateAt = timestampUpdateAt?.toDate()
+        val createAt = timestampCreateAt?.toDate()
 
         return document.toObject(Note::class.java)!!.copy(
             idDoc = document.id,

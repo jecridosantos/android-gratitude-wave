@@ -97,6 +97,7 @@ private fun ContentRemindersView(
     // val data by settingsViewModel.reminders.collectAsState()
     val configUser by settingsViewModel.userSettings.collectAsState()
     val data = configUser.reminders
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .padding(paddingValues)
@@ -113,7 +114,7 @@ private fun ContentRemindersView(
                             navController.navigate("SaveRemindersView/$index")
                         }) {
                             checked ->
-                            settingsViewModel.updateReminderState(index, checked) {}
+                            settingsViewModel.updateReminderState(context, index, checked) {}
                         }
 
 
