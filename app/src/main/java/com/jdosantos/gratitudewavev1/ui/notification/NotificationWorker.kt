@@ -12,7 +12,9 @@ import androidx.work.Worker
 import androidx.work.WorkerParameters
 import com.jdosantos.gratitudewavev1.R
 import com.jdosantos.gratitudewavev1.data.local.RemindersStore
+import com.jdosantos.gratitudewavev1.domain.handles.ReminderRepetitions
 import com.jdosantos.gratitudewavev1.domain.models.UserSettingReminders
+import com.jdosantos.gratitudewavev1.ui.view.main.profile.settings.SettingsViewModel
 import com.jdosantos.gratitudewavev1.utils.constants.Constants
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
@@ -45,15 +47,26 @@ class NotificationWorker(context: Context, params: WorkerParameters) : Worker(co
 
     companion object {
 
-        suspend fun releaseNotification(context: Context) {
+        suspend fun releaseNotification(context: Context, settingsViewModel: SettingsViewModel) {
             val store = RemindersStore(context)
 
             store.getReminders().collect { reminderSet ->
-                reminderSet!!.forEach { reminderString ->
+                reminderSet!!.forEachIndexed { index, reminderString ->
                     val reminder = parseReminderString(reminderString)
                     Log.e("REMINDER", reminder.toString())
                     scheduleNotification(context, reminder)
+
+                    if (reminder.repeat.toInt() == ReminderRepetitions.Once.id) {
+                     //   val updatedReminderSet = reminderSet.minus(reminderString)
+
+                       // store.saveRemindersSet(updatedReminderSet)
+                        //settingsViewModel.disableReminder(index)
+                    }
+
+
                 }
+
+
             }
         }
 
@@ -83,7 +96,7 @@ class NotificationWorker(context: Context, params: WorkerParameters) : Worker(co
                 if (notificationTime.after(currentTime)) {
                     val delayInMillis = notificationTime.timeInMillis - currentTime.timeInMillis
 
-                    Log.e("REMINDER","delayInMillis $delayInMillis")
+                    Log.e("REMINDER", "delayInMillis $delayInMillis")
                     val constraints = Constraints.Builder()
                         .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
                         .setRequiresCharging(false)

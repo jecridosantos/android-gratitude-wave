@@ -1,5 +1,6 @@
 package com.jdosantos.gratitudewavev1.ui.view.main.profile.settings.reminders
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -48,6 +49,9 @@ import com.jdosantos.gratitudewavev1.utils.hourFormat
 import com.jdosantos.gratitudewavev1.ui.view.main.profile.settings.SettingsViewModel
 import com.jdosantos.gratitudewavev1.ui.widget.EmptyMessage
 import com.jdosantos.gratitudewavev1.ui.widget.Loader
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.REMINDER_INDEX_EMPTY
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.REMINDER_INDEX_HOUR_EMPTY
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.REMINDER_INDEX_MINUTE_EMPTY
 import com.jdosantos.gratitudewavev1.utils.getFirstLetters
 import com.jdosantos.gratitudewavev1.utils.getRepeatDescription
 
@@ -74,7 +78,7 @@ fun RemindersScreen(navController: NavController, settingsViewModel: SettingsVie
         },
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                navController.navigate(Screen.SaveRemindersScreen.params(-1))
+                navController.navigate(Screen.SaveRemindersScreen.params(REMINDER_INDEX_EMPTY, REMINDER_INDEX_HOUR_EMPTY, REMINDER_INDEX_MINUTE_EMPTY))
             }) {
                 Icon(
                     imageVector = Icons.Default.Add,
@@ -113,9 +117,9 @@ private fun ContentRemindersView(
             if (data.isNotEmpty()) {
                 LazyColumn {
                     itemsIndexed(data) { index, item ->
-
+                        Log.d("TIMEPICKER 2", "index: $index, item: $item")
                         ItemReminder(item, {
-                            navController.navigate(Screen.SaveRemindersScreen.params(index))
+                            navController.navigate(Screen.SaveRemindersScreen.params(index, item.hour!!, item.minute!!))
                         }) {
                             checked ->
                             settingsViewModel.updateReminderState(context, index, checked) {}

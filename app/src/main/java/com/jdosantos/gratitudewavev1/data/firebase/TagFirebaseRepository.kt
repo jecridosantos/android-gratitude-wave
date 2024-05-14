@@ -7,7 +7,7 @@ import com.jdosantos.gratitudewavev1.domain.models.NoteTag
 import com.jdosantos.gratitudewavev1.domain.repository.TagRepository
 import javax.inject.Inject
 
-class TagFirebaseImpl @Inject constructor(
+class TagFirebaseRepository @Inject constructor(
     db: FirebaseFirestore
 ) : TagRepository {
     private val tag = this::class.java.simpleName

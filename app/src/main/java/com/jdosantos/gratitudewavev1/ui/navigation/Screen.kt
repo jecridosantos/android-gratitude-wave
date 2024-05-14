@@ -3,6 +3,8 @@ package com.jdosantos.gratitudewavev1.ui.navigation
 import com.jdosantos.gratitudewavev1.utils.constants.ConstantsRouteParams.NOTE_DETAILS_COLOR
 import com.jdosantos.gratitudewavev1.utils.constants.ConstantsRouteParams.NOTE_DETAILS_ID
 import com.jdosantos.gratitudewavev1.utils.constants.ConstantsRouteParams.REMINDER_INDEX
+import com.jdosantos.gratitudewavev1.utils.constants.ConstantsRouteParams.REMINDER_INDEX_HOUR
+import com.jdosantos.gratitudewavev1.utils.constants.ConstantsRouteParams.REMINDER_INDEX_MINUTE
 import com.jdosantos.gratitudewavev1.utils.constants.ConstantsRouteParams.TAG_DETAILS_ID
 import com.jdosantos.gratitudewavev1.utils.constants.ConstantsRouteParams.TAG_DETAILS_NAME
 
@@ -52,9 +54,11 @@ sealed class Screen(val route: String) {
     data object GoalsScreen : Screen("GoalsScreen")
     data object RemindersScreen : Screen("RemindersScreen")
 
-    data object SaveRemindersScreen : Screen("SaveRemindersScreen/{${REMINDER_INDEX}}") {
-        fun params(index: Int): String {
+    data object SaveRemindersScreen : Screen("SaveRemindersScreen/{$REMINDER_INDEX}/{$REMINDER_INDEX_HOUR}/{$REMINDER_INDEX_MINUTE}") {
+        fun params(index: Int, hour: Int, minute: Int): String {
             return this.route.replace(oldValue = "{$REMINDER_INDEX}", newValue = "$index")
+                .replace(oldValue = "{$REMINDER_INDEX_HOUR}", newValue = "$hour")
+                .replace(oldValue = "{$REMINDER_INDEX_MINUTE}", newValue = "$minute")
         }
     }
 }

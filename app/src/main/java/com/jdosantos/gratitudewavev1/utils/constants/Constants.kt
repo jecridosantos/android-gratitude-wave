@@ -38,7 +38,8 @@ class Constants {
         const val SPACE_DEFAULT = 16
         const val SPACE_DEFAULT_MAX = 32
 
-        const val GOOGLE_TOKEN = "741930850747-12p5utjs35rpjat1mipu4q4mejnks39d.apps.googleusercontent.com"
+        const val GOOGLE_TOKEN =
+            "741930850747-12p5utjs35rpjat1mipu4q4mejnks39d.apps.googleusercontent.com"
 
         const val VERIFY_EMAIL_OPTION_GO_TO_EMAIL = 0
         const val VERIFY_EMAIL_OPTION_RESEND_LINK = 1
@@ -47,5 +48,9 @@ class Constants {
         const val NOTIFICATION_CHANNEL_ID = "gratitudeMainAppId"
         const val NOTIFICATION_CHANNEL_NAME = "gratitudeMainAppName"
         const val NOTIFICATION_CHANNEL_DESCRIPTION = "Canal de notificaciones"
+
+        const val REMINDER_INDEX_EMPTY = -1
+        const val REMINDER_INDEX_HOUR_EMPTY = 1
+        const val REMINDER_INDEX_MINUTE_EMPTY = 0
     }
 }

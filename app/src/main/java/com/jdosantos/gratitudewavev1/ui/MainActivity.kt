@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
             LaunchedEffect(Unit) {
                 permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
 
-                NotificationWorker.releaseNotification(context)
+                NotificationWorker.releaseNotification(context, settingsViewModel)
             }
 
 

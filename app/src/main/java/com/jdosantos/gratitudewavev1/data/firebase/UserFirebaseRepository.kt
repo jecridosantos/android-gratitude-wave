@@ -12,7 +12,7 @@ import kotlinx.coroutines.suspendCancellableCoroutine
 import javax.inject.Inject
 import kotlin.coroutines.resume
 
-class UserFirebaseImpl @Inject constructor(
+class UserFirebaseRepository @Inject constructor(
     private val auth: FirebaseAuth?,
     db: FirebaseFirestore
 ) : UserRepository {

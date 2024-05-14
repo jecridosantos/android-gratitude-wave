@@ -12,13 +12,13 @@ import com.jdosantos.gratitudewavev1.domain.repository.GoalsRepository
 import com.jdosantos.gratitudewavev1.domain.repository.NoteRepository
 import com.jdosantos.gratitudewavev1.domain.repository.TagRepository
 import com.jdosantos.gratitudewavev1.domain.repository.UserRepository
-import com.jdosantos.gratitudewavev1.data.firebase.AuthFirebaseImpl
-import com.jdosantos.gratitudewavev1.data.firebase.ConfigUserFirebaseImpl
-import com.jdosantos.gratitudewavev1.data.firebase.FeedbackFirebaseImpl
-import com.jdosantos.gratitudewavev1.data.firebase.GoalsFirebaseImpl
-import com.jdosantos.gratitudewavev1.data.firebase.NoteFirebaseImpl
-import com.jdosantos.gratitudewavev1.data.firebase.TagFirebaseImpl
-import com.jdosantos.gratitudewavev1.data.firebase.UserFirebaseImpl
+import com.jdosantos.gratitudewavev1.data.firebase.AuthFirebaseRepository
+import com.jdosantos.gratitudewavev1.data.firebase.ConfigUserFirebaseRepository
+import com.jdosantos.gratitudewavev1.data.firebase.FeedbackFirebaseRepository
+import com.jdosantos.gratitudewavev1.data.firebase.GoalsFirebaseRepository
+import com.jdosantos.gratitudewavev1.data.firebase.NoteFirebaseRepository
+import com.jdosantos.gratitudewavev1.data.firebase.TagFirebaseRepository
+import com.jdosantos.gratitudewavev1.data.firebase.UserFirebaseRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -44,31 +44,31 @@ object AppModule {
     @Singleton
     @Provides
     fun providesLoginFirebase(auth: FirebaseAuth): AuthRepository {
-        return AuthFirebaseImpl(auth)
+        return AuthFirebaseRepository(auth)
     }
 
     @Singleton
     @Provides
     fun providesNoteFirebase(auth: FirebaseAuth?, db: FirebaseFirestore): NoteRepository {
-        return NoteFirebaseImpl(auth, db)
+        return NoteFirebaseRepository(auth, db)
     }
 
     @Singleton
     @Provides
     fun providesUserFirebase(auth: FirebaseAuth?, db: FirebaseFirestore): UserRepository {
-        return UserFirebaseImpl(auth, db)
+        return UserFirebaseRepository(auth, db)
     }
 
     @Singleton
     @Provides
     fun provideTagFirebase(db: FirebaseFirestore): TagRepository {
-        return TagFirebaseImpl(db)
+        return TagFirebaseRepository(db)
     }
 
     @Singleton
     @Provides
     fun provideGoalsFirebase(auth: FirebaseAuth?, db: FirebaseFirestore): GoalsRepository {
-        return GoalsFirebaseImpl(auth, db)
+        return GoalsFirebaseRepository(auth, db)
     }
 
     @Singleton
@@ -77,7 +77,7 @@ object AppModule {
         auth: FirebaseAuth?,
         db: FirebaseFirestore
     ): ConfigUserRepository {
-        return ConfigUserFirebaseImpl(auth, db)
+        return ConfigUserFirebaseRepository(auth, db)
     }
 
     @Singleton
@@ -86,6 +86,6 @@ object AppModule {
         auth: FirebaseAuth?,
         db: FirebaseFirestore
     ): FeedbackRepository {
-        return FeedbackFirebaseImpl(auth, db)
+        return FeedbackFirebaseRepository(auth, db)
     }
 }

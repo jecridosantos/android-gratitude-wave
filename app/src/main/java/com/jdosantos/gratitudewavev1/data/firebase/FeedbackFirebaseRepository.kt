@@ -8,7 +8,7 @@ import com.jdosantos.gratitudewavev1.domain.models.Feedback
 import com.jdosantos.gratitudewavev1.domain.repository.FeedbackRepository
 import javax.inject.Inject
 
-class FeedbackFirebaseImpl @Inject constructor(
+class FeedbackFirebaseRepository @Inject constructor(
     private val auth: FirebaseAuth?,
     db: FirebaseFirestore
 ) : FeedbackRepository {

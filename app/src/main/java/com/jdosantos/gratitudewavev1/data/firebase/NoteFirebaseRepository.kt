@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.Flow
 import java.util.Date
 import javax.inject.Inject
 
-class NoteFirebaseImpl @Inject constructor(
+class NoteFirebaseRepository @Inject constructor(
     private val auth: FirebaseAuth?,
     db: FirebaseFirestore
 ) : NoteRepository {

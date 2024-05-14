@@ -10,6 +10,7 @@
 
     <string name="button_save">Save</string>
     <string name="button_write">Write</string>
+    <string name="button_delete">Delete</string>
 
     <!--Messages-->
     <string name="login_alert_title">Log In failed!</string>
@@ -153,7 +154,8 @@
     <string name="label_my_morning_reminder">Mi recordatorio de la mañana</string>
     <string name="label_no_reminders">Sin recordatorios</string>
     <string name="label_reminders">Recordatorios</string>
-    <string name="label_save_reminders">Guardar recordatorio</string>
+    <string name="label_save_reminders">Nuevo recordatorio</string>
+    <string name="label_update_reminders">Actualizar recordatorio</string>
     <string name="label_settings">Ajustes</string>
     <string name="label_customize_reminders">Personalizar recordatorios</string>
     <string name="label_mute_notifications">Silenciar notificaciones</string>

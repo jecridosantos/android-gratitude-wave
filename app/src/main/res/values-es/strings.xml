@@ -11,6 +11,7 @@
 
     <string name="button_save">Guardar</string>
     <string name="button_write">Escribir</string>
+    <string name="button_delete">Eliminar</string>
 
     <!--Messages-->
     <string name="login_alert_title">Inicio de sesión fallido!</string>
@@ -152,6 +153,7 @@
     <string name="label_no_reminders">Sin recordatorios</string>
     <string name="label_reminders">Recordatorios</string>
     <string name="label_save_reminders">Guardar recordatorio</string>
+    <string name="label_update_reminders">Actualizar recordatorio</string>
     <string name="label_settings">Ajustes</string>
     <string name="label_customize_reminders">Personalizar recordatorios</string>
     <string name="label_mute_notifications">Silenciar notificaciones</string>

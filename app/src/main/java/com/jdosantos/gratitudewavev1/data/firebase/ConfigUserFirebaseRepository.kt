@@ -4,91 +4,95 @@ import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
-import com.jdosantos.gratitudewavev1.domain.models.Goals
-import com.jdosantos.gratitudewavev1.domain.repository.GoalsRepository
+import com.jdosantos.gratitudewavev1.domain.models.UserSettings
+import com.jdosantos.gratitudewavev1.domain.repository.ConfigUserRepository
 import javax.inject.Inject
 
-class GoalsFirebaseImpl @Inject constructor(
+class ConfigUserFirebaseRepository
+@Inject constructor(
     private val auth: FirebaseAuth?,
     db: FirebaseFirestore
-) : GoalsRepository {
+) : ConfigUserRepository {
     private val tag = this::class.java.simpleName
     private val uid: String?
         get() = auth?.currentUser?.uid
 
 
-    private val collection: CollectionReference = db.collection("Goals")
+    private val collection: CollectionReference = db.collection("UserSettings")
 
-    override fun save(goals: Goals, callback: (Boolean) -> Unit) {
+    override fun save(body: UserSettings, callback: (success: Boolean) -> Unit) {
         Log.d(tag, "save")
         try {
-            val newGoals = hashMapOf(
+            val newDocument = hashMapOf(
                 "uid" to uid,
-                "challenge" to goals.challenge,
+                "muteNotifications" to body.muteNotifications,
+                "reminders" to body.reminders,
                 "createAt" to com.google.firebase.firestore.FieldValue.serverTimestamp()
             )
 
-            collection.add(newGoals)
+            collection.add(newDocument)
                 .addOnSuccessListener { callback.invoke(true) }
                 .addOnFailureListener {
+                    callback.invoke(false)
                     Log.e(tag, "save - error: ${it.message}")
-                    callback.invoke(true)
                 }
 
         } catch (e: Exception) {
-            Log.e(tag, "save - error: ${e.message}")
             callback.invoke(false)
+            Log.e(tag, "save - error: ${e.message}")
         }
     }
 
-    override fun getByUser(callback: (Goals) -> Unit, onError: () -> Unit) {
+    override fun getByUser(callback: (UserSettings) -> Unit, onError: ()-> Unit) {
         Log.d(tag, "getByUser")
         if (uid != null) {
             collection
                 .whereEqualTo("uid", uid)
                 .get()
                 .addOnSuccessListener { querySnapshot ->
-                    var goals = Goals()
+                    var userSettings = UserSettings()
                     if (querySnapshot != null) {
                         for (document in querySnapshot) {
                             val myDocument =
-                                document.toObject(Goals::class.java).copy(id = document.id)
-                            goals = myDocument
+                                document.toObject(UserSettings::class.java).copy(id = document.id)
+                            userSettings = myDocument
 
                         }
-                        callback(goals)
+                        Log.d(tag, "getByUser - userSettings: $userSettings")
+                        callback.invoke(userSettings)
                     }
                 }
-                .addOnFailureListener {
-                    Log.e(tag, "getByUser - error: ${it.message}")
+                .addOnFailureListener { exception ->
                     onError.invoke()
+                    Log.e(tag, "getByUser - error: ${exception.message}")
                 }
         }
     }
 
-    override fun update(goals: Goals, callback: (Boolean) -> Unit) {
+    override fun update(body: UserSettings, callback: (success: Boolean) -> Unit) {
         Log.d(tag, "update")
         try {
-            val editGoals = hashMapOf(
-                "id" to goals.id,
-                "uid" to goals.uid,
-                "challenge" to goals.challenge,
+            val editMap = hashMapOf(
+                "id" to body.id,
+                "uid" to body.uid,
+                "muteNotifications" to body.muteNotifications,
+                "reminders" to body.reminders,
                 "updateAt" to com.google.firebase.firestore.FieldValue.serverTimestamp()
             )
             collection
-                .document(goals.id!!)
-                .update(editGoals as Map<String, Any>)
+                .document(body.id!!)
+                .update(editMap as Map<String, Any>)
                 .addOnSuccessListener {
                     callback.invoke(true)
                 }.addOnFailureListener {
-                    Log.e(tag, "update - error: ${it.message}")
                     callback.invoke(false)
+                    Log.e(tag, "update - error: ${it.message}")
                 }
 
 
         } catch (e: Exception) {
-            Log.e(tag, "update - error: ${e.message}")
             callback.invoke(false)
+            Log.e(tag, "update - error: ${e.message}")
         }
     }
 }

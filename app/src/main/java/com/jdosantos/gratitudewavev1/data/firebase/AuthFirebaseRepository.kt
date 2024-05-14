@@ -13,7 +13,7 @@ import com.jdosantos.gratitudewavev1.domain.repository.AuthRepository
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class AuthFirebaseImpl @Inject constructor(private val auth: FirebaseAuth) : AuthRepository {
+class AuthFirebaseRepository @Inject constructor(private val auth: FirebaseAuth) : AuthRepository {
     private val tag = this::class.java.simpleName
 
     override suspend fun loginGoogle(

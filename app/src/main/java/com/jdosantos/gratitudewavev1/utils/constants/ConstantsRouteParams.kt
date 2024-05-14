@@ -6,4 +6,6 @@ object ConstantsRouteParams {
     const val TAG_DETAILS_ID = "tagId"
     const val TAG_DETAILS_NAME = "tagName"
     const val REMINDER_INDEX = "reminderIndex"
+    const val REMINDER_INDEX_HOUR = "reminderIndexHour"
+    const val REMINDER_INDEX_MINUTE = "reminderIndexMinute"
 }
