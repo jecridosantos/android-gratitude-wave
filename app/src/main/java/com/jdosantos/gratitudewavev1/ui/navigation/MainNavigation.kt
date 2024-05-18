@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.jdosantos.gratitudewavev1.ui.view.auth.login.loginScreenRoute
 import com.jdosantos.gratitudewavev1.ui.view.auth.register.registerScreenRoute
+import com.jdosantos.gratitudewavev1.ui.view.auth.reset.resetPasswordScreenRoute
 import com.jdosantos.gratitudewavev1.ui.view.auth.verify.verifyEmailScreenRoute
 import com.jdosantos.gratitudewavev1.ui.view.main.containerScreenRoute
 import com.jdosantos.gratitudewavev1.ui.view.main.goals.goalsScreenRoute
@@ -60,7 +61,7 @@ fun MainNavigation(
 
         notesByTagScreenRoute(navController)
 
-
+        resetPasswordScreenRoute(navController)
 
         settingsScreenRoute(navController, settingsViewModel)
 

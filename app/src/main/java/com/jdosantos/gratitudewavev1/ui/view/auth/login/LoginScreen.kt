@@ -34,10 +34,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -59,13 +61,14 @@ import com.jdosantos.gratitudewavev1.ui.widget.Loader
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.GOOGLE_TOKEN
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT_MAX
+import com.jdosantos.gratitudewavev1.utils.isValidEmail
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 data class LoginViewState(
     val backPressedOnce: MutableState<Boolean>,
     val email: MutableState<String>,
-    val password: MutableState<String>
+    val password: MutableState<String>,
 )
 
 @Composable
@@ -79,7 +82,7 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel = h
     val state = LoginViewState(
         backPressedOnce = remember { mutableStateOf(false) },
         email = remember { mutableStateOf("") },
-        password = remember { mutableStateOf("") }
+        password = remember { mutableStateOf("") },
     )
 
     BackHandler(enabled = true) {
@@ -151,6 +154,9 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel = h
             .fillMaxSize()
             .padding(SPACE_DEFAULT.dp)
     ) {
+
+        Image(painter = painterResource(id = R.drawable.image_logo), contentDescription = null)
+        Spacer(modifier = Modifier.height(SPACE_DEFAULT_MAX.dp))
         Text(
             text = stringResource(id = R.string.login_welcome),
             fontSize = 36.sp,
@@ -161,7 +167,7 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel = h
 
         InputRound(
             stringResource(R.string.login_label_input_email), state.email.value,
-            stringResource(R.string.login_label_input_email), KeyboardType.Email
+            stringResource(R.string.login_label_input_email), KeyboardType.Email,
         ) {
             state.email.value = it
         }
@@ -203,7 +209,9 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel = h
             fontWeight = FontWeight.Light,
             fontSize = 14.sp,
             color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.clickable { })
+            modifier = Modifier.clickable {
+                navController.navigate(Screen.ResetPasswordScreen.route)
+            })
         Spacer(modifier = Modifier.height(SPACE_DEFAULT.dp))
 
         Row {

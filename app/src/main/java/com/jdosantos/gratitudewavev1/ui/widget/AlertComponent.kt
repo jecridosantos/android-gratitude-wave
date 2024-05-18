@@ -39,7 +39,7 @@ fun AlertComponent(
         text = {
             Text(
                 text = message,
-                textAlign = TextAlign.Justify,
+               // textAlign = TextAlign.Justify,
                 modifier = Modifier.verticalScroll(scroll)
             )
         },

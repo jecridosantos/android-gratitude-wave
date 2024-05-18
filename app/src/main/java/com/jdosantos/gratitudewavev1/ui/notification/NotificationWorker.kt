@@ -80,7 +80,7 @@ class NotificationWorker(context: Context, params: WorkerParameters) : Worker(co
         return NotificationCompat.Builder(applicationContext, Constants.NOTIFICATION_CHANNEL_ID)
             .setContentTitle(title)
             .setContentText(getRandomMessage())
-            .setSmallIcon(R.drawable.baseline_emoji_emotions_24)
+            .setSmallIcon(R.drawable.image_logo) // TODO: pendiente cambiar icono de notificacion
             .setPriority(NotificationManager.IMPORTANCE_HIGH)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
@@ -118,8 +118,8 @@ class NotificationWorker(context: Context, params: WorkerParameters) : Worker(co
         private fun parseReminderString(reminderString: String): UserSettingReminders? {
             val parts = reminderString.split("|")
             val time = parts[1].split(",")
-            if (parts.size == 6) {
-                return UserSettingReminders(
+            return if (parts.size == 6) {
+                UserSettingReminders(
                     uuid = parts[0],
                     hour = time[0].toIntOrNull(),
                     minute = time[1].toIntOrNull(),
@@ -129,7 +129,7 @@ class NotificationWorker(context: Context, params: WorkerParameters) : Worker(co
                     active = parts[5].toBoolean()
                 )
             } else {
-                return null;
+                null;
             }
 
         }

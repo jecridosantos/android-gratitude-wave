@@ -4,6 +4,7 @@ import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
+import com.jdosantos.gratitudewavev1.domain.exceptions.AuthenticationException
 import com.jdosantos.gratitudewavev1.domain.exceptions.GenericException
 import com.jdosantos.gratitudewavev1.domain.exceptions.UserException
 import com.jdosantos.gratitudewavev1.domain.models.User
@@ -78,6 +79,31 @@ class UserFirebaseRepository @Inject constructor(
                 .addOnFailureListener { e ->
                     Log.e(tag, "getUserByUid - error: ${e.message}")
                     continuation.resume(Result.failure(GenericException.ClientException()))
+                }
+        }
+    }
+
+    override suspend fun emailExists(email: String): Result<Boolean> {
+        return suspendCancellableCoroutine { continuation ->
+            collection.whereEqualTo("email", email).get()
+                .addOnSuccessListener { documents ->
+                    if (documents.isEmpty) {
+
+                        Log.d(
+                            tag,
+                            "emailExists - No existe un usuario con el correo electrónico $email."
+                        )
+                        continuation.resume(Result.failure(AuthenticationException.EmailNotFoundException()))
+                    } else {
+                        Log.d(
+                            tag,
+                            "emailExists - Existe un usuario con el correo electrónico $email."
+                        )
+                        continuation.resume(Result.success(true))
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Log.e(tag, "emailExists - error: ${exception.message}")
                 }
         }
     }

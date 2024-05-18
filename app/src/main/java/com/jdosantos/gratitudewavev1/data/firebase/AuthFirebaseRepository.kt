@@ -163,6 +163,16 @@ class AuthFirebaseRepository @Inject constructor(private val auth: FirebaseAuth)
         }
     }
 
+    override suspend fun resetPassword(email: String): Result<Boolean> {
+        return try {
+            auth.sendPasswordResetEmail(email).await()
+            Result.success(true)
+        } catch (e: Exception) {
+            Log.e(tag, "resetPassword - error: ${e.message}")
+            Result.success(false)
+        }
+    }
+
 
     override fun getCurrentUser(): Result<User> {
         val userLogged = auth.currentUser

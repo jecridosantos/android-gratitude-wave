@@ -8,4 +8,6 @@ interface UserRepository {
 
     suspend fun getUserByUid(uid: String): Result<User>
 
+    suspend fun emailExists(email: String): Result<Boolean>
+
 }

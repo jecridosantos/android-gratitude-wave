@@ -18,5 +18,8 @@ interface AuthRepository {
     fun isUserLoggedIn(): Result<Boolean>
 
     fun getCurrentUser(): Result<User>
+
     suspend fun signOut(): Result<Boolean>
+
+    suspend fun resetPassword(email: String): Result<Boolean>
 }
