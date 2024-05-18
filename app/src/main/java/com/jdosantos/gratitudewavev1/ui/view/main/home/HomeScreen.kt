@@ -99,7 +99,7 @@ fun HomeScreen(
                         text = homeViewModel.getWelcomeGretting(),
                         maxLines = MAX_LENGHT_TITLE_TOP_BAR,
                         overflow = TextOverflow.Ellipsis,
-                        fontWeight = FontWeight.Bold,
+                     //   fontWeight = FontWeight.Bold,
 
                         )
                 },
@@ -119,11 +119,11 @@ fun HomeScreen(
                         Icon(imageVector = Icons.Default.Search, contentDescription = "")
                     }
 
-                    IconButton(onClick = {
+/*                    IconButton(onClick = {
                         navController.navigate(Screen.NotificationsScreen.route)
                     }) {
                         Icon(imageVector = Icons.Default.Notifications, contentDescription = "")
-                    }
+                    }*/
                 }
             )
         },

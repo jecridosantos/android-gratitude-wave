@@ -1,5 +1,7 @@
 package com.jdosantos.gratitudewavev1.ui.view.main.profile
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -67,6 +70,7 @@ fun ContentProfileView(
     profileViewModel: ProfileViewModel,
     navController: NavController
 ) {
+    val context = LocalContext.current
     val scope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
         profileViewModel.getCuurrentUser()
@@ -112,8 +116,16 @@ fun ContentProfileView(
                     ) {
                         navController.navigate(Screen.HelpScreen.route)
                     }
-                    ItemSettings(null, null, stringResource(R.string.label_privacy_policy)) {}
-                    ItemSettings(null, null, stringResource(R.string.label_terms_of_service)) {}
+                    ItemSettings(null, null, stringResource(R.string.label_privacy_policy)) {
+                        val openURL = Intent(Intent.ACTION_VIEW)
+                        openURL.data = Uri.parse("https://gratitude-wave-terms-production.up.railway.app/privacy_policy")
+                        context.startActivity(openURL)
+                    }
+                    ItemSettings(null, null, stringResource(R.string.label_terms_of_service)) {
+                        val openURL = Intent(Intent.ACTION_VIEW)
+                        openURL.data = Uri.parse("https://gratitude-wave-terms-production.up.railway.app/terms_of_service")
+                        context.startActivity(openURL)
+                    }
                     Spacer(modifier = Modifier.height(16.dp))
                 }
 

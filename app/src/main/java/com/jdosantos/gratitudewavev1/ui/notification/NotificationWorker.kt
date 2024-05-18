@@ -107,23 +107,31 @@ class NotificationWorker(context: Context, params: WorkerParameters) : Worker(co
             store.getReminders().collect { reminderSet ->
                 reminderSet?.forEach { reminderString ->
                     val reminder = parseReminderString(reminderString)
-                    scheduleNotification(context, reminder)
+                    if (reminder!=null) {
+                        scheduleNotification(context, reminder)
+                    }
+
                 }
             }
         }
 
-        private fun parseReminderString(reminderString: String): UserSettingReminders {
+        private fun parseReminderString(reminderString: String): UserSettingReminders? {
             val parts = reminderString.split("|")
             val time = parts[1].split(",")
-            return UserSettingReminders(
-                uuid = parts[0],
-                hour = time[0].toIntOrNull(),
-                minute = time[1].toIntOrNull(),
-                label = parts[2],
-                repeat = parts[3].toInt(),
-                repeatDays = parts[4].split(",").mapNotNull { it.toIntOrNull() }.toMutableList(),
-                active = parts[5].toBoolean()
-            )
+            if (parts.size == 6) {
+                return UserSettingReminders(
+                    uuid = parts[0],
+                    hour = time[0].toIntOrNull(),
+                    minute = time[1].toIntOrNull(),
+                    label = parts[2],
+                    repeat = parts[3].toInt(),
+                    repeatDays = parts[4].split(",").mapNotNull { it.toIntOrNull() }.toMutableList(),
+                    active = parts[5].toBoolean()
+                )
+            } else {
+                return null;
+            }
+
         }
 
         private fun scheduleNotification(context: Context, reminder: UserSettingReminders) {

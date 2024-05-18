@@ -311,7 +311,8 @@ fun CardItems(icon: Int, text: String, color: Color, onClick: () -> Unit) {
                     Modifier.size(50.dp)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(text = text, fontWeight = FontWeight.ExtraBold,
+                Text(text = text,
+                    //fontWeight = FontWeight.ExtraBold,
                     maxLines = 1,
                     fontSize = 14.sp,
                     overflow = TextOverflow.Ellipsis)
