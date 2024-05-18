@@ -14,6 +14,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,6 +31,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,13 +39,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
 import com.jdosantos.gratitudewavev1.ui.navigation.Screen
-import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
-import com.jdosantos.gratitudewavev1.utils.getSafeColor
 import com.jdosantos.gratitudewavev1.ui.view.main.note.CurrentDateView
 import com.jdosantos.gratitudewavev1.ui.view.main.note.DisplayEmotion
 import com.jdosantos.gratitudewavev1.ui.view.main.note.DisplayTag
 import com.jdosantos.gratitudewavev1.ui.view.main.note.getColors
 import com.jdosantos.gratitudewavev1.ui.widget.AlertComponent
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.utils.getSafeColor
 
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,8 +61,8 @@ fun DetailNoteScreen(
     var selectedColor by remember { mutableStateOf(colors.getSafeColor(detailNoteViewModel.color.toInt())) }
 
     LaunchedEffect(Unit) {
-        detailNoteViewModel.getNoteById(detailNoteViewModel.id) {noteColor->
-              selectedColor = colors.getSafeColor(noteColor)
+        detailNoteViewModel.getNoteById(detailNoteViewModel.id) { noteColor ->
+            selectedColor = colors.getSafeColor(noteColor)
         }
     }
 
@@ -68,13 +72,24 @@ fun DetailNoteScreen(
             .background(selectedColor, RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)),
         horizontalAlignment = Alignment.Start
     ) {
-        Header({
-            navController.popBackStack()
-        }, {
-            navController.navigate(Screen.UpdateNoteScreen.params(detailNoteViewModel.id, note.color!!))
-        }) {
-            detailNoteViewModel.showAlert()
-        }
+        Header(
+            onExit = {
+                navController.popBackStack()
+            },
+            onEdit = {
+                navController.navigate(
+                    Screen.UpdateNoteScreen.params(
+                        detailNoteViewModel.id,
+                        note.color!!
+                    )
+                )
+            },
+            onDelete = {
+                detailNoteViewModel.showAlert()
+            }, onShare = {
+                navController.navigate(Screen.SharedScreen.params(note.idDoc, note.color!!))
+            }
+        )
 
         Column(
             modifier = Modifier
@@ -139,7 +154,7 @@ private fun AlertDeleteNote(
 }
 
 @Composable
-private fun Header(onExit: () -> Unit, onEdit: () -> Unit, onDelete: () -> Unit) {
+private fun Header(onExit: () -> Unit, onEdit: () -> Unit, onDelete: () -> Unit, onShare: () -> Unit) {
     Row(
         modifier = Modifier
             .padding(4.dp)
@@ -147,27 +162,101 @@ private fun Header(onExit: () -> Unit, onEdit: () -> Unit, onDelete: () -> Unit)
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(onClick = { onExit() }) {
-            Icon(imageVector = Icons.Default.Close, contentDescription = ""
-                ,tint = MaterialTheme.colorScheme.onSurfaceVariant
+            Icon(
+                imageVector = Icons.Default.Close,
+                contentDescription = "",
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
         Spacer(modifier = Modifier.width(4.dp))
         CurrentDateView(modifier = Modifier) {}
         Spacer(modifier = Modifier.weight(1f))
-        IconButton(onClick = {
-            onEdit()
 
-        }) {
-            Icon(imageVector = Icons.Default.Edit, contentDescription = ""
-                ,tint = MaterialTheme.colorScheme.onSurfaceVariant
+        var expanded by remember { mutableStateOf(false) }
+        IconButton(
+            onClick = { expanded = !expanded }
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.baseline_more_vert_24),
+                contentDescription = "Menú"
             )
-        }
-        IconButton(onClick = {
-            onDelete()
+            if (expanded) {
+                DropdownMenu(
+                    expanded = expanded,
 
-        }) {
-            Icon(imageVector = Icons.Default.Delete, contentDescription = ""
-                ,tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                    onDismissRequest = { expanded = false }
+                ) {
+                    DropdownMenuItem(
+                        text = {
+                            Text(text = "Editar")
+
+                        },
+                        trailingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = "",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        },
+                        onClick = {
+                            onEdit()
+                            expanded = false
+                        }
+                    )
+
+                    DropdownMenuItem(
+                        text = { Text(text = "Eliminar") },
+                        trailingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        },
+                        onClick = {
+                            onDelete()
+                            expanded = false
+                        }
+                    )
+
+                    DropdownMenuItem(
+                        text = { Text(text = "Compartir") },
+                        trailingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Share,
+                                contentDescription = "",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        },
+                        onClick = {
+                            onShare()
+                            expanded = false
+                        }
+                    )
+                }
+            }
         }
+
+
+        /* IconButton(onClick = {
+             onEdit()
+
+         }) {
+             Icon(
+                 imageVector = Icons.Default.Edit,
+                 contentDescription = "",
+                 tint = MaterialTheme.colorScheme.onSurfaceVariant
+             )
+         }
+         IconButton(onClick = {
+             onDelete()
+
+         }) {
+             Icon(
+                 imageVector = Icons.Default.Delete,
+                 contentDescription = "",
+                 tint = MaterialTheme.colorScheme.onSurfaceVariant
+             )
+         }*/
     }
 }

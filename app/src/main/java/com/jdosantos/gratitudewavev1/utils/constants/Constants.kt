@@ -3,7 +3,7 @@ package com.jdosantos.gratitudewavev1.utils.constants
 class Constants {
     companion object {
         const val DEFAULT_COLOR_INDEX = 0
-        const val COLOR_0_LIGHT = 0xFFFFF8F6
+        const val COLOR_0_LIGHT = 0xFFF4FBF8
         const val COLOR_1_LIGHT = 0xFFEFAAA3
         const val COLOR_2_LIGHT = 0xFFEA9C77
         const val COLOR_3_LIGHT = 0xFFF4EEB3
@@ -16,7 +16,7 @@ class Constants {
         const val COLOR_10_LIGHT = 0xFFE1DBCD
         const val COLOR_11_LIGHT = 0xFFE8E8EB
 
-        const val COLOR_0_DARK = 0xFF1A110F
+        const val COLOR_0_DARK = 0xFF0E1513
         const val COLOR_1_DARK = 0xFF771E33
         const val COLOR_2_DARK = 0xFF69301D
         const val COLOR_3_DARK = 0xFF7B4E0C

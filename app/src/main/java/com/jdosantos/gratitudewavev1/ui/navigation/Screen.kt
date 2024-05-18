@@ -30,6 +30,14 @@ sealed class Screen(val route: String) {
 
     }
 
+    data object SharedScreen : Screen("SharedScreen/{${NOTE_DETAILS_ID}}/{${NOTE_DETAILS_COLOR}}") {
+        fun params(id: String, color: Int): String {
+            return this.route.replace(oldValue = "{$NOTE_DETAILS_ID}", newValue = id)
+                .replace(oldValue = "{$NOTE_DETAILS_COLOR}", newValue = "$color")
+        }
+
+    }
+
     data object ByCalendarScreen : Screen("ByCalendarScreen")
     data object RegisterScreen : Screen("RegisterScreen")
     data object ResetPasswordScreen : Screen("ResetPasswordScreen")

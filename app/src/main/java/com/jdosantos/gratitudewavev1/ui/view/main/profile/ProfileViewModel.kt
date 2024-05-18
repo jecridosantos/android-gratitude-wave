@@ -19,7 +19,7 @@ class ProfileViewModel @Inject constructor(
     var user by mutableStateOf(User())
         private set
 
-    fun getCuurrentUser() {
+    fun getCurrentUser() {
         getCurrentUserUseCase.execute().onSuccess { value: User ->
             user = value
         }

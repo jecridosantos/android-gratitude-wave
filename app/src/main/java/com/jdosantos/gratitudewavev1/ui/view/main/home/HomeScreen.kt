@@ -1,4 +1,4 @@
- package com.jdosantos.gratitudewavev1.ui.view.main.home
+package com.jdosantos.gratitudewavev1.ui.view.main.home
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -15,13 +15,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
@@ -43,14 +45,11 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
 import com.jdosantos.gratitudewavev1.ui.navigation.Screen
-import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.MAX_LENGHT_TITLE_TOP_BAR
-import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
 import com.jdosantos.gratitudewavev1.ui.theme.ChangeStatusBarColor
 import com.jdosantos.gratitudewavev1.ui.view.main.note.CardItems
 import com.jdosantos.gratitudewavev1.ui.view.main.note.ShowListNotes
@@ -59,6 +58,9 @@ import com.jdosantos.gratitudewavev1.ui.widget.EmptyMessage
 import com.jdosantos.gratitudewavev1.ui.widget.ImageAvatar
 import com.jdosantos.gratitudewavev1.ui.widget.Loader
 import com.jdosantos.gratitudewavev1.ui.widget.Title
+import com.jdosantos.gratitudewavev1.ui.widget.isScrollingUp
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.MAX_LENGHT_TITLE_TOP_BAR
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -70,6 +72,7 @@ fun HomeScreen(
 ) {
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
+    val scrollState = rememberScrollState()
     val navigateToNewNote: () -> Unit = {
         navController.navigate(Screen.WriteNoteScreen.route)
     }
@@ -88,6 +91,8 @@ fun HomeScreen(
         homeViewModel.fetchNotes()
     }
 
+    val listState = rememberLazyListState()
+
     Scaffold(
         modifier = Modifier
             .nestedScroll(scrollBehavior.nestedScrollConnection)
@@ -99,9 +104,9 @@ fun HomeScreen(
                         text = homeViewModel.getWelcomeGretting(),
                         maxLines = MAX_LENGHT_TITLE_TOP_BAR,
                         overflow = TextOverflow.Ellipsis,
-                     //   fontWeight = FontWeight.Bold,
+                        //   fontWeight = FontWeight.Bold,
 
-                        )
+                    )
                 },
                 scrollBehavior = scrollBehavior,
                 colors = TopAppBarDefaults.largeTopAppBarColors(
@@ -118,29 +123,33 @@ fun HomeScreen(
                     IconButton(onClick = { navController.navigate(Screen.SearchNoteScreen.route) }) {
                         Icon(imageVector = Icons.Default.Search, contentDescription = "")
                     }
-
-/*                    IconButton(onClick = {
-                        navController.navigate(Screen.NotificationsScreen.route)
-                    }) {
-                        Icon(imageVector = Icons.Default.Notifications, contentDescription = "")
-                    }*/
+                    /*                    IconButton(onClick = {
+                                            navController.navigate(Screen.NotificationsScreen.route)
+                                        }) {
+                                            Icon(imageVector = Icons.Default.Notifications, contentDescription = "")
+                                        }*/
                 }
             )
         },
 
         floatingActionButton = {
-            FloatingActionButton(onClick = { navigateToNewNote() }) {
-                Icon(
-                    painter = painterResource(id = R.drawable.editar),
-                    modifier = Modifier.size(24.dp),
-                    contentDescription = ""
-                )
-            }
+            ExtendedFloatingActionButton(
+                text = { Text(text = "Agradecer") },
+                icon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.editar),
+                        modifier = Modifier.size(24.dp),
+                        contentDescription = ""
+                    )
+                },
+                expanded = listState.isScrollingUp(),
+                onClick = { navigateToNewNote() }
+            )
         }
 
 
     ) {
-        ContentHomeView(it, homeViewModel, navController)
+        ContentHomeView(it, homeViewModel, navController, listState)
     }
 
 
@@ -151,7 +160,8 @@ fun HomeScreen(
 fun ContentHomeView(
     paddingValues: PaddingValues,
     homeViewModel: HomeViewModel,
-    navController: NavController
+    navController: NavController,
+    listState: LazyListState
 ) {
     val isLoading by homeViewModel.isLoading.collectAsState()
 
@@ -164,6 +174,7 @@ fun ContentHomeView(
 
         val notes by homeViewModel.notesData.collectAsState()
         Spacer(modifier = Modifier.height(16.dp))
+
         LazyVerticalStaggeredGrid(
             columns = StaggeredGridCells.Fixed(2),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -187,13 +198,18 @@ fun ContentHomeView(
         }
 
         Spacer(modifier = Modifier.height(16.dp))
+
+
         Title(text = stringResource(id = R.string.label_home_today), modifier = Modifier)
         Spacer(modifier = Modifier.height(16.dp))
         if (isLoading) {
             Loader()
         } else {
             if (notes.isNotEmpty()) {
-                ShowListNotes(notes) { navController.navigate(Screen.DetailNoteScreen.params(it.idDoc, it.color!!)) }
+                ShowListNotes(
+                    notes,
+                    listState
+                ) { navController.navigate(Screen.DetailNoteScreen.params(it.idDoc, it.color!!)) }
 
             } else {
                 // EmptyNotes()

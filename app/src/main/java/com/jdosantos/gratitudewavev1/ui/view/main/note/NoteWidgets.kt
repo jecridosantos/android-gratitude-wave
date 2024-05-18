@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
@@ -271,8 +272,10 @@ fun ShowListGirdNotes(notes: List<Note>, onClick: (Note) -> Unit) {
 }
 
 @Composable
-fun ShowListNotes(notes: List<Note>, onClick: (Note) -> Unit) {
-    LazyColumn {
+fun ShowListNotes(notes: List<Note>, listState: LazyListState, onClick: (Note) -> Unit) {
+    LazyColumn(
+        state = listState
+    ) {
 
         items(
             count = notes.size,

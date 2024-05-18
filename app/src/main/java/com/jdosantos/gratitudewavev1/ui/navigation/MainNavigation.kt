@@ -15,6 +15,7 @@ import com.jdosantos.gratitudewavev1.ui.view.main.home.notesbytag.notesByTagScre
 import com.jdosantos.gratitudewavev1.ui.view.main.home.progress.progressScreenRoute
 import com.jdosantos.gratitudewavev1.ui.view.main.home.search.searchNoteScreenRoute
 import com.jdosantos.gratitudewavev1.ui.view.main.home.tags.searchByTagsScreenRoute
+import com.jdosantos.gratitudewavev1.ui.view.main.note.detailnote.DetailNoteViewModel
 import com.jdosantos.gratitudewavev1.ui.view.main.note.detailnote.detailNoteScreenRoute
 import com.jdosantos.gratitudewavev1.ui.view.main.note.updatenote.updateNoteScreenRoute
 import com.jdosantos.gratitudewavev1.ui.view.main.note.writenote.writeNoteScreenRoute
@@ -27,7 +28,7 @@ import com.jdosantos.gratitudewavev1.ui.view.splash.splashScreenRoute
 
 @Composable
 fun MainNavigation(
-    settingsViewModel: SettingsViewModel
+    settingsViewModel: SettingsViewModel,
 ) {
 
     val navController = rememberNavController()

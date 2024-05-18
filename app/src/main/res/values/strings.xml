@@ -233,6 +233,7 @@
     <string name="message_reset_password_success_message">Revise su bandeja de correo para cambiar de contraseña.</string>
     <string name="message_reset_password_success_confirm">Ir a mi correo</string>
     <string name="message_reset_password_success_cancel">Aceptar</string>
+    <string name="label_shared_note">Compartir mi nota</string>
 
 
 </resources>

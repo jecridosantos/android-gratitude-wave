@@ -35,15 +35,11 @@ fun CardNote(note: Note, onClick: () -> Unit) {
         colors = CardDefaults.cardColors(
             containerColor = if (note.color == null || note.color == VALUE_INT_EMPTY) colorScheme.background else colors[note.color],
         ),
-        /*  elevation = CardDefaults.cardElevation(
-              defaultElevation = 1.dp
-          ),*/
-        border = BorderStroke(3.dp, colorScheme.outlineVariant),
+        border = BorderStroke( width = if (note.color == null || note.color == VALUE_INT_EMPTY) 1.dp else 0.dp, colorScheme.outlineVariant),
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = SPACE_DEFAULT_MID.dp, bottom = SPACE_DEFAULT_MID.dp)
             .clickable { onClick() },
-        //    shape = RoundedCornerShape(8.dp)
     ) {
         Column(
             modifier = Modifier.padding(SPACE_DEFAULT.dp),

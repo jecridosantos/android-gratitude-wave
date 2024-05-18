@@ -73,7 +73,7 @@ fun ContentProfileView(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     LaunchedEffect(Unit) {
-        profileViewModel.getCuurrentUser()
+        profileViewModel.getCurrentUser()
     }
 
     Column(

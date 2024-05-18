@@ -31,6 +31,7 @@ import androidx.work.WorkQuery
 import com.jdosantos.gratitudewavev1.ui.navigation.MainNavigation
 import com.jdosantos.gratitudewavev1.ui.notification.NotificationWorker
 import com.jdosantos.gratitudewavev1.ui.theme.GratitudeWaveV1Theme
+import com.jdosantos.gratitudewavev1.ui.view.main.note.detailnote.DetailNoteViewModel
 import com.jdosantos.gratitudewavev1.ui.view.main.profile.settings.SettingsViewModel
 import com.jdosantos.gratitudewavev1.utils.convertMillisToDateTime
 import dagger.hilt.android.AndroidEntryPoint
@@ -63,6 +64,7 @@ class MainActivity : ComponentActivity() {
 
                 NotificationWorker.releaseNotification(context, settingsViewModel)
             }
+
 
             val workInfosLiveData = getAllScheduledWork(context)
 

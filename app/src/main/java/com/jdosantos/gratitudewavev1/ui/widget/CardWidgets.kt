@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -33,7 +34,9 @@ import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_D
 fun CardProgress(title: String, text: String, color: Color, onClick: () -> Unit) {
     Box(modifier = Modifier
         .padding(bottom = SPACE_DEFAULT.dp)
-        .fillMaxWidth()) {
+        .fillMaxWidth(),
+     //   shape = RoundedCornerShape(10.dp),
+        ) {
         Card(
             colors = CardDefaults.cardColors(
                 containerColor = color,
@@ -41,9 +44,10 @@ fun CardProgress(title: String, text: String, color: Color, onClick: () -> Unit)
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 5.dp
             ),
+            shape = RoundedCornerShape(10.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { onClick() }
+              //  .clickable { onClick() }
         ) {
             Column(
                 modifier = Modifier.padding(24.dp)

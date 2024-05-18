@@ -1,4 +1,4 @@
-package com.jdosantos.gratitudewavev1.ui.view.main.note.detailnote
+package com.jdosantos.gratitudewavev1.ui.view.main.note.sharednote
 
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -8,32 +8,29 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jdosantos.gratitudewavev1.domain.models.Note
+import com.jdosantos.gratitudewavev1.domain.models.User
+import com.jdosantos.gratitudewavev1.domain.usecase.auth.GetCurrentUserUseCase
 import com.jdosantos.gratitudewavev1.domain.usecase.notes.DeleteNoteByIdUseCase
 import com.jdosantos.gratitudewavev1.domain.usecase.notes.GetNoteByIdUseCase
 import com.jdosantos.gratitudewavev1.utils.constants.ConstantsRouteParams
-import com.jdosantos.gratitudewavev1.utils.constants.ConstantsRouteParams.NOTE_DETAILS_COLOR
-import com.jdosantos.gratitudewavev1.utils.constants.ConstantsRouteParams.NOTE_DETAILS_ID
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class DetailNoteViewModel @Inject constructor(
+class SharedNoteViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val getNoteByIdUseCase: GetNoteByIdUseCase?,
-    private val deleteNoteByIdUseCase: DeleteNoteByIdUseCase?
+    private val getCurrentUserUseCase: GetCurrentUserUseCase
 ) :
     ViewModel() {
 
-    val id: String = checkNotNull(savedStateHandle[NOTE_DETAILS_ID]?:"")
+    val id: String = checkNotNull(savedStateHandle[ConstantsRouteParams.NOTE_DETAILS_ID]?:"")
 
-    val color: String = checkNotNull(savedStateHandle[NOTE_DETAILS_COLOR]?:"0")
+    val color: String = checkNotNull(savedStateHandle[ConstantsRouteParams.NOTE_DETAILS_COLOR]?:"0")
 
     private val tag = this::class.java.simpleName
-
-    var showAlert by mutableStateOf(false)
-
     var note by mutableStateOf(Note())
         private set
 
@@ -52,24 +49,13 @@ class DetailNoteViewModel @Inject constructor(
         note = Note()
     }
 
-    fun delete(id: String, onSuccess: () -> Unit) {
-        viewModelScope.launch(Dispatchers.Main) {
-            deleteNoteByIdUseCase!!.execute(id,
-                callback = { success ->
-                    if (success) {
-                        onSuccess.invoke()
-                    } else {
-                        Log.e(tag, "delete - deleteNoteByIdUseCase")
-                    }
-                })
+    var user by mutableStateOf(User())
+        private set
+
+    fun getCurrentUser() {
+        getCurrentUserUseCase.execute().onSuccess { value: User ->
+            user = value
         }
     }
 
-    fun showAlert() {
-        showAlert = true
-    }
-
-    fun closeAlert() {
-        showAlert = false
-    }
 }
