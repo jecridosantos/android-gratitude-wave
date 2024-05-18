@@ -39,7 +39,7 @@ fun getWeekDays(resources: Resources, fullNames: Boolean = true): List<String> {
 }
 
 val repeatListOptions = listOf(
-    ReminderRepetitions.Once,
+//    ReminderRepetitions.Once,
     ReminderRepetitions.Daily,
     ReminderRepetitions.MonToFri,
     ReminderRepetitions.Custom

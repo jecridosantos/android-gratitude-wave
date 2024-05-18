@@ -136,8 +136,7 @@ fun SaveRemindersScreen(
 
         val timePickerState = rememberTimePickerState(
             initialHour = hour,
-            initialMinute = minute,
-            true
+            initialMinute = minute
         )
 
         val showTimePickerDialog = rememberSaveable { mutableStateOf(false) }

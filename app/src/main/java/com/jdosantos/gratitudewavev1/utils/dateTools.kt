@@ -153,3 +153,9 @@ fun hourFormat(hour: Int, minutes: Int): String {
     val hora12 = if (hour % 12 == 0) 12 else hour % 12
     return String.format("%02d:%02d %s", hora12, minutes, amPm)
 }
+
+fun convertMillisToDateTime(millis: Long): String {
+    val date = Date(millis)
+    val format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+    return format.format(date)
+}

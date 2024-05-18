@@ -8,6 +8,7 @@ data class UserSettings(
 )
 
 data class UserSettingReminders(
+    val uuid: String? = "",
     val hour: Int? = 0,
     val minute: Int? = 0,
     val label: String? = "",
@@ -16,7 +17,7 @@ data class UserSettingReminders(
     val repeatDays: MutableList<Int>? = mutableListOf()
 ){
     override fun toString(): String {
-        return "$hour,$minute|$label|$repeat|$active|${repeatDays?.joinToString(",")}"
+        return "$uuid|$hour,$minute|$label|$repeat|${repeatDays?.joinToString(",")}|$active"
     }
 
 }

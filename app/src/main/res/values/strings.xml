@@ -138,7 +138,7 @@
     <string name="label_home_today">Today</string>
 
     <string name="title_goals">Challenges</string>
-    <string name="label_goals">My hallenge</string>
+    <string name="label_goals">My challenge</string>
 
     <string name="label_select">Select</string>
 
@@ -161,7 +161,7 @@
     <string name="label_mute_notifications">Silenciar notificaciones</string>
     <string name="label_send_feedback">Enviar comentarios</string>
     <string name="label_help_center">Centro de ayuda</string>
-    <string name="label_privacy_policy">Plíticas de seguridad</string>
+    <string name="label_privacy_policy">Políticas de seguridad</string>
     <string name="label_terms_of_service">Términos de servicio</string>
     <string name="label_send_feedback_title_one">¿Qué te gustó más de la aplicación?</string>
     <string name="label_send_feedback_title_two">¿En qué podemos mejorar?</string>

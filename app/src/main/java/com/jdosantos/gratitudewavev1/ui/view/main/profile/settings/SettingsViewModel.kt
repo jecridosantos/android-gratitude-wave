@@ -18,6 +18,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -77,7 +78,8 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun fillReminderLabel(label: String) {
-        currentReminder = currentReminder.copy(label = label)
+        val labelClean = label.replace("|", " ").replace(",", " ").replace("_", " ")
+        currentReminder = currentReminder.copy(label = labelClean)
     }
 
     fun fillReminderRepeat(repeatConfig: Int) {
@@ -89,9 +91,8 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun addReminder(context: Context, callback: (Boolean) -> Unit) {
-        Log.d("REMINDERS", "addReminder ${_userSettings.value.reminders}")
+        currentReminder = currentReminder.copy(uuid = UUID.randomUUID().toString())
         _userSettings.value.reminders.add(currentReminder)
-        Log.d("REMINDERS", "addReminder ${_userSettings.value.reminders}")
         _userSettings.value =
             _userSettings.value.copy(reminders = _userSettings.value.reminders.toMutableList())
         saveSettings(callback = {
@@ -118,6 +119,7 @@ class SettingsViewModel @Inject constructor(
 
     fun cleanReminder() {
         currentReminder = currentReminder.copy(
+            uuid = "",
             hour = 0,
             minute = 0,
             label = "",
@@ -135,6 +137,7 @@ class SettingsViewModel @Inject constructor(
             Log.d("TIMEPICKER 4", "reminderToEdit: $reminderToEdit")
 
             currentReminder = currentReminder.copy(
+                uuid = reminderToEdit.uuid,
                 hour = reminderToEdit.hour,
                 minute = reminderToEdit.minute,
                 label = reminderToEdit.label,

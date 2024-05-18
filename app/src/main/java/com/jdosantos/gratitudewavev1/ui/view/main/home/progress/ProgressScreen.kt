@@ -109,7 +109,7 @@ private fun ContentProgressView(
                 CardProgress(stringResource(R.string.label_best_streak), "${progressState.bestStreak} ${stringResource(id = R.string.label_days)}", getColors()[2]) {}
             }
         }
-        Spacer(modifier = Modifier.height(16.dp))
+       /* Spacer(modifier = Modifier.height(16.dp))
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -138,7 +138,7 @@ private fun ContentProgressView(
         } else {
             Text(text = stringResource(R.string.label_select_challenge))
         }
-
+*/
 
     }
 }

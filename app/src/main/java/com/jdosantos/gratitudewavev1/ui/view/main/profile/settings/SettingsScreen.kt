@@ -77,11 +77,11 @@ private fun ContentSettingsView(
 
     Column(modifier = Modifier.padding(paddingValues)) {
 
-        SettingItemCheck(title = stringResource(R.string.label_mute_notifications), configUser.muteNotifications) {
+/*        SettingItemCheck(title = stringResource(R.string.label_mute_notifications), configUser.muteNotifications) {
             settingsViewModel.saveMuteNotifications(it) {
 
             }
-        }
+        }*/
         SettingItem(title = stringResource(R.string.label_customize_reminders)) {
             navController.navigate(Screen.RemindersScreen.route)
         }
