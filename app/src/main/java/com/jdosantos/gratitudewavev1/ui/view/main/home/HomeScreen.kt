@@ -208,7 +208,7 @@ fun ContentHomeView(
             if (notes.isNotEmpty()) {
                 ShowListNotes(
                     notes,
-                    listState
+                    listState, navController
                 ) { navController.navigate(Screen.DetailNoteScreen.params(it.idDoc, it.color!!)) }
 
             } else {

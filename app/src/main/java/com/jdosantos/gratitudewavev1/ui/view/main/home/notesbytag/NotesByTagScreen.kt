@@ -102,9 +102,9 @@ fun ContentNotesByTagView(
             if (notes.isNotEmpty()) {
                 LazyColumn {
                     items(notes) { item ->
-                        CardNote(item) {
+                        CardNote(item, navController, onClick =  {
                             navController.navigate(Screen.DetailNoteScreen.params(item.idDoc, item.color!!))
-                        }
+                        })
                     }
                 }
             } else {

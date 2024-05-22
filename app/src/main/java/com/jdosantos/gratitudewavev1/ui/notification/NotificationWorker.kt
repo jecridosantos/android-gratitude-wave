@@ -80,7 +80,7 @@ class NotificationWorker(context: Context, params: WorkerParameters) : Worker(co
         return NotificationCompat.Builder(applicationContext, Constants.NOTIFICATION_CHANNEL_ID)
             .setContentTitle(title)
             .setContentText(getRandomMessage())
-            .setSmallIcon(R.drawable.image_logo) // TODO: pendiente cambiar icono de notificacion
+            .setSmallIcon(R.drawable.ic_stat_name)
             .setPriority(NotificationManager.IMPORTANCE_HIGH)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)

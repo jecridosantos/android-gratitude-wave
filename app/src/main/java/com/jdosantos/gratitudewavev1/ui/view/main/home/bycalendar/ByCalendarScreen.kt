@@ -153,7 +153,7 @@ fun ContentByCalendarView(
                     state = listState
                 ) {
                     items(data) { item ->
-                        CardNote(item) {
+                        CardNote(item, navController, onClick = {
                             byCalendarViewModel.navigateToDetail(true)
                             navController.navigate(
                                 Screen.DetailNoteScreen.params(
@@ -161,7 +161,9 @@ fun ContentByCalendarView(
                                     item.color!!
                                 )
                             )
-                        }
+                        })
+
+
                     }
                 }
             } else {

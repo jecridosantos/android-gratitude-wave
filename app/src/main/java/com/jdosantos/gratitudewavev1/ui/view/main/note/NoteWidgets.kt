@@ -2,10 +2,8 @@ package com.jdosantos.gratitudewavev1.ui.view.main.note
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,9 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -50,19 +45,20 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
-import com.jdosantos.gratitudewavev1.utils.emotionLists
-import com.jdosantos.gratitudewavev1.utils.darkColors
-import com.jdosantos.gratitudewavev1.utils.getFormattedDate
-import com.jdosantos.gratitudewavev1.utils.lightColors
+import com.jdosantos.gratitudewavev1.domain.enums.Emotion
 import com.jdosantos.gratitudewavev1.domain.models.Note
 import com.jdosantos.gratitudewavev1.domain.models.NoteTag
+import com.jdosantos.gratitudewavev1.ui.widget.CardNote
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT_MID
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT_MIN
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.VALUE_INT_EMPTY
-import com.jdosantos.gratitudewavev1.domain.enums.Emotion
-import com.jdosantos.gratitudewavev1.ui.widget.CardNote
+import com.jdosantos.gratitudewavev1.utils.darkColors
+import com.jdosantos.gratitudewavev1.utils.emotionLists
+import com.jdosantos.gratitudewavev1.utils.getFormattedDate
+import com.jdosantos.gratitudewavev1.utils.lightColors
 import java.util.Date
 import java.util.Locale
 
@@ -185,7 +181,12 @@ fun ItemOptionsNote(
     ) {
         Row(
             modifier = Modifier
-                .padding(start = SPACE_DEFAULT.dp, end = SPACE_DEFAULT.dp, top = SPACE_DEFAULT_MIN.dp, bottom = SPACE_DEFAULT_MIN.dp)
+                .padding(
+                    start = SPACE_DEFAULT.dp,
+                    end = SPACE_DEFAULT.dp,
+                    top = SPACE_DEFAULT_MIN.dp,
+                    bottom = SPACE_DEFAULT_MIN.dp
+                )
                 .height(40.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -256,23 +257,12 @@ fun DisplayDate(modifier: Modifier, date: Date?, updatedAt: Date?) {
 }
 
 @Composable
-fun ShowListGirdNotes(notes: List<Note>, onClick: (Note) -> Unit) {
-    LazyVerticalStaggeredGrid(
-        columns = StaggeredGridCells.Fixed(2),
-        contentPadding = PaddingValues(SPACE_DEFAULT_MID.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        items(notes) { item ->
-
-            CardNote(item) {
-                onClick(item)
-            }
-        }
-    }
-}
-
-@Composable
-fun ShowListNotes(notes: List<Note>, listState: LazyListState, onClick: (Note) -> Unit) {
+fun ShowListNotes(
+    notes: List<Note>,
+    listState: LazyListState,
+    navController: NavController,
+    onClick: (Note) -> Unit
+) {
     LazyColumn(
         state = listState
     ) {
@@ -284,9 +274,11 @@ fun ShowListNotes(notes: List<Note>, listState: LazyListState, onClick: (Note) -
             },
             itemContent = { index ->
                 val cartItemData = notes[index]
-                CardNote(cartItemData) {
+
+                CardNote(cartItemData, navController, onClick = {
                     onClick(cartItemData)
-                }
+                })
+
             }
         )
     }
@@ -294,8 +286,10 @@ fun ShowListNotes(notes: List<Note>, listState: LazyListState, onClick: (Note) -
 
 @Composable
 fun CardItems(icon: Int, text: String, color: Color, onClick: () -> Unit) {
-    Box(modifier = Modifier.padding(bottom = SPACE_DEFAULT_MID.dp)
-        .fillMaxWidth().clickable { onClick() }) {
+    Box(modifier = Modifier
+        .padding(bottom = SPACE_DEFAULT_MID.dp)
+        .fillMaxWidth()
+        .clickable { onClick() }) {
         Card(
             colors = CardDefaults.cardColors(
                 containerColor = color,
@@ -303,7 +297,7 @@ fun CardItems(icon: Int, text: String, color: Color, onClick: () -> Unit) {
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 5.dp
             ),
-            modifier = Modifier .fillMaxWidth()
+            modifier = Modifier.fillMaxWidth()
         ) {
             Column(
                 modifier = Modifier.padding(SPACE_DEFAULT.dp)
@@ -314,11 +308,13 @@ fun CardItems(icon: Int, text: String, color: Color, onClick: () -> Unit) {
                     Modifier.size(50.dp)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(text = text,
+                Text(
+                    text = text,
                     //fontWeight = FontWeight.ExtraBold,
                     maxLines = 1,
                     fontSize = 14.sp,
-                    overflow = TextOverflow.Ellipsis)
+                    overflow = TextOverflow.Ellipsis
+                )
             }
         }
     }
