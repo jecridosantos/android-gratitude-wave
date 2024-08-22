@@ -17,7 +17,6 @@ class GenerateByIAUseCase @Inject constructor(
     private val noteRepository: NoteRepository,
     private val noteGenerationTracker: NoteGenerationTracker,
     private val userPreferencesManager: UserPreferencesManager,
-    private val localizedPromptStarterManager: LocalizedPromptStarterManager,
     private val localizedMessageManager: LocalizedMessageManager
 ) {
     suspend fun generate(inputPrompt: String? = null): Result<String> {
@@ -31,11 +30,7 @@ class GenerateByIAUseCase @Inject constructor(
                     try {
 
                         val retrievedUserPreferences = userPreferencesManager.getUserPreferences()
-                        var prompt = "Escribe una frase motivadora por la que agradecer";
-                       // if (retrievedUserPreferences.uid.isNotEmpty() && !retrievedUserPreferences.skip) {
-                            prompt = createPersonalizedPrompt(retrievedUserPreferences, inputPrompt)
-                        //}
-
+                        val prompt = createPersonalizedPrompt(retrievedUserPreferences, inputPrompt)
                         val response = generativeModel.generateContent(prompt)
                         val responseText =
                             response.text ?: return Result.failure(NoteException.GenerateError())
@@ -69,8 +64,10 @@ class GenerateByIAUseCase @Inject constructor(
         return deferredByIA.await()
     }
 
-    private fun createPersonalizedPrompt(userPreferences: UserPreferences, inputPrompt: String? = null): String {
-        val promptStarters = localizedPromptStarterManager.getLocalizedPromptStarters()
+    private fun createPersonalizedPrompt(
+        userPreferences: UserPreferences,
+        inputPrompt: String? = null
+    ): String {
 
         val parts = mutableListOf<String>()
 
@@ -103,15 +100,12 @@ class GenerateByIAUseCase @Inject constructor(
             parts.add("${localizedMessageManager.getMessage(LocalizedMessageManager.MessageKey.PROMPT_MESSAGE_ABOUT)} ${userPreferences.about}")
         }
 
-        // Selecciona aleatoriamente una frase inicial y una parte de las preferencias del usuario
-        val randomPromptStarter =
-            "${localizedMessageManager.getMessage(LocalizedMessageManager.MessageKey.PROMPT_MESSAGE_RANDOM_PROMPT_STARTER)} ${promptStarters.random()}"
-        val randomPart = parts.randomOrNull() ?: localizedMessageManager.getMessage(
-            LocalizedMessageManager.MessageKey.PROMPT_MESSAGE_RANDOM_PART
-        )
-
         // Crea el prompt con la instrucción
-        return "${localizedMessageManager.getMessage(LocalizedMessageManager.MessageKey.PROMPT_MESSAGE_RANDOM_PROMPT_STARTER)} $inputPrompt ${localizedMessageManager.getMessage(LocalizedMessageManager.MessageKey.PROMPT_MESSAGE_FINAL_PROMPT)}"
+        return "${localizedMessageManager.getMessage(LocalizedMessageManager.MessageKey.PROMPT_MESSAGE_RANDOM_PROMPT_STARTER)} $inputPrompt ${
+            localizedMessageManager.getMessage(
+                LocalizedMessageManager.MessageKey.PROMPT_MESSAGE_FINAL_PROMPT
+            )
+        }"
     }
 
 }

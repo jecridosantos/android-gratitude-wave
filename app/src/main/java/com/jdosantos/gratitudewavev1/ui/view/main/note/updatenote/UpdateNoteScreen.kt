@@ -131,7 +131,7 @@ fun UpdateNoteScreen(
                         updateNoteViewModel.generateMessage()
                     })
                 {
-                    Text(text = "Mejorar mis palabras")
+                    Text(text = stringResource(R.string.label_improve_my_words))
                     Icon(
                         painter = painterResource(id = R.drawable.baseline_auto_awesome_24),
                         contentDescription = ""

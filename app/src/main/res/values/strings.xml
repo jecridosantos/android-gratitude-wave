@@ -257,4 +257,5 @@
     <string name="label_profession_placeholder">What do you do for a living?</string>
     <string name="label_other_people">Other people</string>
     <string name="label_other_people_placeholder">Someone else to consider</string>
+    <string name="label_improve_my_words">Improve my words</string>
 </resources>

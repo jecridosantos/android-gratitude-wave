@@ -419,7 +419,7 @@ private fun IconFloatingOption2(painter: Painter, onClick: () -> Unit) {
             contentDescription = "",
             Modifier.padding(end = 8.dp)
         )
-        Text(text = "Mejorar mis palabras")
+        Text(text = stringResource(R.string.label_improve_my_words))
 
     }
 }

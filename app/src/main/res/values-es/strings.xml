@@ -253,4 +253,5 @@
     <string name="label_profession_placeholder">¿A qué te dedicas?</string>
     <string name="label_other_people">Otras personas</string>
     <string name="label_other_people_placeholder">Alguien más por considerar</string>
+    <string name="label_improve_my_words">Mejorar mis palabras</string>
 </resources>
