@@ -63,7 +63,7 @@ fun SplashScreen(navController: NavController, splashViewModel: SplashViewModel 
         verticalArrangement = Arrangement.Center
     ) {
         Image(
-            painter = painterResource(id = R.drawable.gratitud_text),
+            painter = painterResource(id = R.drawable.yuspa_logo),
             contentDescription = null, // Add appropriate content description
             modifier = Modifier.size(200.dp)
         )

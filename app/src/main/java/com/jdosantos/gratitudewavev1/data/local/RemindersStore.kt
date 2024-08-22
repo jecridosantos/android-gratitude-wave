@@ -9,8 +9,9 @@ import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class RemindersStore(private val context: Context) {
+class RemindersStore @Inject constructor(val context: Context) {
 
     companion object {
         private val Context.dataStore: DataStore<Preferences> by preferencesDataStore("Reminders")
@@ -36,4 +37,10 @@ class RemindersStore(private val context: Context) {
         .map { preferences ->
             preferences[REMINDERS_KEY] ?: emptySet()
         }
+
+    suspend fun clearAll() {
+        context.dataStore.edit { preferences ->
+            preferences.clear()
+        }
+    }
 }

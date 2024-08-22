@@ -5,8 +5,6 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.os.Build
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.work.Constraints
 import androidx.work.NetworkType
@@ -19,16 +17,18 @@ import com.jdosantos.gratitudewavev1.R
 import com.jdosantos.gratitudewavev1.data.local.RemindersStore
 import com.jdosantos.gratitudewavev1.domain.handles.ReminderRepetitions
 import com.jdosantos.gratitudewavev1.domain.models.UserSettingReminders
+import com.jdosantos.gratitudewavev1.domain.services.impl.DefaultLanguageProvider
 import com.jdosantos.gratitudewavev1.ui.MainActivity
-import com.jdosantos.gratitudewavev1.ui.view.main.profile.settings.SettingsViewModel
 import com.jdosantos.gratitudewavev1.utils.constants.Constants
-import com.jdosantos.gratitudewavev1.utils.messages
-import com.jdosantos.gratitudewavev1.utils.titles
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 import kotlin.random.Random
 
-class NotificationWorker(context: Context, params: WorkerParameters) : Worker(context, params) {
+class NotificationWorker @Inject constructor(
+    private val context: Context,
+    params: WorkerParameters
+) : Worker(context, params) {
 
     override fun doWork(): Result {
         val calendar = Calendar.getInstance()
@@ -68,8 +68,11 @@ class NotificationWorker(context: Context, params: WorkerParameters) : Worker(co
         val reminderDetail = reminderTag.substringAfter("DETAIL_")
         val label = reminderDetail.split("|")[1]
 
-        fun getRandomTitle() = titles.random()
-        fun getRandomMessage() = messages.random()
+        val languageProvider = DefaultLanguageProvider(context)
+        val messages = LocalizedMessageNotificationManager(languageProvider)
+
+        fun getRandomTitle() = messages.getLocalizedTitles().random()
+        fun getRandomMessage() = messages.getLocalizedMessages().random()
 
         val title = label.ifEmpty { getRandomTitle() }
 
@@ -93,7 +96,12 @@ class NotificationWorker(context: Context, params: WorkerParameters) : Worker(co
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
 
-        return PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        return PendingIntent.getActivity(
+            context,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
     }
 
     companion object {
@@ -101,13 +109,13 @@ class NotificationWorker(context: Context, params: WorkerParameters) : Worker(co
         private const val KEY_PREFIX = "KEY"
         private const val TAG_PREFIX_DETAIL = "DETAIL"
 
-        suspend fun releaseNotification(context: Context, settingsViewModel: SettingsViewModel) {
+        suspend fun releaseNotification(context: Context) {
             val store = RemindersStore(context)
 
             store.getReminders().collect { reminderSet ->
                 reminderSet?.forEach { reminderString ->
                     val reminder = parseReminderString(reminderString)
-                    if (reminder!=null) {
+                    if (reminder != null) {
                         scheduleNotification(context, reminder)
                     }
 
@@ -125,7 +133,8 @@ class NotificationWorker(context: Context, params: WorkerParameters) : Worker(co
                     minute = time[1].toIntOrNull(),
                     label = parts[2],
                     repeat = parts[3].toInt(),
-                    repeatDays = parts[4].split(",").mapNotNull { it.toIntOrNull() }.toMutableList(),
+                    repeatDays = parts[4].split(",").mapNotNull { it.toIntOrNull() }
+                        .toMutableList(),
                     active = parts[5].toBoolean()
                 )
             } else {
@@ -156,7 +165,8 @@ class NotificationWorker(context: Context, params: WorkerParameters) : Worker(co
             if (createNewWork && reminder.active && reminder.hour != null && reminder.minute != null) {
                 val notificationTime = getNotificationTime(reminder)
                 if (notificationTime.after(Calendar.getInstance())) {
-                    val delayInMillis = notificationTime.timeInMillis - Calendar.getInstance().timeInMillis
+                    val delayInMillis =
+                        notificationTime.timeInMillis - Calendar.getInstance().timeInMillis
                     val constraints = Constraints.Builder()
                         .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
                         .setRequiresCharging(false)

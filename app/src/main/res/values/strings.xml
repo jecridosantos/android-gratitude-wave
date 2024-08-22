@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Gratitude Wave</string>
-    <string name="login_welcome">Welcome!</string>
+    <string name="login_welcome">Welcome to Yuspa!</string>
     <string name="login_label_input_email">Email</string>
     <string name="login_label_input_pass">Password</string>
     <string name="login_button_login">Log In</string>
@@ -12,11 +12,11 @@
     <string name="button_write">Write</string>
     <string name="button_delete">Delete</string>
 
-    <!--Messages-->
+    <!--LocalizedMessageManager-->
     <string name="login_alert_title">Log In failed!</string>
     <string name="login_alert_message">Incorrect credentials</string>
 
-    <!--Messages-->
+    <!--LocalizedMessageManager-->
     <string name="login_note_form_error_title">Stop writing!</string>
     <string name="login_note_form_error_message">You have unsaved changes, do you want to continue?</string>
     <string name="login_note_form_error_empty">Empty note</string>
@@ -156,6 +156,7 @@
     <string name="label_reminders">Reminders</string>
     <string name="label_save_reminders">New reminder</string>
     <string name="label_update_reminders">Update reminder</string>
+    <string name="label_me">This is me</string>
     <string name="label_settings">Settings</string>
     <string name="label_customize_reminders">Customize reminders</string>
     <string name="label_mute_notifications">Mute notifications</string>
@@ -189,13 +190,17 @@
     <string name="label_register">Register</string>
     <string name="label_reset_password">Reset Your Password</string>
     <string name="label_name">Name</string>
+    <string name="label_age">Age</string>
     <string name="label_email">Email</string>
+    <string name="label_country">Country</string>
+    <string name="label_country_placeholder">Where do you live?</string>
     <string name="label_password">Password</string>
-    <string name="label_name_placeholder">Name</string>
-    <string name="label_email_placeholder">Email</string>
-    <string name="label_password_placeholder">Password</string>
+    <string name="label_name_placeholder">Enter your name</string>
+    <string name="label_age_placeholder">Enter your age</string>
+    <string name="label_email_placeholder">Enter your email</string>
+    <string name="label_password_placeholder">Enter your password</string>
 
-    <string name="label_message_accept_conditions">By creating an account, you agree to the Privacy Policy and Terms and Conditions.</string>
+    <string name="label_message_accept_conditions">By creating an account, you agree to:</string>
     <string name="label_message_verify_email">We need to verify your email so you can use our app.</string>
     <string name="label_continue">Continue</string>
     <string name="label_error_register">Registration error</string>
@@ -236,5 +241,20 @@
     <string name="label_shared_note">Share my note</string>
 
 
-
+    <!-- Password rules -->
+    <string name="password_rule_length">At least 8 characters long</string>
+    <string name="password_rule_uppercase">At least one uppercase letter</string>
+    <string name="password_rule_number">At least one number</string>
+    <string name="password_rule_no_whitespace">No whitespace allowed</string>
+    <string name="password_rule_no_name_email">Cannot contain name or email</string>
+    <string name="label_secure_password">Ingrese una contraseña segura.</string>
+    <string name="button_finish">Finalizar</string>
+    <string name="button_next">Continuar</string>
+    <string name="button_back">Anterior</string>
+    <string name="button_skip">Omitir</string>
+    <string name="label_other_interest">Other interests</string>
+    <string name="label_other_interest_placeholder">Enter other interests that you do not find on the list</string>
+    <string name="label_profession_placeholder">What do you do for a living?</string>
+    <string name="label_other_people">Other people</string>
+    <string name="label_other_people_placeholder">Someone else to consider</string>
 </resources>

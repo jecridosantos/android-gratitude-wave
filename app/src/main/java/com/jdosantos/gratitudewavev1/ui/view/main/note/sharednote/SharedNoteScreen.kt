@@ -12,28 +12,32 @@ import android.net.Uri
 import android.os.Environment
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Share
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -48,6 +52,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.draw
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
@@ -65,8 +70,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
 import com.jdosantos.gratitudewavev1.domain.models.Note
-import com.jdosantos.gratitudewavev1.ui.view.main.note.detailnote.DetailNoteViewModel
-import com.jdosantos.gratitudewavev1.ui.view.main.note.getColors
+import com.jdosantos.gratitudewavev1.ui.widget.getColors
+import com.jdosantos.gratitudewavev1.utils.constants.Constants
 import com.jdosantos.gratitudewavev1.utils.getSafeColor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -78,7 +83,10 @@ import kotlin.coroutines.resume
 //@Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SharedNoteScreen(navController:NavController, sharedNoteViewModel: SharedNoteViewModel = hiltViewModel()) {
+fun SharedNoteScreen(
+    navController: NavController,
+    sharedNoteViewModel: SharedNoteViewModel = hiltViewModel()
+) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -86,7 +94,7 @@ fun SharedNoteScreen(navController:NavController, sharedNoteViewModel: SharedNot
 
     val colors = getColors()
     val note = sharedNoteViewModel.note
-
+    var isChecked by remember { mutableStateOf(false) }
     var selectedColor by remember { mutableStateOf(colors.getSafeColor(sharedNoteViewModel.color.toInt())) }
     var permission by remember {
         mutableStateOf(
@@ -137,11 +145,22 @@ fun SharedNoteScreen(navController:NavController, sharedNoteViewModel: SharedNot
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
 
-    ) { padding ->
-        Column (
+        ) { padding ->
+        Column(
             modifier = Modifier
                 .padding(padding)
-                .fillMaxSize(),
+                .fillMaxSize()
+                .background(
+
+                    //RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            MaterialTheme.colorScheme.background,
+                            selectedColor,
+
+                            )
+                    )
+                ),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Column(
@@ -168,33 +187,64 @@ fun SharedNoteScreen(navController:NavController, sharedNoteViewModel: SharedNot
                         }
                     }
             ) {
-                ScreenContentToCapture(sharedNoteViewModel.user.name, note, selectedColor)
+                ScreenContentToCapture(sharedNoteViewModel.user.name, note, selectedColor, isChecked)
             }
+            if (!(note.color == null || note.color == Constants.VALUE_INT_EMPTY)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(start = Constants.SPACE_DEFAULT_MID.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+
+                    Checkbox(
+                        checked = isChecked,
+                        onCheckedChange = {
+                            isChecked = it
+                        }
+                    )
+                    Text(
+                        text = "Compartir con fondo blanco.",
+                        modifier = Modifier.padding(start = Constants.SPACE_DEFAULT_MID.dp)
+                    )
+                }
+            }
+
             ElevatedButton(onClick = {
                 shareBitmapFromComposable()
             }) {
                 Text(text = "Compartir")
                 Icon(Icons.Default.Share, "share")
             }
-        }
 
+
+
+        }
 
 
     }
 }
 
 @Composable
-private fun ScreenContentToCapture(name: String, note: Note, color: Color) {
+private fun ScreenContentToCapture(
+    name: String,
+    note: Note,
+    color: Color,
+    isChecked: Boolean = false
+) {
+    val colors = getColors()
     Card(
-        colors = CardDefaults.cardColors(
-            containerColor = color,
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 5.dp
-        ),
+
         modifier = Modifier
             .size(400.dp, 500.dp)
             .padding(16.dp)
+            .fillMaxWidth()
+
+            .padding(top = Constants.SPACE_DEFAULT_MID.dp)
+         ,
+        colors = CardDefaults.cardColors(
+            containerColor = if ((note.color == null || note.color == Constants.VALUE_INT_EMPTY) || isChecked) MaterialTheme.colorScheme.background else colors[note.color!!],
+        ),
+        shape = RoundedCornerShape(20.dp),
+        border = BorderStroke(1.dp, if ((note.color == null || note.color == Constants.VALUE_INT_EMPTY) || isChecked) MaterialTheme.colorScheme.surfaceVariant else colors[note.color!!])
     ) {
         Column(
 
@@ -204,21 +254,13 @@ private fun ScreenContentToCapture(name: String, note: Note, color: Color) {
                 .padding(start = 32.dp, end = 32.dp)
                 .fillMaxSize()
         ) {
-
             Image(
-                painterResource(id = R.drawable.image_logo),
+                painterResource(id = R.drawable.yuspa_logo),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(70.dp),
+                    .size(150.dp),
             )
             Spacer(modifier = Modifier.height(16.dp))
-            Image(
-                painterResource(id = R.drawable.gratitud_text),
-                contentDescription = null,
-                modifier = Modifier
-                    .width(120.dp),
-            )
-            Spacer(modifier = Modifier.height(32.dp))
             Text(
                 note.note,
                 textAlign = TextAlign.Center,

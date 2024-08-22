@@ -8,8 +8,9 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class NoteTypeStore(private val context: Context) {
+class NoteTypeStore @Inject constructor(val context: Context) {
 
     companion object {
         private val Context.dataStore: DataStore<Preferences> by preferencesDataStore("PublishingOption")
@@ -28,6 +29,12 @@ class NoteTypeStore(private val context: Context) {
 
     suspend fun saveDefault(index: Int) {
         saveValue(index.toString())
+    }
+
+    suspend fun clearAll() {
+        context.dataStore.edit { preferences ->
+            preferences.clear()
+        }
     }
 
 

@@ -5,60 +5,71 @@ package com.jdosantos.gratitudewavev1.ui.view.main.note.writenote
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Card
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
 import com.jdosantos.gratitudewavev1.domain.models.Note
-import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
-import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.VALUE_INT_EMPTY
-import com.jdosantos.gratitudewavev1.utils.emotionLists
-import com.jdosantos.gratitudewavev1.ui.view.main.note.ChipEmotionChoose
-import com.jdosantos.gratitudewavev1.ui.view.main.note.ChipTagChoose
 import com.jdosantos.gratitudewavev1.ui.view.main.note.ChooseColorBackground
 import com.jdosantos.gratitudewavev1.ui.view.main.note.ChooseNoteEmotion
 import com.jdosantos.gratitudewavev1.ui.view.main.note.ChooseNoteTag
-import com.jdosantos.gratitudewavev1.ui.view.main.note.CurrentDateView
-import com.jdosantos.gratitudewavev1.ui.view.main.note.IconFloatingOption
-import com.jdosantos.gratitudewavev1.ui.view.main.note.NoteInput
-import com.jdosantos.gratitudewavev1.ui.view.main.note.getColors
+import com.jdosantos.gratitudewavev1.ui.widget.ChipEmotionChoose
+import com.jdosantos.gratitudewavev1.ui.widget.ChipTagChoose
+import com.jdosantos.gratitudewavev1.ui.widget.CurrentDateView
+import com.jdosantos.gratitudewavev1.ui.widget.FloatingOptions
+import com.jdosantos.gratitudewavev1.ui.widget.NoteInput
+import com.jdosantos.gratitudewavev1.ui.widget.getColors
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT_TOP_APP_BAR
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.VALUE_INT_EMPTY
+import com.jdosantos.gratitudewavev1.utils.emotionLists
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun WriteNoteScreen(navController: NavController, writeNoteViewModel: WriteNoteViewModel = hiltViewModel() ) {
+fun WriteNoteScreen(
+    navController: NavController,
+    writeNoteViewModel: WriteNoteViewModel
+) {
 
     val context = LocalContext.current
-
+    val isLoading by writeNoteViewModel.isLoading.collectAsState()
     val colors = getColors()
 
     val backgroundDefault = colorScheme.background
@@ -67,13 +78,17 @@ fun WriteNoteScreen(navController: NavController, writeNoteViewModel: WriteNoteV
 
     val note = writeNoteViewModel.note
 
+    fun cleanView() = navController.popBackStack()
+
     LaunchedEffect(Unit) {
         writeNoteViewModel.init(context)
     }
 
-    fun cleanView() {
-        navController.popBackStack()
-    }
+    writeNoteViewModel.toastMessage.observe(LocalLifecycleOwner.current, Observer { message ->
+        message?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        }
+    })
 
     Scaffold() { paddingValues ->
 
@@ -81,26 +96,39 @@ fun WriteNoteScreen(navController: NavController, writeNoteViewModel: WriteNoteV
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
-                .background(selectedColor, RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)),
+                .background(
+
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            MaterialTheme.colorScheme.background,
+                            selectedColor,
+                        )
+                    )
+                ),
 
             ) {
 
             Column() {
                 Header(
+                    writeNoteViewModel,
                     onSave = {
-                        writeNoteViewModel.saveNewNote { success ->
-                            if (success) cleanView()
-                        }
+                        writeNoteViewModel.saveNewNote()
+                        cleanView()
                     }, onCleanView = {
                         cleanView()
                     }
                 )
 
-                NoteInput(note, {
-                    writeNoteViewModel.onNote(it)
-                }) {
-                    writeNoteViewModel.clean()
-                }
+                NoteInput(
+                    note = note,
+                    isLoading = isLoading,
+                    onNoteChange = {
+                        writeNoteViewModel.onNote(it)
+                    },
+                    onDispose = {
+                        writeNoteViewModel.clean()
+                    })
+
 
                 Tags(note, writeNoteViewModel)
             }
@@ -108,7 +136,12 @@ fun WriteNoteScreen(navController: NavController, writeNoteViewModel: WriteNoteV
             FloatingOptions(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(SPACE_DEFAULT.dp), writeNoteViewModel
+                    .padding(SPACE_DEFAULT.dp),
+                showGenerator = note.note.length > 10,
+                onClickTag = { writeNoteViewModel.showDialogTag() },
+                onClickEmotion = { writeNoteViewModel.showDialogEmotion() },
+                onClickColor = { writeNoteViewModel.showDialogColor() },
+                onClickGenerate = { writeNoteViewModel.generateMessage() }
             )
 
         }
@@ -165,22 +198,28 @@ fun WriteNoteScreen(navController: NavController, writeNoteViewModel: WriteNoteV
 
 
 @Composable
-private fun Header(onSave: () -> Unit, onCleanView: () -> Unit) {
+private fun Header(
+    writeNoteViewModel: WriteNoteViewModel,
+    onSave: () -> Unit,
+    onCleanView: () -> Unit
+) {
     Row(
         modifier = Modifier
             .padding(4.dp)
-            .height(56.dp),
+            .height(SPACE_DEFAULT_TOP_APP_BAR.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(onClick = { onCleanView() }) {
             Icon(
                 imageVector = Icons.Default.Close,
                 contentDescription = "",
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                tint = colorScheme.onSurfaceVariant
             )
         }
         Spacer(modifier = Modifier.width(4.dp))
-        CurrentDateView(modifier = Modifier) {}
+        CurrentDateView(clickeable = true) {
+            writeNoteViewModel.onDate(it)
+        }
         Spacer(modifier = Modifier.weight(1f))
         IconButton(onClick = {
             onSave()
@@ -189,7 +228,7 @@ private fun Header(onSave: () -> Unit, onCleanView: () -> Unit) {
             Icon(
                 imageVector = Icons.Default.Check,
                 contentDescription = "",
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                tint = colorScheme.onSurfaceVariant
             )
         }
     }
@@ -224,23 +263,3 @@ private fun Tags(note: Note, writeNoteViewModel: WriteNoteViewModel) {
     }
 }
 
-@Composable
-private fun FloatingOptions(modifier: Modifier, writeNoteViewModel: WriteNoteViewModel) {
-    Card(
-        modifier = modifier,
-        shape = RoundedCornerShape(50.dp),
-    ) {
-        Row(
-            modifier = Modifier.padding(4.dp)
-        ) {
-            Spacer(modifier = Modifier.width(8.dp))
-            IconFloatingOption(painterResource(id = R.drawable.chinche)) { writeNoteViewModel.showDialogTag() }
-            Spacer(modifier = Modifier.width(8.dp))
-            IconFloatingOption(painterResource(id = R.drawable.haz_de_sonrisa)) { writeNoteViewModel.showDialogEmotion() }
-            Spacer(modifier = Modifier.width(8.dp))
-            IconFloatingOption(painterResource(id = R.drawable.paleta)) { writeNoteViewModel.showDialogColor() }
-
-            Spacer(modifier = Modifier.width(8.dp))
-        }
-    }
-}

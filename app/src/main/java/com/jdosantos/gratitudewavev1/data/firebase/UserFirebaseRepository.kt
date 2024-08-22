@@ -42,11 +42,36 @@ class UserFirebaseRepository @Inject constructor(
                     }
                     .addOnFailureListener { exception ->
                         Log.e(tag, "saveUser - error: ${exception.message}")
-                        continuation.resume(Result.failure(exception))
+                        continuation.resume(Result.failure(UserException.UserSaveError()))
                     }
             } catch (e: Exception) {
                 Log.e(tag, "saveUser - error: ${e.message}")
-                continuation.resume(Result.failure(e))
+                continuation.resume(Result.failure(UserException.UserSaveError()))
+            }
+        }
+    }
+
+    override suspend fun updateName(userId: String, name: String): Result<Boolean> {
+        Log.d(tag, "saveUser")
+        return suspendCancellableCoroutine { continuation ->
+            try {
+                val updateName = hashMapOf(
+                    "name" to name,
+                    "updateAt" to com.google.firebase.firestore.FieldValue.serverTimestamp()
+                )
+                collection.document(userId)
+                    .update(updateName as Map<String, Any>)
+                    .addOnSuccessListener { documentReference ->
+                        continuation.resume(Result.success(true))
+                    }
+                    .addOnFailureListener { exception ->
+                        Log.e(tag, "updateName - error: ${exception.message}")
+                        continuation.resume(Result.failure(UserException.UserSaveError()))
+                        continuation.resume(Result.success(false))
+                    }
+            } catch (e: Exception) {
+                Log.e(tag, "updateName - error: ${e.message}")
+                continuation.resume(Result.failure(UserException.UserSaveError()))
             }
         }
     }

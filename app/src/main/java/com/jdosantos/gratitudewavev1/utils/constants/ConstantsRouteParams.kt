@@ -8,4 +8,6 @@ object ConstantsRouteParams {
     const val REMINDER_INDEX = "reminderIndex"
     const val REMINDER_INDEX_HOUR = "reminderIndexHour"
     const val REMINDER_INDEX_MINUTE = "reminderIndexMinute"
+    const val WEB_VIEW_PATH = "webViewPath"
+    const val WEB_VIEW_TITLE = "webViewTitle"
 }

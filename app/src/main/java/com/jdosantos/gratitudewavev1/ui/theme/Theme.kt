@@ -112,7 +112,7 @@ fun GratitudeWaveV1Theme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.background.toArgb()
+            window.statusBarColor =  colorScheme.background.toArgb()
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
         }
     }
@@ -123,16 +123,3 @@ fun GratitudeWaveV1Theme(
         content = content
     )
 }
-
-@Composable
-fun ChangeStatusBarColor(color: Color, isDarkTheme: Boolean) {
-    val view = LocalView.current
-    if (!view.isInEditMode) {
-        SideEffect {
-            val window = (view.context as Activity).window
-            window.statusBarColor = color.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !isDarkTheme
-        }
-    }
-}
-

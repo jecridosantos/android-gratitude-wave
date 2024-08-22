@@ -28,7 +28,7 @@ class AuthFirebaseRepository @Inject constructor(private val auth: FirebaseAuth)
                     uid = userLogged.uid,
                     email = userLogged.email.toString(),
                     name = userLogged.displayName.toString(),
-                    photoUrl = userLogged.photoUrl,
+                    photoUrl = if (userLogged.photoUrl == null) "" else userLogged.photoUrl.toString(),
                     provider = userLogged.providerId
                 )
             )
@@ -68,7 +68,7 @@ class AuthFirebaseRepository @Inject constructor(private val auth: FirebaseAuth)
                         uid = userLogged.uid,
                         email = userLogged.email.toString(),
                         name = userLogged.displayName.toString(),
-                        photoUrl = userLogged.photoUrl,
+                        photoUrl = if (userLogged.photoUrl == null) "" else userLogged.photoUrl.toString(),
                         provider = userLogged.providerId
                     )
                 )
@@ -100,7 +100,7 @@ class AuthFirebaseRepository @Inject constructor(private val auth: FirebaseAuth)
                             uid = userLogged.uid,
                             email = userLogged.email.toString(),
                             name = userLogged.displayName.toString(),
-                            photoUrl = userLogged.photoUrl,
+                            photoUrl = if (userLogged.photoUrl == null) "" else userLogged.photoUrl.toString(),
                             provider = userLogged.providerId
                         )
                     )
@@ -181,8 +181,8 @@ class AuthFirebaseRepository @Inject constructor(private val auth: FirebaseAuth)
                 User(
                     uid = userLogged.uid,
                     email = userLogged.email.toString(),
-                    name = userLogged.displayName.toString(),
-                    photoUrl = userLogged.photoUrl,
+                    name = if (userLogged.displayName == null) "" else userLogged.displayName.toString(),
+                    photoUrl = if (userLogged.photoUrl == null) "" else if (userLogged.photoUrl == null) "" else userLogged.photoUrl.toString(),
                     provider = userLogged.providerId
                 )
             )

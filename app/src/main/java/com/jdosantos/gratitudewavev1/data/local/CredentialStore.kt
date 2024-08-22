@@ -8,9 +8,9 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class CredentialStore(private val context: Context) {
-
+class CredentialStore  @Inject constructor(val context: Context) {
 
     companion object {
         private val Context.dataStore: DataStore<Preferences> by preferencesDataStore("Credential")
@@ -27,5 +27,9 @@ class CredentialStore(private val context: Context) {
             preferences[PASSWORD_KEY] ?: "0"
         }
 
-
+    suspend fun clearAll() {
+        context.dataStore.edit { preferences ->
+            preferences.clear()
+        }
+    }
 }

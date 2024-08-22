@@ -5,21 +5,15 @@ import android.app.Activity
 import android.content.Context
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
-import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,6 +24,7 @@ import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
@@ -39,8 +34,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -48,16 +43,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.jdosantos.gratitudewavev1.R
 import com.jdosantos.gratitudewavev1.ui.navigation.Screen
-import com.jdosantos.gratitudewavev1.ui.theme.ChangeStatusBarColor
-import com.jdosantos.gratitudewavev1.ui.view.main.note.CardItems
-import com.jdosantos.gratitudewavev1.ui.view.main.note.ShowListNotes
-import com.jdosantos.gratitudewavev1.ui.view.main.note.getColors
 import com.jdosantos.gratitudewavev1.ui.widget.EmptyMessage
 import com.jdosantos.gratitudewavev1.ui.widget.ImageAvatar
+import com.jdosantos.gratitudewavev1.ui.widget.ListCardNotes
 import com.jdosantos.gratitudewavev1.ui.widget.Loader
-import com.jdosantos.gratitudewavev1.ui.widget.Title
+import com.jdosantos.gratitudewavev1.ui.widget.NoticeWithoutNotesToday
 import com.jdosantos.gratitudewavev1.ui.widget.isScrollingUp
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.MAX_LENGHT_TITLE_TOP_BAR
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
@@ -72,16 +66,11 @@ fun HomeScreen(
 ) {
 
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
-    val scrollState = rememberScrollState()
     val navigateToNewNote: () -> Unit = {
         navController.navigate(Screen.WriteNoteScreen.route)
     }
     val backPressedOnce = remember { mutableStateOf(false) }
     val context = LocalContext.current
-    val colorBackground = MaterialTheme.colorScheme.background
-    val dark = isSystemInDarkTheme()
-
-    ChangeStatusBarColor(colorBackground, dark)
 
     BackHandler(enabled = true) {
         handleBackPressed(context, backPressedOnce)
@@ -92,20 +81,24 @@ fun HomeScreen(
     }
 
     val listState = rememberLazyListState()
+    val userName by homeViewModel.userName.collectAsState()
+    val userAvatar by homeViewModel.userAvatar.collectAsState()
+    val showOnboarding by homeViewModel.showOnboarding.collectAsState()
+    if (showOnboarding) {
+        navController.navigate(Screen.OnboardingScreen.route)
+        homeViewModel.setShowOnboarding(false)
+    }
 
     Scaffold(
         modifier = Modifier
-            .nestedScroll(scrollBehavior.nestedScrollConnection)
-            .background(color = Color.Red),
+            .nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             LargeTopAppBar(
                 title = {
                     Text(
-                        text = homeViewModel.getWelcomeGretting(),
+                        text = userName,
                         maxLines = MAX_LENGHT_TITLE_TOP_BAR,
-                        overflow = TextOverflow.Ellipsis,
-                        //   fontWeight = FontWeight.Bold,
-
+                        overflow = TextOverflow.Ellipsis
                     )
                 },
                 scrollBehavior = scrollBehavior,
@@ -116,18 +109,19 @@ fun HomeScreen(
                     IconButton(onClick = {
 
                     }) {
-                        ImageAvatar(painter = homeViewModel.getUserAvatar())
+                        ImageAvatar(
+                            painter = rememberAsyncImagePainter(
+                                model = ImageRequest.Builder(LocalContext.current)
+                                    .data(userAvatar)
+                                    .build()
+                            )
+                        )
                     }
                 },
                 actions = {
                     IconButton(onClick = { navController.navigate(Screen.SearchNoteScreen.route) }) {
                         Icon(imageVector = Icons.Default.Search, contentDescription = "")
                     }
-                    /*                    IconButton(onClick = {
-                                            navController.navigate(Screen.NotificationsScreen.route)
-                                        }) {
-                                            Icon(imageVector = Icons.Default.Notifications, contentDescription = "")
-                                        }*/
                 }
             )
         },
@@ -137,7 +131,7 @@ fun HomeScreen(
                 text = { Text(text = "Agradecer") },
                 icon = {
                     Icon(
-                        painter = painterResource(id = R.drawable.editar),
+                        painter = painterResource(id = R.drawable.icon_pencil),
                         modifier = Modifier.size(24.dp),
                         contentDescription = ""
                     )
@@ -173,51 +167,48 @@ fun ContentHomeView(
     ) {
 
         val notes by homeViewModel.notesData.collectAsState()
-        Spacer(modifier = Modifier.height(16.dp))
 
-        LazyVerticalStaggeredGrid(
-            columns = StaggeredGridCells.Fixed(2),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
+        Row(
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            item {
-                CardItems(
-                    R.drawable.progress,
-                    stringResource(R.string.label_my_progress), getColors()[3]
-                ) {
-                    navController.navigate(Screen.ProgressScreen.route)
+            Text(
+                text = stringResource(id = R.string.label_home_today), modifier = Modifier,
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Spacer(modifier = Modifier.weight(1f))
+            if (notes.isNotEmpty()) {
+                TextButton(onClick = { navController.navigate(Screen.ByCalendarScreen.route) }) {
+                    Text(
+                        text = stringResource(id = R.string.label_see_more),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                 }
             }
-            item {
-                CardItems(
-                    R.drawable.calendario,
-                    stringResource(R.string.label_all_my_notes), getColors()[4]
-                ) {
-                    navController.navigate(Screen.ByCalendarScreen.route)
-                }
-            }
+
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Loader(isLoading)
+        if (!isLoading) {
 
-
-        Title(text = stringResource(id = R.string.label_home_today), modifier = Modifier)
-        Spacer(modifier = Modifier.height(16.dp))
-        if (isLoading) {
-            Loader()
-        } else {
+            if (!homeViewModel.thereAreNotesToday.value && homeViewModel.isFetch.value) {
+                NoticeWithoutNotesToday()
+            }
             if (notes.isNotEmpty()) {
-                ShowListNotes(
-                    notes,
-                    listState, navController
+                ListCardNotes(
+                    notes = notes,
+                    listState = listState,
+                    navController = navController,
                 ) { navController.navigate(Screen.DetailNoteScreen.params(it.idDoc, it.color!!)) }
 
             } else {
-                // EmptyNotes()
-                EmptyMessage(
-                    R.drawable.empty_notes,
-                    stringResource(R.string.label_no_notes_today),
-                    stringResource(R.string.label_no_notes_today_message)
-                )
+                if (homeViewModel.isFetch.value) {
+                    EmptyMessage(
+                        R.drawable.transistor_empty_envelope_with_fly_inside,
+                        stringResource(R.string.label_no_notes),
+                        stringResource(R.string.label_no_notes_today_message)
+                    )
+                }
+
             }
         }
     }

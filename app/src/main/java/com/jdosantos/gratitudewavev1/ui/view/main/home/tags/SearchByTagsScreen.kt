@@ -26,6 +26,7 @@ import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
 import com.jdosantos.gratitudewavev1.ui.navigation.Screen
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT_MID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,7 +76,7 @@ fun ContentSearchByTagsView(
     ) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(1),
-            contentPadding = PaddingValues(8.dp)
+            contentPadding = PaddingValues(SPACE_DEFAULT_MID.dp)
         ) {
             items(tags) {
                 Card(modifier = Modifier

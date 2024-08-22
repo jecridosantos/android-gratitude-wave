@@ -1,7 +1,6 @@
 package com.jdosantos.gratitudewavev1.ui.view.main.profile
 
-import android.content.Intent
-import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,6 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -31,33 +31,43 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Observer
 import androidx.navigation.NavController
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.jdosantos.gratitudewavev1.R
 import com.jdosantos.gratitudewavev1.ui.navigation.Screen
-import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
 import com.jdosantos.gratitudewavev1.ui.widget.ConfigItem
 import com.jdosantos.gratitudewavev1.ui.widget.TextItem
 import com.jdosantos.gratitudewavev1.ui.widget.Title
-import kotlinx.coroutines.launch
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.POLICIES_URL
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT_MIN
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.TERMS_URL
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.VERSION_APP
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(profileViewModel: ProfileViewModel, navController: NavController) {
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(title = { Text(text = stringResource(R.string.label_title_profile)) })
+            CenterAlignedTopAppBar(title = {
+                Text(text = stringResource(R.string.label_title_profile))
+
+            })
         }
     ) {
         ContentProfileView(paddingValues = it, profileViewModel, navController)
@@ -76,92 +86,139 @@ fun ContentProfileView(
         profileViewModel.getCurrentUser()
     }
 
+    profileViewModel.toastMessage.observe(LocalLifecycleOwner.current, Observer { message ->
+        message?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        }
+    })
+
+    val logoutSuccess by profileViewModel.logoutSuccess.collectAsState()
+    LaunchedEffect(logoutSuccess) {
+        if (logoutSuccess) {
+            navController.navigate(Screen.LoginScreen.route) {
+                popUpTo(Screen.SplashScreen.route) { inclusive = true }
+            }
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)
             .verticalScroll(rememberScrollState())
     ) {
-
-        Box {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Box(
+                modifier = Modifier.fillMaxSize()
             ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
 
-                HeaderProfile(profileViewModel)
+                    HeaderProfile(profileViewModel)
 
-                Box(modifier = Modifier.padding(SPACE_DEFAULT.dp)) {
-                    Title(text = stringResource(id = R.string.label_settings), modifier = Modifier)
-                }
-
-
-                Column {
-                    ItemSettings(
-                        Icons.Default.Settings,
-                        null,
-                        stringResource(id = R.string.label_settings)
-                    ) {
-                        navController.navigate(Screen.SettingsScreen.route)
+                    Box(modifier = Modifier.padding(SPACE_DEFAULT.dp)) {
+                        Title(
+                            text = stringResource(id = R.string.label_settings),
+                            modifier = Modifier
+                        )
                     }
-                    ItemSettings(
-                        Icons.Default.Email, null,
-                        stringResource(R.string.label_send_feedback)
-                    ) {
-                        navController.navigate(Screen.FeedbackScreen.route)
-                    }
-                    ItemSettings(
-                        null, R.drawable.baseline_help_outline_24,
-                        stringResource(R.string.label_help_center)
-                    ) {
-                        navController.navigate(Screen.HelpScreen.route)
-                    }
-                    ItemSettings(null, null, stringResource(R.string.label_privacy_policy)) {
-                        val openURL = Intent(Intent.ACTION_VIEW)
-                        openURL.data = Uri.parse("https://gratitude-wave-terms-production.up.railway.app/privacy_policy")
-                        context.startActivity(openURL)
-                    }
-                    ItemSettings(null, null, stringResource(R.string.label_terms_of_service)) {
-                        val openURL = Intent(Intent.ACTION_VIEW)
-                        openURL.data = Uri.parse("https://gratitude-wave-terms-production.up.railway.app/terms_of_service")
-                        context.startActivity(openURL)
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
 
 
-                Spacer(modifier = Modifier.weight(1f))
+                    Column {
+                        ItemSettings(
+                            Icons.Default.Face,
+                            null,
+                            stringResource(id = R.string.label_me)
+                        ) {
+                            navController.navigate(Screen.OnboardingScreen.route)
+                        }
 
-                Box(modifier = Modifier.padding(SPACE_DEFAULT.dp)) {
-                    ElevatedButton(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = {
-                            scope.launch {
-                                profileViewModel.logout().onSuccess { success ->
-                                    if (success) {
-                                        navController.navigate(Screen.LoginScreen.route) {
+                        ItemSettings(
+                            Icons.Default.Settings,
+                            null,
+                            stringResource(id = R.string.label_settings)
+                        ) {
+                            navController.navigate(Screen.SettingsScreen.route)
+                        }
+                        ItemSettings(
+                            Icons.Default.Email, null,
+                            stringResource(R.string.label_send_feedback)
+                        ) {
+                            navController.navigate(Screen.FeedbackScreen.route)
+                        }
+                        ItemSettings(
+                            null, R.drawable.baseline_help_outline_24,
+                            stringResource(R.string.label_help_center)
+                        ) {
+                            navController.navigate(Screen.HelpScreen.route)
+                        }
+                        ItemSettings(null, null, stringResource(R.string.label_privacy_policy)) {
+//                            val openURL = Intent(Intent.ACTION_VIEW)
+//                            openURL.data =
+//                                Uri.parse(POLICIES_URL)
+//                            context.startActivity(openURL)
 
-                                            popUpTo(Screen.SplashScreen.route) { inclusive = true }
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                    ) {
-                        Text(text = stringResource(R.string.label_log_out))
+                            //   profileViewModel.onShowPolicies();
+                            navController.navigate(
+                                Screen.WebViewScreen.params(
+                                    R.string.label_privacy_policy,
+                                    POLICIES_URL
+                                )
+                            )
+                        }
+                        ItemSettings(null, null, stringResource(R.string.label_terms_of_service)) {
+//                            val openURL = Intent(Intent.ACTION_VIEW)
+//                            openURL.data =
+//                                Uri.parse(Constants.TERMS_URL)
+//                            context.startActivity(openURL)
+                            navController.navigate(
+                                Screen.WebViewScreen.params(
+                                    R.string.label_terms_of_service,
+                                    TERMS_URL
+                                )
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
                     }
+
+
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = VERSION_APP, modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                SPACE_DEFAULT_MIN.dp
+                            ),
+                        textAlign = TextAlign.Center, style = MaterialTheme.typography.bodySmall
+                    )
+                    Box(modifier = Modifier.padding(SPACE_DEFAULT.dp)) {
+                        ElevatedButton(
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = { profileViewModel.logout() },
+                        ) {
+                            Text(text = stringResource(R.string.label_log_out))
+                        }
+                    }
+
+
                 }
 
             }
-
         }
-
-
     }
 }
 
 @Composable
 private fun HeaderProfile(profileViewModel: ProfileViewModel) {
+
+
+    val userName by profileViewModel.userName.collectAsState()
+    val userEmail by profileViewModel.userEmail.collectAsState()
+    val userAvatar by profileViewModel.userAvatar.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -172,26 +229,20 @@ private fun HeaderProfile(profileViewModel: ProfileViewModel) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            if (profileViewModel.user.photoUrl != null) {
-                Image(
+            val painter = rememberAsyncImagePainter(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(userAvatar)
+                    .build()
+            )
+            Image(
+                painter = painter,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(120.dp)
+                    .clip(CircleShape)
+            )
 
-                    painter = rememberImagePainter(data = profileViewModel.user.photoUrl),
-                    contentDescription = null, // Add appropriate content description
-                    modifier = Modifier
-                        .size(120.dp)
-                        .clip(CircleShape)
-                )
-            } else {
-                Image(
-
-                    painter = painterResource(id = R.drawable.hombre),
-                    contentDescription = null, // Add appropriate content description
-                    modifier = Modifier
-                        .size(120.dp)
-                        .clip(CircleShape)
-                )
-            }
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(SPACE_DEFAULT.dp))
             Row(
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -201,15 +252,12 @@ private fun HeaderProfile(profileViewModel: ProfileViewModel) {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = profileViewModel.user.name,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 24.sp
+                        text = userName,
+                        style = MaterialTheme.typography.headlineMedium
                     )
                     Text(
-                        text = profileViewModel.user.email,
-                        fontWeight = FontWeight.Light,
-                        fontSize = 16.sp,
-                        color = MaterialTheme.colorScheme.tertiary
+                        text = userEmail,
+                        style = MaterialTheme.typography.labelLarge
                     )
                 }
             }

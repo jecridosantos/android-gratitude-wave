@@ -5,8 +5,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.jdosantos.gratitudewavev1.ui.navigation.Screen
 
-fun NavGraphBuilder.writeNoteScreenRoute(navController: NavController) {
+fun NavGraphBuilder.writeNoteScreenRoute(navController: NavController, viewModel: WriteNoteViewModel) {
     composable(Screen.WriteNoteScreen.route) {
-        WriteNoteScreen(navController = navController)
+        WriteNoteScreen(navController = navController, viewModel)
     }
 }

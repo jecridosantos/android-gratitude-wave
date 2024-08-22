@@ -11,66 +11,70 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
 import com.jdosantos.gratitudewavev1.domain.models.Note
-import com.jdosantos.gratitudewavev1.ui.view.main.note.ChipEmotionChoose
-import com.jdosantos.gratitudewavev1.ui.view.main.note.ChipTagChoose
 import com.jdosantos.gratitudewavev1.ui.view.main.note.ChooseColorBackground
 import com.jdosantos.gratitudewavev1.ui.view.main.note.ChooseNoteEmotion
 import com.jdosantos.gratitudewavev1.ui.view.main.note.ChooseNoteTag
-import com.jdosantos.gratitudewavev1.ui.view.main.note.CurrentDateView
-import com.jdosantos.gratitudewavev1.ui.view.main.note.IconFloatingOption
-import com.jdosantos.gratitudewavev1.ui.view.main.note.NoteInput
-import com.jdosantos.gratitudewavev1.ui.view.main.note.getColors
+import com.jdosantos.gratitudewavev1.ui.widget.ChipEmotionChoose
+import com.jdosantos.gratitudewavev1.ui.widget.ChipTagChoose
+import com.jdosantos.gratitudewavev1.ui.widget.CurrentDateView
+import com.jdosantos.gratitudewavev1.ui.widget.FloatingOptions
+import com.jdosantos.gratitudewavev1.ui.widget.NoteInput
+import com.jdosantos.gratitudewavev1.ui.widget.getColors
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT_MIN
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT_TOP_APP_BAR
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.VALUE_INT_EMPTY
 import com.jdosantos.gratitudewavev1.utils.emotionLists
 import com.jdosantos.gratitudewavev1.utils.getSafeColor
 
 @SuppressLint("StateFlowValueCalledInComposition")
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UpdateNoteScreen(
+    id: String,
+    color: Int,
     navController: NavController,
-    updateNoteViewModel: UpdateNoteViewModel = hiltViewModel(),
+    updateNoteViewModel: UpdateNoteViewModel
 ) {
-
+    val isLoading by updateNoteViewModel.isLoading.collectAsState()
     val context = LocalContext.current
 
     val colors = getColors()
 
     val backgroundDefault = MaterialTheme.colorScheme.background
 
-    var selectedColor by remember { mutableStateOf(colors.getSafeColor(updateNoteViewModel.color.toInt())) }
+    var selectedColor by remember { mutableStateOf(colors.getSafeColor(color.toInt())) }
 
     val note = updateNoteViewModel.note
 
     LaunchedEffect(Unit) {
-        updateNoteViewModel.getNoteById(updateNoteViewModel.id)
+        updateNoteViewModel.getNoteById(id)
     }
 
 
@@ -78,31 +82,75 @@ fun UpdateNoteScreen(
         navController.popBackStack()
     }
 
+    updateNoteViewModel.toastMessage.observe(LocalLifecycleOwner.current, Observer { message ->
+        message?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        }
+    })
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(selectedColor, RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)),
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        MaterialTheme.colorScheme.background,
+                        selectedColor,
+
+                        )
+                )
+            ),
     ) {
         Column() {
-            Header({
-                updateNoteViewModel.updateNote { success ->
-                    if (success) cleanView()
-                }
-            }) {
+            Header(
+                note = note,
+                updateNoteViewModel,
+                {
+//                updateNoteViewModel.updateNote { success ->
+//                    if (success) cleanView()
+                    //}
+                    updateNoteViewModel.updateNote()
+                    cleanView()
+                }) {
                 cleanView()
             }
-            NoteInput(note, {
-                updateNoteViewModel.onNote(it)
-            }) {
-                updateNoteViewModel.clean()
+            NoteInput(
+                note = note,
+                isLoading = isLoading,
+                onNoteChange = {
+                    updateNoteViewModel.onNote(it)
+                },
+                onDispose = {
+                    updateNoteViewModel.clean()
+                })
+
+            if (note.note.length > 10) {
+                OutlinedButton(
+                    modifier = Modifier
+                        .padding(SPACE_DEFAULT.dp),
+                    onClick = {
+                        updateNoteViewModel.generateMessage()
+                    })
+                {
+                    Text(text = "Mejorar mis palabras")
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_auto_awesome_24),
+                        contentDescription = ""
+                    )
+                }
             }
+
             Tags(note, updateNoteViewModel)
         }
+
 
         FloatingOptions(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(SPACE_DEFAULT.dp), updateNoteViewModel
+                .padding(SPACE_DEFAULT.dp),
+            onClickTag = { updateNoteViewModel.showDialogTag() },
+            onClickEmotion = { updateNoteViewModel.showDialogEmotion() },
+            onClickColor = { updateNoteViewModel.showDialogColor() },
+            onClickGenerate = { updateNoteViewModel.generateMessage() }
         )
 
     }
@@ -151,11 +199,16 @@ fun UpdateNoteScreen(
 
 
 @Composable
-private fun Header(onSave: () -> Unit, onCleanView: () -> Unit) {
+private fun Header(
+    note: Note,
+    updateNoteViewModel: UpdateNoteViewModel,
+    onSave: () -> Unit,
+    onCleanView: () -> Unit
+) {
     Row(
         modifier = Modifier
             .padding(SPACE_DEFAULT_MIN.dp)
-            .height(56.dp),
+            .height(SPACE_DEFAULT_TOP_APP_BAR.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(onClick = { onCleanView() }) {
@@ -166,7 +219,9 @@ private fun Header(onSave: () -> Unit, onCleanView: () -> Unit) {
             )
         }
         Spacer(modifier = Modifier.width(4.dp))
-        CurrentDateView(modifier = Modifier) {}
+        CurrentDateView(date = note.date, createAt = note.createAt, clickeable = true) {
+            updateNoteViewModel.onDate(it)
+        }
         Spacer(modifier = Modifier.weight(1f))
         IconButton(onClick = {
             onSave()
@@ -208,26 +263,5 @@ private fun Tags(note: Note, updateNoteViewModel: UpdateNoteViewModel) {
             }
         }
 
-    }
-}
-
-@Composable
-private fun FloatingOptions(modifier: Modifier, viewModel: UpdateNoteViewModel) {
-    Card(
-        modifier = modifier,
-        shape = RoundedCornerShape(50.dp),
-    ) {
-        Row(
-            modifier = Modifier.padding(SPACE_DEFAULT_MIN.dp)
-        ) {
-            Spacer(modifier = Modifier.width(8.dp))
-            IconFloatingOption(painterResource(id = R.drawable.chinche)) { viewModel.showDialogTag() }
-            Spacer(modifier = Modifier.width(8.dp))
-            IconFloatingOption(painterResource(id = R.drawable.haz_de_sonrisa)) { viewModel.showDialogEmotion() }
-            Spacer(modifier = Modifier.width(8.dp))
-            IconFloatingOption(painterResource(id = R.drawable.paleta)) { viewModel.showDialogColor() }
-
-            Spacer(modifier = Modifier.width(8.dp))
-        }
     }
 }

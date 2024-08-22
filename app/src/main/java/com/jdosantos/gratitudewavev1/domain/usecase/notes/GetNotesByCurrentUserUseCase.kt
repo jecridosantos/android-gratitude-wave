@@ -7,8 +7,8 @@ import javax.inject.Inject
 class GetNotesByCurrentUserUseCase @Inject constructor(
     private val noteRepository: NoteRepository
 ) {
-    fun execute(callback: (List<Note>) -> Unit, onError: ()-> Unit) {
-        noteRepository.getNotesByEmail(callback, onError)
+    fun execute(limit: Long? = null ,callback: (List<Note>) -> Unit, onError: ()-> Unit) {
+        noteRepository.getNotesByEmail(limit, callback, onError)
     }
 
 }

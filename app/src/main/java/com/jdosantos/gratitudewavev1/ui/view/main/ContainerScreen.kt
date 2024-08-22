@@ -9,9 +9,11 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -25,6 +27,8 @@ import androidx.navigation.compose.rememberNavController
 import com.jdosantos.gratitudewavev1.ui.navigation.BottomRoutes
 import com.jdosantos.gratitudewavev1.ui.view.main.home.HomeScreen
 import com.jdosantos.gratitudewavev1.ui.view.main.home.HomeViewModel
+import com.jdosantos.gratitudewavev1.ui.view.main.home.bycalendar.ByCalendarScreen
+import com.jdosantos.gratitudewavev1.ui.view.main.home.progress.ProgressScreen
 import com.jdosantos.gratitudewavev1.ui.view.main.profile.ProfileScreen
 import com.jdosantos.gratitudewavev1.ui.view.main.profile.ProfileViewModel
 
@@ -38,13 +42,15 @@ fun ContainerScreen(
     val navHostController = rememberNavController()
     val navigationRoutes = listOf(
         BottomRoutes.HomeView,
-        BottomRoutes.ProfileView
+        BottomRoutes.ProgressScreen,
+        BottomRoutes.ProfileView,
+
     )
 
     Scaffold(bottomBar = {
 
         NavigationBar(
-            containerColor = MaterialTheme.colorScheme.background,
+            containerColor = Color.Transparent
         ) {
             val currentRoute = currentRoute(navHostController = navHostController)
 
@@ -81,7 +87,8 @@ fun ContainerScreen(
             Modifier.padding(it)
         ) {
             composable(navigationRoutes[0].route) { HomeScreen(mainNavController, homeViewModel) }
-            composable(navigationRoutes[1].route) {
+            composable(navigationRoutes[1].route) { ProgressScreen(mainNavController) }
+            composable(navigationRoutes[2].route) {
                 ProfileScreen(
                     profileViewModel,
                     mainNavController

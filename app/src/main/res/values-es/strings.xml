@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Gratitude Wave</string>
-    <string name="login_welcome">Bienvenido!</string>
+    <string name="app_name">Yuspa</string>
+    <string name="login_welcome">Bienvenido a Yuspa!</string>
     <string name="login_label_input_email">Correo</string>
     <string name="login_label_input_pass">Contraseña</string>
     <string name="login_button_login">Iniciar sesión</string>
@@ -13,7 +13,7 @@
     <string name="button_write">Escribir</string>
     <string name="button_delete">Eliminar</string>
 
-    <!--Messages-->
+    <!--LocalizedMessageManager-->
     <string name="login_alert_title">Inicio de sesión fallido!</string>
     <string name="login_alert_message">Credenciales incorrectas</string>
 
@@ -31,9 +31,9 @@
     <string name="label_dismiss">Ocultar</string>
     <string name="label_clean">Limpiar</string>
     <string name="label_today">Hoy</string>
-    <string name="label_see_more">Ver mi progreso</string>
+    <string name="label_see_more">Ver más</string>
 
-    <string name="label_home_today">Mis notas del día</string>
+    <string name="label_home_today">Mis notas</string>
 
     <string name="label_signin_with_google">Iniciar sesión con Google</string>
     <!--Tabs-->
@@ -108,7 +108,7 @@
     <string name="note_emotion_message_Sunflower">Me siento inspirado</string>
     <string name="note_emotion_message_Raised_Hands">Me siento orgulloso</string>
 
-    <string name="placeholder_write_note">¿Tienes aglo por agredecer?</string>
+    <string name="placeholder_write_note">¿Tienes algo por agredecer?</string>
 
     <string name="label_date_today">Hoy</string>
     <string name="label_date_yesterday">Ayer</string>
@@ -154,6 +154,7 @@
     <string name="label_reminders">Recordatorios</string>
     <string name="label_save_reminders">Guardar recordatorio</string>
     <string name="label_update_reminders">Actualizar recordatorio</string>
+    <string name="label_me">Actualiza tu información</string>
     <string name="label_settings">Ajustes</string>
     <string name="label_customize_reminders">Personalizar recordatorios</string>
     <string name="label_mute_notifications">Silenciar notificaciones</string>
@@ -187,12 +188,16 @@
     <string name="label_register">Registro</string>
     <string name="label_reset_password">Recuperar tu contraseña</string>
     <string name="label_name">Nombre</string>
+    <string name="label_age">Edad</string>
     <string name="label_email">Correo</string>
+    <string name="label_country">País</string>
+    <string name="label_country_placeholder">¿En dónde vives?</string>
     <string name="label_password">Contraseña</string>
-    <string name="label_name_placeholder">Nombre</string>
-    <string name="label_email_placeholder">Correo</string>
-    <string name="label_password_placeholder">Contraseña</string>
-    <string name="label_message_accept_conditions">Al crear una cuenta, acepta la Política de privacidad y los Términos y condiciones.</string>
+    <string name="label_name_placeholder">¿Cómo le gusta ser llamado?</string>
+    <string name="label_age_placeholder">Ingrese su edad</string>
+    <string name="label_email_placeholder">Ingrese su correo</string>
+    <string name="label_password_placeholder">Ingrese un contraseña</string>
+    <string name="label_message_accept_conditions">Al crear una cuenta, acepta:</string>
     <string name="label_message_verify_email">Necesitamos verificar su correo electrónico para que pueda utilizar nuestra aplicación.</string>
     <string name="label_continue">Continuar</string>
     <string name="label_error_register">Error en registro</string>
@@ -232,4 +237,20 @@
     <string name="message_reset_password_success_cancel">Aceptar</string>
     <string name="label_shared_note">Compartir mi nota</string>
 
+    <!-- Password rules -->
+    <string name="password_rule_length">Al menos 8 caracteres</string>
+    <string name="password_rule_uppercase">Al menos una letra mayúscula</string>
+    <string name="password_rule_number">Al menos un número</string>
+    <string name="password_rule_no_whitespace">No se permiten espacios en blanco</string>
+    <string name="password_rule_no_name_email">No puede contener el nombre o correo electrónico</string>
+    <string name="label_secure_password">Ingrese una contraseña segura.</string>
+    <string name="button_finish">Finalizar</string>
+    <string name="button_next">Continuar</string>
+    <string name="button_back">Anterior</string>
+    <string name="button_skip">Omitir</string>
+    <string name="label_other_interest">Otros intereses</string>
+    <string name="label_other_interest_placeholder">Ingrese otros intereses que no encuentras en la lista</string>
+    <string name="label_profession_placeholder">¿A qué te dedicas?</string>
+    <string name="label_other_people">Otras personas</string>
+    <string name="label_other_people_placeholder">Alguien más por considerar</string>
 </resources>

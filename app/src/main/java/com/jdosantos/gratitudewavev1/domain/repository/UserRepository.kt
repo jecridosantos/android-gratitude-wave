@@ -6,6 +6,8 @@ interface UserRepository {
 
     suspend fun saveUser(user: User): Result<User>
 
+    suspend fun updateName(userId: String, name: String): Result<Boolean>
+
     suspend fun getUserByUid(uid: String): Result<User>
 
     suspend fun emailExists(email: String): Result<Boolean>
