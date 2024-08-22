@@ -7,6 +7,8 @@ import com.jdosantos.gratitudewavev1.utils.constants.ConstantsRouteParams.REMIND
 import com.jdosantos.gratitudewavev1.utils.constants.ConstantsRouteParams.REMINDER_INDEX_MINUTE
 import com.jdosantos.gratitudewavev1.utils.constants.ConstantsRouteParams.TAG_DETAILS_ID
 import com.jdosantos.gratitudewavev1.utils.constants.ConstantsRouteParams.TAG_DETAILS_NAME
+import com.jdosantos.gratitudewavev1.utils.constants.ConstantsRouteParams.WEB_VIEW_TITLE
+import com.jdosantos.gratitudewavev1.utils.constants.ConstantsRouteParams.WEB_VIEW_PATH
 
 sealed class Screen(val route: String) {
 
@@ -68,6 +70,15 @@ sealed class Screen(val route: String) {
             return this.route.replace(oldValue = "{$REMINDER_INDEX}", newValue = "$index")
                 .replace(oldValue = "{$REMINDER_INDEX_HOUR}", newValue = "$hour")
                 .replace(oldValue = "{$REMINDER_INDEX_MINUTE}", newValue = "$minute")
+        }
+    }
+
+    data object OnboardingScreen : Screen("OnboardingScreen")
+
+    data object WebViewScreen: Screen("WebViewScreen/{$WEB_VIEW_TITLE}/{$WEB_VIEW_PATH}") {
+        fun params(title: Int, path: String): String {
+            return this.route.replace(oldValue = "{$WEB_VIEW_TITLE}", newValue = "$title")
+                .replace(oldValue = "{$WEB_VIEW_PATH}", newValue = path)
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.jdosantos.gratitudewavev1.ui.view.auth.login
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -20,12 +21,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Button
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -34,16 +37,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Observer
 import androidx.navigation.NavController
@@ -53,16 +53,13 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.GoogleAuthProvider
 import com.jdosantos.gratitudewavev1.R
 import com.jdosantos.gratitudewavev1.data.local.CredentialStore
-import com.jdosantos.gratitudewavev1.domain.exceptions.AuthenticationException
-import com.jdosantos.gratitudewavev1.domain.models.User
 import com.jdosantos.gratitudewavev1.ui.navigation.Screen
 import com.jdosantos.gratitudewavev1.ui.widget.InputRound
 import com.jdosantos.gratitudewavev1.ui.widget.Loader
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.GOOGLE_TOKEN
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT_MAX
-import com.jdosantos.gratitudewavev1.utils.isValidEmail
-import kotlinx.coroutines.async
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT_MID
 import kotlinx.coroutines.launch
 
 data class LoginViewState(
@@ -71,11 +68,11 @@ data class LoginViewState(
     val password: MutableState<String>,
 )
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel = hiltViewModel()) {
 
     val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
     val dataStore = CredentialStore(context)
     val scope = rememberCoroutineScope()
 
@@ -85,10 +82,21 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel = h
         password = remember { mutableStateOf("") },
     )
 
+    loginViewModel.toastMessage.observe(LocalLifecycleOwner.current, Observer { message ->
+        message?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        }
+    })
+
+    val isLoading by loginViewModel.isLoading.collectAsState()
+
+    val loginSuccess by loginViewModel.loginSuccess.collectAsState()
+
+    val unverifiedEmail by loginViewModel.unverifiedEmail.collectAsState()
+
     BackHandler(enabled = true) {
         handleBackPressed(context, state.backPressedOnce)
     }
-    val isLoading by loginViewModel.isLoading.collectAsState()
     val launcherIntentGoogle = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -96,104 +104,128 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel = h
         try {
             val account = task.getResult(ApiException::class.java)
             val credential = GoogleAuthProvider.getCredential(account.idToken, null)
-            loginViewModel.signInWithGoogle(credential) { success ->
-                if (success) handleGoogleSignInResult(navController)
-            }
+            loginViewModel.signInWithGoogle(credential)
         } catch (e: Exception) {
             Log.e("Login google error", "error: $e")
         }
     }
-
-    DisposableEffect(loginViewModel.loginResult) {
-        val observer = Observer<Result<User>> { result ->
-
-            result.onSuccess {
-
-                navController.navigate(Screen.ContainerScreen.route) {
-                    popUpTo("LoginView") { inclusive = true }
-                }
-            }.onFailure {exception ->
-                val errorMessage = when (exception) {
-                    is AuthenticationException.EmailNotVerifiedException -> {
-                        scope.launch {
-                            scope.async {
-                                val password = state.password.value
-                                dataStore.savePassword(password)
-
-                            }.await()
-
-                            navController.navigate(Screen.VerifyEmailScreen.route){
-                                popUpTo(Screen.LoginScreen.route) { inclusive = true }
-                            }
-                        }
-                        null
-                    }
-                    is AuthenticationException.InvalidCredentialsException -> exception.message
-                    is AuthenticationException.GenericAuthenticationException -> exception.message
-                    else ->
-                        "Ha ocurrido un error. Por favor, intenta de nuevo más tarde."
-                }
-
-                errorMessage?.let {
-                    Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-                }
+    LaunchedEffect(loginSuccess) {
+        if (loginSuccess) {
+            navController.navigate(Screen.ContainerScreen.route) {
+                popUpTo(Screen.LoginScreen.route) { inclusive = true }
             }
-
-
-        }
-        loginViewModel.loginResult.observe(lifecycleOwner, observer)
-
-        onDispose {
-            loginViewModel.loginResult.removeObserver(observer)
         }
     }
+
+    LaunchedEffect(unverifiedEmail) {
+        if (unverifiedEmail) {
+
+            val password = state.password.value
+            scope.launch {
+                dataStore.savePassword(password)
+            }
+
+            navController.navigate(Screen.VerifyEmailScreen.route) {
+                popUpTo(Screen.LoginScreen.route) { inclusive = true }
+            }
+        }
+    }
+
+    Loader(show = isLoading)
+
+    LoginScreenContent(
+        state = state,
+        onEmailChanged = { state.email.value = it },
+        onPasswordChanged = { state.password.value = it },
+        onLoginClicked = {
+            handleLoginClick(
+                loginViewModel,
+                state.email.value,
+                state.password.value
+            )
+        },
+        onGoogleSignInClicked = { launcherIntentGoogle.launch(googleSignInIntent(context)) },
+        onForgotPasswordClicked = { navController.navigate(Screen.ResetPasswordScreen.route) },
+        onSignUpClicked = { navController.navigate(Screen.RegisterScreen.route) }
+    )
+}
+
+@Composable
+fun LoginScreenContent(
+    state: LoginViewState,
+    onEmailChanged: (String) -> Unit,
+    onPasswordChanged: (String) -> Unit,
+    onLoginClicked: () -> Unit,
+    onGoogleSignInClicked: () -> Unit,
+    onForgotPasswordClicked: () -> Unit,
+    onSignUpClicked: () -> Unit
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
             .fillMaxSize()
             .padding(SPACE_DEFAULT.dp)
+            .verticalScroll(rememberScrollState())
     ) {
 
-        Image(painter = painterResource(id = R.drawable.image_logo), contentDescription = null)
+        Image(
+            painter = painterResource(id = R.drawable.elefante_gratitud),
+            contentDescription = null,
+            Modifier.size(200.dp)
+        )
         Spacer(modifier = Modifier.height(SPACE_DEFAULT_MAX.dp))
         Text(
             text = stringResource(id = R.string.login_welcome),
-            fontSize = 36.sp,
-            fontWeight = FontWeight.ExtraLight
+            style = MaterialTheme.typography.headlineSmall
         )
 
         Spacer(modifier = Modifier.height(SPACE_DEFAULT_MAX.dp))
 
         InputRound(
-            stringResource(R.string.login_label_input_email), state.email.value,
-            stringResource(R.string.login_label_input_email), KeyboardType.Email,
+            label = stringResource(R.string.login_label_input_email),
+            value = state.email.value,
+            placeholder = stringResource(R.string.login_label_input_email),
+            keyboardType = KeyboardType.Email,
+            imeAction = ImeAction.Next
         ) {
-            state.email.value = it
+            // state.email.value = it
+            onEmailChanged(it)
         }
         InputRound(
-            stringResource(R.string.label_password), state.password.value,
-            stringResource(R.string.label_password_placeholder), KeyboardType.Password
+            label = stringResource(R.string.label_password),
+            value = state.password.value,
+            placeholder = stringResource(R.string.label_password_placeholder),
+            keyboardType = KeyboardType.Password,
+            imeAction = ImeAction.Done
         ) {
-            state.password.value = it
+            //    state.password.value = it
+            onPasswordChanged(it)
         }
 
-        Button(
+        ElevatedButton(
             onClick = {
-                handleLoginClick(loginViewModel, state.email.value, state.password.value)
+                //  handleLoginClick(loginViewModel, state.email.value, state.password.value)
+                onLoginClicked()
             }, modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = SPACE_DEFAULT.dp, end = SPACE_DEFAULT.dp)
+                .padding(start = SPACE_DEFAULT.dp, end = SPACE_DEFAULT.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            )
         ) {
             Text(text = stringResource(id = R.string.login_button_login))
         }
-
-        Button(
+        Spacer(modifier = Modifier.height(SPACE_DEFAULT_MID.dp))
+        ElevatedButton(
             onClick = {
-                launcherIntentGoogle.launch(googleSignInIntent(context))
-            }, modifier = Modifier
+                onGoogleSignInClicked()
+                // launcherIntentGoogle.launch(googleSignInIntent(context))
+            },
+            modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = SPACE_DEFAULT.dp, end = SPACE_DEFAULT.dp)
+                .padding(start = SPACE_DEFAULT.dp, end = SPACE_DEFAULT.dp),
         ) {
             Image(
                 painter = painterResource(id = R.drawable.googleicon),
@@ -206,36 +238,34 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel = h
 
         Spacer(modifier = Modifier.height(SPACE_DEFAULT.dp))
         Text(text = stringResource(id = R.string.login_button_forgot_password),
-            fontWeight = FontWeight.Light,
-            fontSize = 14.sp,
+            style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.clickable {
-                navController.navigate(Screen.ResetPasswordScreen.route)
+                onForgotPasswordClicked()
+                // navController.navigate(Screen.ResetPasswordScreen.route)
             })
         Spacer(modifier = Modifier.height(SPACE_DEFAULT.dp))
 
         Row {
-            Column {
-                Text(text = stringResource(id = R.string.login_text_no_account),
-                    fontWeight = FontWeight.Light,
-                    fontSize = 14.sp,
-                    modifier = Modifier.clickable { })
-            }
+
+            Text(
+                text = stringResource(id = R.string.login_text_no_account),
+                style = MaterialTheme.typography.bodyMedium
+            )
+
             Spacer(modifier = Modifier.width(5.dp))
-            Column {
-                Text(text = stringResource(id = R.string.login_button_to_sign_up),
-                    fontWeight = FontWeight.Light,
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.clickable {
-                        navController.navigate(Screen.RegisterScreen.route)
-                    })
-            }
+
+            Text(
+                text = stringResource(id = R.string.login_button_to_sign_up),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.clickable {
+                    onSignUpClicked()
+                }
+            )
+
         }
 
-        if (isLoading) {
-            Loader()
-        }
     }
 
 }
@@ -251,7 +281,6 @@ private fun handleBackPressed(
         backPressedOnceState.value = true
     }
 }
-
 
 
 private fun handleGoogleSignInResult(navController: NavController) {

@@ -5,27 +5,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.jdosantos.gratitudewavev1.domain.models.Goals
 import com.jdosantos.gratitudewavev1.domain.states.ProgressState
-import com.jdosantos.gratitudewavev1.domain.usecase.goals.GetGoalsByUserUseCase
 import com.jdosantos.gratitudewavev1.domain.usecase.notes.GetNoteCreationDatesByEmailUseCase
+import com.jdosantos.gratitudewavev1.utils.uniqueDates
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
-import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
 class ProgressViewModel @Inject constructor(
-    private val getNoteCreationDatesByEmailUseCase: GetNoteCreationDatesByEmailUseCase,
-    private val getGoalsByUserUseCase: GetGoalsByUserUseCase
+    private val getNoteCreationDatesByEmailUseCase: GetNoteCreationDatesByEmailUseCase
 ) : ViewModel() {
     private val tag = this::class.java.simpleName
     private val _dates = MutableStateFlow(listOf(Date()))
-
-    val goals = MutableStateFlow(Goals())
 
     var progressState by mutableStateOf(ProgressState())
         private set
@@ -41,33 +35,8 @@ class ProgressViewModel @Inject constructor(
                     Log.e(tag, "initialize - getNoteCreationDatesByEmailUseCase")
                 }
             )
-
-        getGoalsByUserUseCase.execute(
-            callback = { goals.value = it },
-            onError = {
-                Log.e(tag, "initialize - getGoalsByUserUseCase")
-            }
-        )
     }
 
-    private fun uniqueDates(dates: List<Date>): List<Date> {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val uniqueDatesSet = dates.map { date ->
-            // Convierte Date a String con formato "yyyy-MM-dd"
-            dateFormat.format(date)
-        }.toSet() // Utiliza un conjunto para eliminar duplicados
-
-        return uniqueDatesSet.map { dateString ->
-            // Convierte String de vuelta a Date
-            Calendar.getInstance().apply {
-                time = dateFormat.parse(dateString)!!
-                set(Calendar.HOUR_OF_DAY, 0)
-                set(Calendar.MINUTE, 0)
-                set(Calendar.SECOND, 0)
-                set(Calendar.MILLISECOND, 0)
-            }.time
-        }
-    }
 
     private fun calculateStreaks() {
         val today = Calendar.getInstance()
@@ -125,7 +94,6 @@ class ProgressViewModel @Inject constructor(
             }
         }
 
-        // Verifica si la última racha es la mejor
         if (tempStreak > bestStreak) {
             bestStreak = tempStreak
             bestStreakStart = tempStreakStart

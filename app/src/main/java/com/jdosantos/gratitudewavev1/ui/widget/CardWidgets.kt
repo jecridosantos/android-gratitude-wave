@@ -23,11 +23,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.jdosantos.gratitudewavev1.R
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
 
 @Composable
@@ -52,15 +54,16 @@ fun CardProgress(title: String, text: String, color: Color, onClick: () -> Unit)
             Column(
                 modifier = Modifier.padding(24.dp)
             ) {
-                Text(text = title, fontWeight = FontWeight.Normal,
+                Text(text = title,
+                    style = MaterialTheme.typography.titleSmall,
                     maxLines = 1,
-                    fontSize = 14.sp,
                     overflow = TextOverflow.Ellipsis)
                 Spacer(modifier = Modifier.height(16.dp))
-                Text(text = text, fontWeight = FontWeight.ExtraBold,
+                Text(text = text,
+                    style = MaterialTheme.typography.displaySmall,
                     maxLines = 1,
-                    fontSize = 24.sp,
                     overflow = TextOverflow.Ellipsis)
+
             }
 
         }

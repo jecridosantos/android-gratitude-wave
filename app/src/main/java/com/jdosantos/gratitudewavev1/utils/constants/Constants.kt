@@ -3,31 +3,32 @@ package com.jdosantos.gratitudewavev1.utils.constants
 class Constants {
     companion object {
         const val DEFAULT_COLOR_INDEX = 0
-        const val COLOR_0_LIGHT = 0xFFF4FBF8
-        const val COLOR_1_LIGHT = 0xFFEFAAA3
-        const val COLOR_2_LIGHT = 0xFFEA9C77
-        const val COLOR_3_LIGHT = 0xFFF4EEB3
-        const val COLOR_4_LIGHT = 0xFFD7EACA
-        const val COLOR_5_LIGHT = 0xFFAED3CB
-        const val COLOR_6_LIGHT = 0xFFCDDBE4
-        const val COLOR_7_LIGHT = 0xFFAAC6D4
-        const val COLOR_8_LIGHT = 0xFFCAB8D2
-        const val COLOR_9_LIGHT = 0xFFEDDAD5
-        const val COLOR_10_LIGHT = 0xFFE1DBCD
-        const val COLOR_11_LIGHT = 0xFFE8E8EB
+        const val COLOR_0_LIGHT = 0xFFF8FAF6 // Un poco más oscuro que el original
+        const val COLOR_1_LIGHT = 0xFFFFD3CF // Más claro y pastel
+        const val COLOR_2_LIGHT = 0xFFFFC2A1 // Más claro y pastel
+        const val COLOR_3_LIGHT = 0xFFFCECA9 // Más claro y pastel
+        const val COLOR_4_LIGHT = 0xFFDAF1E4 // Más claro y pastel
+        const val COLOR_5_LIGHT = 0xFFAEE8DF // Más claro y pastel
+        const val COLOR_6_LIGHT = 0xFFBADCEC // Más claro y pastel
+        const val COLOR_7_LIGHT = 0xFFA7D5E8 // Más claro y pastel
+        const val COLOR_8_LIGHT = 0xFFD5C4E2 // Más claro y pastel
+        const val COLOR_9_LIGHT = 0xFFF5E0DB // Más claro y pastel
+        const val COLOR_10_LIGHT = 0xFFEAE6D4 // Más claro y pastel
+        const val COLOR_11_LIGHT = 0xFFEDEDED // Más claro y pastel
 
-        const val COLOR_0_DARK = 0xFF0E1513
-        const val COLOR_1_DARK = 0xFF771E33
-        const val COLOR_2_DARK = 0xFF69301D
-        const val COLOR_3_DARK = 0xFF7B4E0C
-        const val COLOR_4_DARK = 0xFF2C5140
-        const val COLOR_5_DARK = 0xFF14655F
-        const val COLOR_6_DARK = 0xFF296477
-        const val COLOR_7_DARK = 0xFF2B4357
-        const val COLOR_8_DARK = 0xFF4B3460
-        const val COLOR_9_DARK = 0xFF6B3B51
-        const val COLOR_10_DARK = 0xFF4D463E
-        const val COLOR_11_DARK = 0xFF2A292E
+        const val COLOR_0_DARK = 0xFF111412 // Un poco más claro que el original
+        const val COLOR_1_DARK = 0xFF992437 // Más brillante y pastel
+        const val COLOR_2_DARK = 0xFF884327 // Más brillante y pastel
+        const val COLOR_3_DARK = 0xFFA16512 // Más brillante y pastel
+        const val COLOR_4_DARK = 0xFF3A6650 // Más brillante y pastel
+        const val COLOR_5_DARK = 0xFF1E8A7F // Más brillante y pastel
+        const val COLOR_6_DARK = 0xFF388DA0 // Más brillante y pastel
+        const val COLOR_7_DARK = 0xFF385E73 // Más brillante y pastel
+        const val COLOR_8_DARK = 0xFF6A4B83 // Más brillante y pastel
+        const val COLOR_9_DARK = 0xFF8B5E70 // Más brillante y pastel
+        const val COLOR_10_DARK = 0xFF695C4B // Más brillante y pastel
+        const val COLOR_11_DARK = 0xFF3C3B3F // Más brillante y pastel
+
         const val HEIGHT_ITEMS_CONFIG = 64
         const val WORK_WEEK_SIZE = 5
         const val VALUE_INT_EMPTY = -1
@@ -37,6 +38,7 @@ class Constants {
         const val SPACE_DEFAULT_MID = 8
         const val SPACE_DEFAULT = 16
         const val SPACE_DEFAULT_MAX = 32
+        const val SPACE_DEFAULT_TOP_APP_BAR = 56
 
         const val GOOGLE_TOKEN =
             "741930850747-12p5utjs35rpjat1mipu4q4mejnks39d.apps.googleusercontent.com"
@@ -52,5 +54,14 @@ class Constants {
         const val REMINDER_INDEX_EMPTY = -1
         const val REMINDER_INDEX_HOUR_EMPTY = 1
         const val REMINDER_INDEX_MINUTE_EMPTY = 0
+
+        const val VERSION_APP = "0.0.30"
+
+        const val POLICIES_URL = "privacy_policy"
+        const val TERMS_URL = "terms_of_service"
+        const val LOGO_YUSPA_URL = "https://firebasestorage.googleapis.com/v0/b/gratitudewavev1.appspot.com/o/resources%2Fusuario.png?alt=media&token=166f9918-e429-4ab5-a264-e7b048d20b35"
+
+        const val BASE_PATH = "https://gratitude-wave-terms-production.up.railway.app/"
+
     }
 }

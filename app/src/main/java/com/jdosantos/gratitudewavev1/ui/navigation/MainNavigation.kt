@@ -17,18 +17,26 @@ import com.jdosantos.gratitudewavev1.ui.view.main.home.search.searchNoteScreenRo
 import com.jdosantos.gratitudewavev1.ui.view.main.home.tags.searchByTagsScreenRoute
 import com.jdosantos.gratitudewavev1.ui.view.main.note.detailnote.DetailNoteViewModel
 import com.jdosantos.gratitudewavev1.ui.view.main.note.detailnote.detailNoteScreenRoute
+import com.jdosantos.gratitudewavev1.ui.view.main.note.updatenote.UpdateNoteViewModel
 import com.jdosantos.gratitudewavev1.ui.view.main.note.updatenote.updateNoteScreenRoute
+import com.jdosantos.gratitudewavev1.ui.view.main.note.writenote.WriteNoteViewModel
 import com.jdosantos.gratitudewavev1.ui.view.main.note.writenote.writeNoteScreenRoute
 import com.jdosantos.gratitudewavev1.ui.view.main.notifications.notificationsScreenRoute
+import com.jdosantos.gratitudewavev1.ui.view.main.onboarding.OnboardingViewModel
+import com.jdosantos.gratitudewavev1.ui.view.main.onboarding.onboardingScreenRoute
 import com.jdosantos.gratitudewavev1.ui.view.main.profile.feedback.feedbackScreenRoute
 import com.jdosantos.gratitudewavev1.ui.view.main.profile.help.helpScreenRoute
 import com.jdosantos.gratitudewavev1.ui.view.main.profile.settings.SettingsViewModel
 import com.jdosantos.gratitudewavev1.ui.view.main.profile.settings.settingsScreenRoute
+import com.jdosantos.gratitudewavev1.ui.view.main.webview.webViewScreenRoute
 import com.jdosantos.gratitudewavev1.ui.view.splash.splashScreenRoute
 
 @Composable
 fun MainNavigation(
     settingsViewModel: SettingsViewModel,
+    writeNoteViewModel: WriteNoteViewModel,
+    updateNoteViewModel: UpdateNoteViewModel,
+    onboardingViewModel: OnboardingViewModel
 ) {
 
     val navController = rememberNavController()
@@ -42,9 +50,9 @@ fun MainNavigation(
 
         containerScreenRoute(navController)
 
-        writeNoteScreenRoute(navController)
+        writeNoteScreenRoute(navController, writeNoteViewModel)
 
-        updateNoteScreenRoute(navController)
+        updateNoteScreenRoute(navController, updateNoteViewModel)
 
         detailNoteScreenRoute(navController)
 
@@ -74,6 +82,9 @@ fun MainNavigation(
 
         goalsScreenRoute(navController)
 
+        onboardingScreenRoute(navController, onboardingViewModel)
+
+        webViewScreenRoute(navController)
     }
 
 }

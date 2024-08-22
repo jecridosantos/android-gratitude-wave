@@ -6,6 +6,7 @@ data class User(
     val email: String = "",
     val name: String = "",
     val createAt: Any? = "",
-    val photoUrl: Any? = null,
+    val updateAt: Any? = "",
+    val photoUrl: String? = null,
     val provider: String = ""
 )

@@ -1,11 +1,11 @@
 package com.jdosantos.gratitudewavev1.ui.view.auth.verify
 
-import android.content.Context
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jdosantos.gratitudewavev1.data.local.CredentialStore
+import com.jdosantos.gratitudewavev1.domain.handles.LocalizedMessageManager
+import com.jdosantos.gratitudewavev1.domain.handles.SingleLiveEvent
 import com.jdosantos.gratitudewavev1.domain.models.User
 import com.jdosantos.gratitudewavev1.domain.usecase.auth.GetCurrentUserUseCase
 import com.jdosantos.gratitudewavev1.domain.usecase.auth.LogoutUseCase
@@ -22,13 +22,10 @@ class VerifyEmailViewModel @Inject constructor(
     private val sendEmailVerificationUseCase: SendEmailVerificationUseCase,
     private val logoutUseCase: LogoutUseCase,
     private val getCurrentUserUseCase: GetCurrentUserUseCase,
-    private val reauthenticateUseCase: ReauthenticateUseCase
+    private val reauthenticateUseCase: ReauthenticateUseCase,
+    private val credentialStore: CredentialStore,
+    private val localizedMessageManager: LocalizedMessageManager
 ) : ViewModel() {
-
-
-    private val _reauthenticateResult = MutableLiveData<Result<User>>()
-    val reauthenticateResult: LiveData<Result<User>> = _reauthenticateResult
-
 
     private val _emailCurrentUser = MutableStateFlow<String>("")
     val emailCurrentUser: StateFlow<String> = _emailCurrentUser
@@ -36,19 +33,53 @@ class VerifyEmailViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
-    suspend fun reauthenticate(context: Context) {
-        val dataStore = CredentialStore(context)
-        dataStore.getPassword().collect { password ->
-            _reauthenticateResult.value = reauthenticateUseCase.execute(password!!)
+    private val _registerSuccess = MutableStateFlow(false)
+    val registerSuccess: StateFlow<Boolean> = _registerSuccess
+
+    private val _logoutSuccess = MutableStateFlow(false)
+    val logoutSuccess: StateFlow<Boolean> = _logoutSuccess
+
+    private val _toastMessage = SingleLiveEvent<String>()
+    val toastMessage: LiveData<String> = _toastMessage
+
+    fun reauthenticate() {
+        viewModelScope.launch {
+            credentialStore.getPassword().collect { password ->
+                reauthenticateUseCase.execute(password!!)
+                    .onSuccess {
+                        _registerSuccess.value = true
+                    }.onFailure { exception ->
+                        _toastMessage.value = exception.message
+                    }
+            }
         }
+
     }
 
-    suspend fun resendLink(): Result<Boolean> {
-        return sendEmailVerificationUseCase.execute()
+    fun resendLink() {
+        viewModelScope.launch {
+            sendEmailVerificationUseCase.execute()
+                .onSuccess {
+                    _toastMessage.value =
+                        localizedMessageManager.getMessage(LocalizedMessageManager.MessageKey.RESET_SEND_EMAIL_SUCCESS)
+                }
+                .onFailure {
+                    _toastMessage.value =
+                        localizedMessageManager.getMessage(LocalizedMessageManager.MessageKey.RESET_SEND_EMAIL_ERROR)
+                }
+        }
+
     }
 
-    suspend fun logout(): Result<Boolean> {
-        return logoutUseCase.execute()
+    fun logout() {
+        viewModelScope.launch {
+            logoutUseCase.execute()
+                .onSuccess {
+                    _logoutSuccess.value = true
+                }.onFailure { exception ->
+                    _toastMessage.value = exception.message
+                }
+        }
     }
 
     fun getCurrentUser() {

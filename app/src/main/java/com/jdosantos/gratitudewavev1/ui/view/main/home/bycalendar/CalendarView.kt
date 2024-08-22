@@ -50,12 +50,9 @@ fun CalendarView(
 
     val pagerState = rememberPagerState(
         pageCount = monthsWithNotes.size,
-       //      initialOffscreenLimit = monthsWithNotes.size - 1,
         infiniteLoop = false,
         initialPage = monthsWithNotes.size - 1
     )
-
-    val currentPage = remember { pagerState.currentPage }
 
     val daysOfWeek = getWeekDays(LocalContext.current.resources, false)
 
@@ -137,6 +134,7 @@ private fun MonthView(
 
 @Composable
 private fun DayView(daysOfCalendar: DaysOfCalendar, selectedDate: Date, onClick: (Date) -> Unit) {
+    if (daysOfCalendar.isCurrentMonth) {
     val colorText = MaterialTheme.colorScheme.onBackground
     var colorBack =
         if (daysOfCalendar.isCurrentMonth) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surfaceVariant
@@ -171,7 +169,7 @@ private fun DayView(daysOfCalendar: DaysOfCalendar, selectedDate: Date, onClick:
 
 
             // Texto del día
-            if (daysOfCalendar.isCurrentMonth) {
+
                 if (!daysOfCalendar.isAfter) {
                     Text(
                         text = "${getDayOfMonth(daysOfCalendar.day)}",
@@ -185,18 +183,20 @@ private fun DayView(daysOfCalendar: DaysOfCalendar, selectedDate: Date, onClick:
                     )
                 }
 
+                // Indicador de nota
+                if (daysOfCalendar.hasNotes) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .fillMaxWidth()
+                            .height(8.dp)
+                            .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp))
+                    )
+                }
+
             }
 
-            // Indicador de nota
-            if (daysOfCalendar.hasNotes) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .fillMaxWidth()
-                        .height(8.dp)
-                        .background(MaterialTheme.colorScheme.primary, RoundedCornerShape(4.dp))
-                )
-            }
+
         }
     }
 

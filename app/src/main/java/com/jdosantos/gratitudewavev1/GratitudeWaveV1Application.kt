@@ -7,7 +7,7 @@ import com.jdosantos.gratitudewavev1.utils.constants.Constants
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
-class GratitudeWaveV1Application: Application() {
+class GratitudeWaveV1Application : Application() {
 
     // Notificaciones
     override fun onCreate() {

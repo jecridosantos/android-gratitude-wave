@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 import java.util.Date
 
 interface NoteRepository {
-    fun getNotesByEmail(callback: (List<Note>) -> Unit, onError: ()-> Unit)
+    fun getNotesByEmail(limit: Long? = null, callback: (List<Note>) -> Unit, onError: ()-> Unit)
 
     fun saveNote(note: Note, callback: (success: Boolean) -> Unit)
 
@@ -25,4 +25,8 @@ interface NoteRepository {
     fun getFirstNoteByEmail(callback: (Note?) -> Unit, onError: ()-> Unit)
 
     fun getNoteCreationDatesByEmail(callback: (List<Date>) -> Unit, onError: ()-> Unit)
+
+    fun countNotesForToday(callback: (Int) -> Unit)
+
+    fun countNotesByIAForToday(callback: (Int) -> Unit)
 }

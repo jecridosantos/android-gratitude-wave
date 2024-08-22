@@ -53,8 +53,10 @@ class SharedNoteViewModel @Inject constructor(
         private set
 
     fun getCurrentUser() {
-        getCurrentUserUseCase.execute().onSuccess { value: User ->
-            user = value
+        viewModelScope.launch {
+            getCurrentUserUseCase.execute().onSuccess { value: User ->
+                user = value
+            }
         }
     }
 

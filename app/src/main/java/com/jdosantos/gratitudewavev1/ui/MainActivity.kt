@@ -1,11 +1,9 @@
 package com.jdosantos.gratitudewavev1.ui
 
 import android.Manifest
-import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -23,28 +21,34 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
-import androidx.work.WorkInfo
-import androidx.work.WorkManager
-import androidx.work.WorkQuery
 import com.jdosantos.gratitudewavev1.ui.navigation.MainNavigation
 import com.jdosantos.gratitudewavev1.ui.notification.NotificationWorker
 import com.jdosantos.gratitudewavev1.ui.theme.GratitudeWaveV1Theme
-import com.jdosantos.gratitudewavev1.ui.view.main.note.detailnote.DetailNoteViewModel
+import com.jdosantos.gratitudewavev1.ui.view.main.note.updatenote.UpdateNoteViewModel
+import com.jdosantos.gratitudewavev1.ui.view.main.note.writenote.WriteNoteViewModel
+import com.jdosantos.gratitudewavev1.ui.view.main.onboarding.OnboardingViewModel
 import com.jdosantos.gratitudewavev1.ui.view.main.profile.settings.SettingsViewModel
-import com.jdosantos.gratitudewavev1.utils.convertMillisToDateTime
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         val settingsViewModel: SettingsViewModel by viewModels()
+
+        val writeNoteViewModel: WriteNoteViewModel by viewModels()
+
+        val updateNoteViewModel: UpdateNoteViewModel by viewModels()
+
+        val onboardingViewModel: OnboardingViewModel by viewModels()
+
         setContent {
-            val context = LocalContext.current
+            val context = LocalContext.current as ComponentActivity
+
             // Notificaciones
             var permission by remember {
                 mutableStateOf(
@@ -61,49 +65,25 @@ class MainActivity : ComponentActivity() {
 
             LaunchedEffect(Unit) {
                 permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-
-                NotificationWorker.releaseNotification(context, settingsViewModel)
+                NotificationWorker.releaseNotification(context)
             }
-
-
-            val workInfosLiveData = getAllScheduledWork(context)
-
-            workInfosLiveData.observe(this, Observer { workInfos ->
-                for (workInfo in workInfos) {
-                    val workId = workInfo.id
-                    val state = workInfo.state
-                    val tags = workInfo.tags
-                    val nextScheduleTimeMillis =
-                        convertMillisToDateTime(workInfo.nextScheduleTimeMillis)
-
-                    Log.d("WorkInfo", "Work ID: $workId, State: $state, Tags: $tags, nextScheduleTimeMillis: $nextScheduleTimeMillis")
-                }
-            })
 
             GratitudeWaveV1Theme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainNavigation(settingsViewModel)
+                    MainNavigation(
+                        settingsViewModel,
+                        writeNoteViewModel,
+                        updateNoteViewModel,
+                        onboardingViewModel
+                    )
+
                 }
+
+
             }
         }
-    }
-
-    fun getAllScheduledWork(context: Context): LiveData<List<WorkInfo>> {
-        val workManager = WorkManager.getInstance(context)
-        val workQuery = WorkQuery.Builder.fromStates(
-            listOf(
-                WorkInfo.State.ENQUEUED,
-                WorkInfo.State.RUNNING,
-                WorkInfo.State.SUCCEEDED,
-                WorkInfo.State.FAILED,
-                WorkInfo.State.BLOCKED,
-                WorkInfo.State.CANCELLED
-            )
-        ).build()
-
-        return workManager.getWorkInfosLiveData(workQuery)
     }
 }

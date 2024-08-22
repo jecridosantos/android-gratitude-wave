@@ -1,6 +1,7 @@
 package com.jdosantos.gratitudewavev1.ui.view.main.profile.settings.reminders
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -36,12 +37,15 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Observer
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
 import com.jdosantos.gratitudewavev1.domain.handles.ReminderRepetitions
@@ -77,7 +81,11 @@ fun SaveRemindersScreen(
             settingsViewModel.fillReminder(id)
         }
     }
-
+    settingsViewModel.toastMessage.observe(LocalLifecycleOwner.current, Observer { message ->
+        message?.let {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        }
+    })
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -89,8 +97,6 @@ fun SaveRemindersScreen(
                     )
                 },
                 navigationIcon = {
-
-
                     IconButton(onClick = {
                         navController.popBackStack()
                     }) {
@@ -102,26 +108,20 @@ fun SaveRemindersScreen(
 
                     if (isUpdated) {
                         IconButton(onClick = {
-                            settingsViewModel.deleteReminder(context, id) {
-                                navController.popBackStack()
-                            }
-                        }) {
+                            settingsViewModel.deleteReminder(id)
+                            navController.popBackStack()
+                        }
+
+                        ) {
                             Icon(imageVector = Icons.Default.Delete, contentDescription = "")
                         }
 
                     }
                     IconButton(onClick = {
                         if (isUpdated) {
-                            settingsViewModel.updateReminder(
-                                context,
-                                id
-                            ) {
-
-                            }
+                            settingsViewModel.updateReminder(id)
                         } else {
-                            settingsViewModel.addReminder(context) {
-
-                            }
+                            settingsViewModel.addReminder()
                         }
                         navController.popBackStack()
 
@@ -206,7 +206,8 @@ fun SaveRemindersScreen(
                 stringResource(R.string.label_label),
                 currentReminder.label!!,
                 stringResource(R.string.label_my_morning_reminder),
-                KeyboardType.Text
+                KeyboardType.Text,
+                imeAction = ImeAction.Done
             ) {
                 settingsViewModel.fillReminderLabel(it)
             }

@@ -102,27 +102,23 @@ private fun ContentRemindersView(
     settingsViewModel: SettingsViewModel
 ) {
     val isLoading by settingsViewModel.isLoading.collectAsState()
-    // val data by settingsViewModel.reminders.collectAsState()
     val configUser by settingsViewModel.userSettings.collectAsState()
     val data = configUser.reminders
-    val context = LocalContext.current
     Column(
         modifier = Modifier
             .padding(paddingValues)
             .padding(SPACE_DEFAULT.dp)
     ) {
-        if (isLoading) {
-            Loader()
-        } else {
+        Loader(isLoading)
+        if (!isLoading) {
             if (data.isNotEmpty()) {
                 LazyColumn {
                     itemsIndexed(data) { index, item ->
-                        Log.d("TIMEPICKER 2", "index: $index, item: $item")
                         ItemReminder(item, {
                             navController.navigate(Screen.SaveRemindersScreen.params(index, item.hour!!, item.minute!!))
                         }) {
                             checked ->
-                            settingsViewModel.updateReminderState(context, index, checked) {}
+                            settingsViewModel.updateReminderState(index, checked)
                         }
 
 

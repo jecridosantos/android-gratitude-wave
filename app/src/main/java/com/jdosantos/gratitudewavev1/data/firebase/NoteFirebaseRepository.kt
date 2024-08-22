@@ -10,9 +10,12 @@ import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import com.jdosantos.gratitudewavev1.domain.models.Note
 import com.jdosantos.gratitudewavev1.data.pagination.NotesPagingSource
+import com.jdosantos.gratitudewavev1.domain.models.Note
 import com.jdosantos.gratitudewavev1.domain.repository.NoteRepository
+import com.jdosantos.gratitudewavev1.utils.EncryptionUtils
+import com.jdosantos.gratitudewavev1.utils.getToday
+import com.jdosantos.gratitudewavev1.utils.isSameDay
 import kotlinx.coroutines.flow.Flow
 import java.util.Date
 import javax.inject.Inject
@@ -27,46 +30,60 @@ class NoteFirebaseRepository @Inject constructor(
 
     private val collection: CollectionReference = db.collection("Notes")
 
-    override fun getNotesByEmail(callback: (List<Note>) -> Unit, onError: () -> Unit) {
+    override fun getNotesByEmail(
+        limit: Long?,
+        callback: (List<Note>) -> Unit,
+        onError: () -> Unit
+    ) {
         Log.d(tag, "getNotesByEmail")
         if (email != null) {
-            collection
+            val query = collection
                 .whereEqualTo("email", email!!.toString())
                 .orderBy("createAt", Query.Direction.DESCENDING)
 
-                .addSnapshotListener { querySnapshot, error ->
-                    if (error != null) {
-                        onError.invoke()
-                        Log.e(tag, "getNotesByEmail - error: $error")
-                        return@addSnapshotListener
-                    }
+            val finalQuery = if (limit != null) query.limit(limit) else query
 
-                    val notes = mutableListOf<Note>()
-                    if (querySnapshot != null) {
-                        for (document in querySnapshot) {
-                            val note = mapToState(document)
-                            notes.add(note)
-
-                        }
-                    }
-
-                    callback.invoke(notes)
+            finalQuery.addSnapshotListener { querySnapshot, error ->
+                if (error != null) {
+                    onError.invoke()
+                    Log.e(tag, "getNotesByEmail - error: $error")
+                    return@addSnapshotListener
                 }
+
+                val notes = mutableListOf<Note>()
+                if (querySnapshot != null) {
+                    for (document in querySnapshot) {
+                        val note = mapToState(document)
+                        notes.add(note)
+                    }
+                }
+
+                callback.invoke(notes)
+            }
         }
     }
+
 
     @SuppressLint("SuspiciousIndentation")
     override fun saveNote(note: Note, callback: (success: Boolean) -> Unit) {
         Log.d(tag, "saveNote")
+
+        //  val (textoEncriptado, nuevoIv) = encrypt(note.note.toByteArray())
+
+        //  val noteBase64 = Base64.encodeToString(textoEncriptado, Base64.NO_WRAP)
+        //  val ivBase64 = Base64.encodeToString(nuevoIv, Base64.NO_WRAP)
+        val noteBase64 = EncryptionUtils.encrypt(note.note);
         try {
             val newNote = hashMapOf(
-                "note" to note.note,
+                "note" to noteBase64,
+                //     "iv" to ivBase64,
                 "type" to note.type,
                 "emotion" to note.emotion,
                 "date" to note.date,
                 "email" to email,
                 "noteTag" to note.noteTag,
                 "color" to note.color,
+                "generatedByAI" to note.generatedByAI,
                 "createAt" to com.google.firebase.firestore.FieldValue.serverTimestamp()
             )
 
@@ -93,9 +110,24 @@ class NoteFirebaseRepository @Inject constructor(
 
         val updateAt = timestampUpdateAt?.toDate()
         val createAt = timestampCreateAt?.toDate()
+        var noteText = document.getString("note") ?: ""
+        try {
+//            val ivBase64 = document.getString("iv")
+//            if (ivBase64 != null) {
+//                val textoEncriptado = Base64.decode(noteText, Base64.NO_WRAP)
+//                val iv = Base64.decode(ivBase64, Base64.NO_WRAP)
+//                noteText = decrypt(textoEncriptado, iv);
+//            }
+
+            noteText = EncryptionUtils.decrypt(noteText)
+
+        } catch (e: Exception) {
+            Log.d("Error en desencriptar", e.message.toString())
+        }
 
         return document.toObject(Note::class.java)!!.copy(
             idDoc = document.id,
+            note = noteText,
             updateAt = updateAt,
             createAt = createAt
         )
@@ -103,13 +135,22 @@ class NoteFirebaseRepository @Inject constructor(
 
     override fun updateNote(note: Note, callback: (success: Boolean) -> Unit) {
         Log.d(tag, "updateNote")
+//        val (textoEncriptado, nuevoIv) = encrypt(note.note.toByteArray())
+//
+//        val noteBase64 = Base64.encodeToString(textoEncriptado, Base64.NO_WRAP)
+//        val ivBase64 = Base64.encodeToString(nuevoIv, Base64.NO_WRAP)
+
+        val noteBase64 = EncryptionUtils.encrypt(note.note);
         try {
             val editNote = hashMapOf(
-                "note" to note.note,
+                "note" to noteBase64,
+                //  "iv" to ivBase64,
                 "type" to note.type,
                 "emotion" to note.emotion,
                 "noteTag" to note.noteTag,
                 "color" to note.color,
+                "date" to note.date,
+                "generatedByAI" to note.generatedByAI,
                 "updateAt" to com.google.firebase.firestore.FieldValue.serverTimestamp()
             )
             Log.d("UPDATE", note.idDoc)
@@ -287,6 +328,50 @@ class NoteFirebaseRepository @Inject constructor(
                     callback.invoke(creationDates)
                 }
         }
+    }
+
+    override fun countNotesForToday(callback: (Int) -> Unit) {
+
+        val calendar = getToday()
+        val startOfDay = calendar.time
+
+        collection
+            .whereEqualTo("email", email!!.toString())
+            .whereGreaterThanOrEqualTo("createAt", startOfDay)
+            .get()
+            .addOnSuccessListener { result ->
+                val count = result.documents.count { document ->
+                    val timestamp = document.getTimestamp("createAt")?.toDate()
+                    timestamp != null && timestamp.isSameDay(calendar)
+                }
+                callback(count)
+            }
+            .addOnFailureListener { error ->
+                Log.e(tag, "countNotesForToday - error: $error")
+                callback(0)
+            }
+    }
+
+    override fun countNotesByIAForToday(callback: (Int) -> Unit) {
+        val calendar = getToday()
+        val startOfDay = calendar.time
+
+        collection
+            .whereEqualTo("email", email!!.toString())
+            .whereGreaterThanOrEqualTo("createAt", startOfDay)
+            .whereEqualTo("generatedByAI", true)
+            .get()
+            .addOnSuccessListener { result ->
+                val count = result.documents.count { document ->
+                    val timestamp = document.getTimestamp("createAt")?.toDate()
+                    timestamp != null && timestamp.isSameDay(calendar)
+                }
+                callback(count)
+            }
+            .addOnFailureListener { error ->
+                Log.e(tag, "countNotesByIAForToday - error: $error")
+                callback(0)
+            }
     }
 
 }
