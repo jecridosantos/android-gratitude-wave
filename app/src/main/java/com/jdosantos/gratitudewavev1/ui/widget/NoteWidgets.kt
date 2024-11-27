@@ -337,7 +337,7 @@ fun CardItems(icon: Int, text: String, color: Color, onClick: () -> Unit) {
                 Icon(
                     painter = painterResource(id = icon),
                     contentDescription = "",
-                    Modifier.size(50.dp)
+                    Modifier.size(50.
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
