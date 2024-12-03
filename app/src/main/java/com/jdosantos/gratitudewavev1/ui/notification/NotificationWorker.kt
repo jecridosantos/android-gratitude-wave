@@ -76,7 +76,6 @@ class NotificationWorker @Inject constructor(
 
         val title = label.ifEmpty { getRandomTitle() }
 
-        // TODO: validar ruta a write note
         val pendingIntent = createPendingIntent(applicationContext, "gratitude_view")
 
 

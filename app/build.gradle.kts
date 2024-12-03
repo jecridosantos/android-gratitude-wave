@@ -8,15 +8,6 @@ plugins {
 }
 
 android {
-    signingConfigs {
-        getByName("debug") {
-            storeFile =
-                file("C:\\Users\\jecri\\Workspace\\gratitud\\gratitude-wave\\gratitude.keystore")
-            storePassword = "gratitude"
-            keyPassword = "gratitude"
-            keyAlias = "key0"
-        }
-    }
     namespace = "com.jdosantos.gratitudewavev1"
     compileSdk = 34
 

@@ -1,41 +1,41 @@
 {
   "project_info": {
-    "project_number": "741930850747",
-    "project_id": "gratitudewavev1",
-    "storage_bucket": "gratitudewavev1.appspot.com"
+    "project_number": "123456789012",
+    "project_id": "randomprojectid123",
+    "storage_bucket": "randombucket.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:741930850747:android:c787a68baabd82c20bcc9e",
+        "mobilesdk_app_id": "1:123456789012:android:abcdef123456",
         "android_client_info": {
           "package_name": "com.jdosantos.gratitudewavev1"
         }
       },
       "oauth_client": [
         {
-          "client_id": "741930850747-evc2nbicolpuirgu4679legkkl5d8lcb.apps.googleusercontent.com",
+          "client_id": "123456789012-abcdefghijklmnopqrstuvwx.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.jdosantos.gratitudewavev1",
-            "certificate_hash": "1f11a3eb83854f6ba40fccced5e1b5f1afd1a4a9"
+            "certificate_hash": "abcdef1234567890abcdef1234567890abcdef12"
           }
         },
         {
-          "client_id": "741930850747-12p5utjs35rpjat1mipu4q4mejnks39d.apps.googleusercontent.com",
+          "client_id": "123456789012-abcdefghijklmnopqrstuvwx.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCxh41P9AYi8ozmh2UBe9i_wW-CsidRGm0"
+          "current_key": "AbCdEfGhIjKlMnOpQrStUvWxYz1234567890"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "741930850747-12p5utjs35rpjat1mipu4q4mejnks39d.apps.googleusercontent.com",
+              "client_id": "123456789012-abcdefghijklmnopqrstuvwx.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
@@ -43,5 +43,5 @@
       }
     }
   ],
-  "configuration_version": "1"
+  "configuration_version": "2"
 }

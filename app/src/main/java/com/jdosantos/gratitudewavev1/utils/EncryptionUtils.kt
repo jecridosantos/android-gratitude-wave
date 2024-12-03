@@ -7,7 +7,8 @@ import android.util.Base64
 object EncryptionUtils {
     private const val ALGORITHM = "AES"
     private const val TRANSFORMATION = "AES/ECB/PKCS5Padding"
-    private const val SECRET_KEY = "tu_clave_secreta"
+    //TODO: add custom secret key
+    private const val SECRET_KEY = ""
 
     fun encrypt(value: String): String {
         val cipher = Cipher.getInstance(TRANSFORMATION)
