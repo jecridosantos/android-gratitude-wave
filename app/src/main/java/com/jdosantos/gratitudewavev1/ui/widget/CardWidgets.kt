@@ -33,11 +33,10 @@ import com.jdosantos.gratitudewavev1.R
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
 
 @Composable
-fun CardProgress(title: String, text: String, color: Color, onClick: () -> Unit) {
+fun CardProgress(title: String, text: String, color: Color) {
     Box(modifier = Modifier
         .padding(bottom = SPACE_DEFAULT.dp)
         .fillMaxWidth(),
-     //   shape = RoundedCornerShape(10.dp),
         ) {
         Card(
             colors = CardDefaults.cardColors(

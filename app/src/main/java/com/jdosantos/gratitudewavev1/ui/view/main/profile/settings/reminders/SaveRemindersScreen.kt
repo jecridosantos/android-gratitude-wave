@@ -14,10 +14,10 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -100,7 +100,10 @@ fun SaveRemindersScreen(
                     IconButton(onClick = {
                         navController.popBackStack()
                     }) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "")
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                            contentDescription = ""
+                        )
                     }
 
                 },
@@ -268,7 +271,7 @@ private fun ItemReminderOption(title: String, config: String, onClick: () -> Uni
             Row {
                 Text(text = config, color = MaterialTheme.colorScheme.outline)
                 Icon(
-                    imageVector = Icons.Default.KeyboardArrowRight,
+                    imageVector = Icons.AutoMirrored.Default.KeyboardArrowRight,
                     contentDescription = "",
                     tint = MaterialTheme.colorScheme.outline
                 )
@@ -296,7 +299,7 @@ private fun ChooseRepeat(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 LazyColumn {
-                    itemsIndexed(items) { index, item ->
+                    itemsIndexed(items) { _, item ->
 
                         ItemSelectedOptions(selected == item.id, stringResource(id = item.title)) {
                             onSelected(item)

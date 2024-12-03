@@ -61,7 +61,7 @@ class UserFirebaseRepository @Inject constructor(
                 )
                 collection.document(userId)
                     .update(updateName as Map<String, Any>)
-                    .addOnSuccessListener { documentReference ->
+                    .addOnSuccessListener { _ ->
                         continuation.resume(Result.success(true))
                     }
                     .addOnFailureListener { exception ->

@@ -80,7 +80,6 @@ fun ByCalendarScreen(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ContentByCalendarView(
     byCalendarViewModel: ByCalendarViewModel,
@@ -123,24 +122,6 @@ fun ContentByCalendarView(
 
             }
         }
-
-
-        /*  Column(
-              horizontalAlignment = Alignment.CenterHorizontally,
-              modifier = Modifier.fillMaxWidth()
-          ) {
-
-          }*/
-
-
-        // Spacer(modifier = Modifier.height(16.dp))
-
-        /*Title(
-            text = getFormattedDateSimple(byCalendarViewModel.selectedDate.value),
-            modifier = Modifier
-        )
-        Spacer(modifier = Modifier.height(16.dp))*/
-
 
         Row(
             verticalAlignment = Alignment.CenterVertically
@@ -185,7 +166,6 @@ fun ContentByCalendarView(
                     }
                 }
             } else {
-                //   EmptyMessage()
                 EmptyMessage(null, stringResource(id = R.string.label_no_notes), null)
             }
         }

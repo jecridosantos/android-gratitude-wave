@@ -136,8 +136,7 @@ private fun MonthView(
 private fun DayView(daysOfCalendar: DaysOfCalendar, selectedDate: Date, onClick: (Date) -> Unit) {
     if (daysOfCalendar.isCurrentMonth) {
     val colorText = MaterialTheme.colorScheme.onBackground
-    var colorBack =
-        if (daysOfCalendar.isCurrentMonth) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surfaceVariant
+    var colorBack = MaterialTheme.colorScheme.surface
 
     val isToday = compareDatesWithoutTime(Date(), daysOfCalendar.day)
     val isSelectedDay = compareDatesWithoutTime(selectedDate, daysOfCalendar.day)

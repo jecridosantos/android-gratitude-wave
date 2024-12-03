@@ -1,6 +1,5 @@
 package com.jdosantos.gratitudewavev1.ui.view.main.profile.settings.reminders
 
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,8 +11,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -32,28 +31,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.asFlow
 import androidx.navigation.NavController
 import com.jdosantos.gratitudewavev1.R
-import com.jdosantos.gratitudewavev1.domain.models.UserSettingReminders
 import com.jdosantos.gratitudewavev1.domain.handles.ReminderRepetitions
+import com.jdosantos.gratitudewavev1.domain.models.UserSettingReminders
 import com.jdosantos.gratitudewavev1.ui.navigation.Screen
-import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
-import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT_MID
-import com.jdosantos.gratitudewavev1.utils.hourFormat
 import com.jdosantos.gratitudewavev1.ui.view.main.profile.settings.SettingsViewModel
 import com.jdosantos.gratitudewavev1.ui.widget.EmptyMessage
 import com.jdosantos.gratitudewavev1.ui.widget.Loader
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.REMINDER_INDEX_EMPTY
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.REMINDER_INDEX_HOUR_EMPTY
 import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.REMINDER_INDEX_MINUTE_EMPTY
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT
+import com.jdosantos.gratitudewavev1.utils.constants.Constants.Companion.SPACE_DEFAULT_MID
 import com.jdosantos.gratitudewavev1.utils.getFirstLetters
 import com.jdosantos.gratitudewavev1.utils.getRepeatDescription
+import com.jdosantos.gratitudewavev1.utils.hourFormat
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -70,7 +66,10 @@ fun RemindersScreen(navController: NavController, settingsViewModel: SettingsVie
                     IconButton(onClick = {
                         navController.popBackStack()
                     }) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "")
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                            contentDescription = ""
+                        )
                     }
 
                 }
@@ -78,7 +77,13 @@ fun RemindersScreen(navController: NavController, settingsViewModel: SettingsVie
         },
         floatingActionButton = {
             FloatingActionButton(onClick = {
-                navController.navigate(Screen.SaveRemindersScreen.params(REMINDER_INDEX_EMPTY, REMINDER_INDEX_HOUR_EMPTY, REMINDER_INDEX_MINUTE_EMPTY))
+                navController.navigate(
+                    Screen.SaveRemindersScreen.params(
+                        REMINDER_INDEX_EMPTY,
+                        REMINDER_INDEX_HOUR_EMPTY,
+                        REMINDER_INDEX_MINUTE_EMPTY
+                    )
+                )
             }) {
                 Icon(
                     imageVector = Icons.Default.Add,
@@ -115,9 +120,14 @@ private fun ContentRemindersView(
                 LazyColumn {
                     itemsIndexed(data) { index, item ->
                         ItemReminder(item, {
-                            navController.navigate(Screen.SaveRemindersScreen.params(index, item.hour!!, item.minute!!))
-                        }) {
-                            checked ->
+                            navController.navigate(
+                                Screen.SaveRemindersScreen.params(
+                                    index,
+                                    item.hour!!,
+                                    item.minute!!
+                                )
+                            )
+                        }) { checked ->
                             settingsViewModel.updateReminderState(index, checked)
                         }
 
@@ -139,7 +149,7 @@ private fun ItemReminder(
 ) {
     val repeatConfigSelect = userSettingReminders.repeat
     val selectedDays = userSettingReminders.repeatDays
-    var subtitleRepeat = stringResource(id =  getRepeatDescription(repeatConfigSelect))
+    var subtitleRepeat = stringResource(id = getRepeatDescription(repeatConfigSelect))
 
     if (repeatConfigSelect == ReminderRepetitions.Custom.id && selectedDays!!.size > 0) {
         subtitleRepeat = getFirstLetters(selectedDays, LocalContext.current.resources)
@@ -151,7 +161,6 @@ private fun ItemReminder(
             .fillMaxWidth()
             .padding(top = SPACE_DEFAULT_MID.dp, bottom = SPACE_DEFAULT_MID.dp)
             .clickable { onClick() },
-        //    shape = RoundedCornerShape(8.dp)
     ) {
         Row(
             modifier = Modifier.padding(SPACE_DEFAULT.dp),

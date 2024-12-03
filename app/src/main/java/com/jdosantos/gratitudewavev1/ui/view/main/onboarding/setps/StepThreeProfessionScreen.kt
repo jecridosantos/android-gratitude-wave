@@ -49,7 +49,6 @@ fun StepThreeProfessionScreen(modifier: Modifier = Modifier, viewModel: Onboardi
 
     val preferences = viewModel.preferences
     val professions = viewModel.professionsList.collectAsState().value
-  //  val professionOtherWord = viewModel.professionOtherWord.collectAsState().value
 
     var profession = preferences.profession
 

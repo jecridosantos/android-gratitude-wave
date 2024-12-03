@@ -69,13 +69,10 @@ fun AlertMessageToday(
     onConfirmClick: () -> Unit,
     onDismissClick: () -> Unit
 ) {
-    val scroll = rememberScrollState(0)
 
-    Dialog(onDismissRequest = { /*TODO*/ }) {
+    Dialog(onDismissRequest = { }) {
         Card(
             modifier = Modifier
-         //       .fillMaxWidth()
-              //  .height(200.dp)
                 .padding(SPACE_DEFAULT.dp),
             shape = RoundedCornerShape(16.dp),
         ) {

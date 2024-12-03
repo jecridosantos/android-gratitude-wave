@@ -11,7 +11,7 @@ android {
     signingConfigs {
         getByName("debug") {
             storeFile =
-                file("E:\\Workspace\\GratitudeWave\\android\\gratitude-wave\\gratitude.keystore")
+                file("C:\\Users\\jecri\\Workspace\\gratitud\\gratitude-wave\\gratitude.keystore")
             storePassword = "gratitude"
             keyPassword = "gratitude"
             keyAlias = "key0"

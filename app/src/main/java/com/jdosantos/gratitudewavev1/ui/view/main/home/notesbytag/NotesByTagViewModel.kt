@@ -41,7 +41,7 @@ class NotesByTagViewModel @Inject constructor(
         fetchNotes(tagId)
     }
 
-    fun fetchNotes(tagId: String) {
+    private fun fetchNotes(tagId: String) {
         _isLoading.value = true
 
         getTagByIdUseCase.execute(tagId, { noteTag: NoteTag ->

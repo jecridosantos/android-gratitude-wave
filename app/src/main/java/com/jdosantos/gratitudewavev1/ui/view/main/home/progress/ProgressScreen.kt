@@ -75,24 +75,21 @@ private fun ContentProgressView(
                 CardProgress(
                     title = stringResource(R.string.label_total_notes),
                     text = "${progressState.totalNotes}",
-                    color = getColors()[0],
-                    onClick = {}
+                    color = getColors()[0]
                 )
             }
             item {
                 CardProgress(
                     title = stringResource(R.string.label_current_streak),
                     text = "${progressState.currentStreak} ${stringResource(id = R.string.label_days)}",
-                    color = getColors()[1],
-                    onClick = {}
+                    color = getColors()[1]
                 )
             }
             item {
                 CardProgress(
                     title = stringResource(R.string.label_best_streak),
                     text = "${progressState.bestStreak} ${stringResource(id = R.string.label_days)}",
-                    color = getColors()[2],
-                    onClick = {}
+                    color = getColors()[2]
                 )
             }
         }

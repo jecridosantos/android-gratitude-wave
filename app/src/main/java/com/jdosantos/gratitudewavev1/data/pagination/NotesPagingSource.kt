@@ -46,7 +46,7 @@ class NotesPagingSource(
             )
 
         } catch (e: Exception) {
-            Log.d("Paging error", e.localizedMessage)
+            Log.d("Paging error", e.localizedMessage!!)
             LoadResult.Error(e)
         }
 }

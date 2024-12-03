@@ -68,15 +68,10 @@ class NoteFirebaseRepository @Inject constructor(
     override fun saveNote(note: Note, callback: (success: Boolean) -> Unit) {
         Log.d(tag, "saveNote")
 
-        //  val (textoEncriptado, nuevoIv) = encrypt(note.note.toByteArray())
-
-        //  val noteBase64 = Base64.encodeToString(textoEncriptado, Base64.NO_WRAP)
-        //  val ivBase64 = Base64.encodeToString(nuevoIv, Base64.NO_WRAP)
         val noteBase64 = EncryptionUtils.encrypt(note.note);
         try {
             val newNote = hashMapOf(
                 "note" to noteBase64,
-                //     "iv" to ivBase64,
                 "type" to note.type,
                 "emotion" to note.emotion,
                 "date" to note.date,
@@ -112,13 +107,6 @@ class NoteFirebaseRepository @Inject constructor(
         val createAt = timestampCreateAt?.toDate()
         var noteText = document.getString("note") ?: ""
         try {
-//            val ivBase64 = document.getString("iv")
-//            if (ivBase64 != null) {
-//                val textoEncriptado = Base64.decode(noteText, Base64.NO_WRAP)
-//                val iv = Base64.decode(ivBase64, Base64.NO_WRAP)
-//                noteText = decrypt(textoEncriptado, iv);
-//            }
-
             noteText = EncryptionUtils.decrypt(noteText)
 
         } catch (e: Exception) {
@@ -135,16 +123,10 @@ class NoteFirebaseRepository @Inject constructor(
 
     override fun updateNote(note: Note, callback: (success: Boolean) -> Unit) {
         Log.d(tag, "updateNote")
-//        val (textoEncriptado, nuevoIv) = encrypt(note.note.toByteArray())
-//
-//        val noteBase64 = Base64.encodeToString(textoEncriptado, Base64.NO_WRAP)
-//        val ivBase64 = Base64.encodeToString(nuevoIv, Base64.NO_WRAP)
-
         val noteBase64 = EncryptionUtils.encrypt(note.note);
         try {
             val editNote = hashMapOf(
                 "note" to noteBase64,
-                //  "iv" to ivBase64,
                 "type" to note.type,
                 "emotion" to note.emotion,
                 "noteTag" to note.noteTag,

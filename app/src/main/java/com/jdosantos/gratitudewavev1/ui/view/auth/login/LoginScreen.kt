@@ -189,7 +189,6 @@ fun LoginScreenContent(
             keyboardType = KeyboardType.Email,
             imeAction = ImeAction.Next
         ) {
-            // state.email.value = it
             onEmailChanged(it)
         }
         InputRound(
@@ -199,13 +198,11 @@ fun LoginScreenContent(
             keyboardType = KeyboardType.Password,
             imeAction = ImeAction.Done
         ) {
-            //    state.password.value = it
             onPasswordChanged(it)
         }
 
         ElevatedButton(
             onClick = {
-                //  handleLoginClick(loginViewModel, state.email.value, state.password.value)
                 onLoginClicked()
             }, modifier = Modifier
                 .fillMaxWidth()
@@ -221,7 +218,6 @@ fun LoginScreenContent(
         ElevatedButton(
             onClick = {
                 onGoogleSignInClicked()
-                // launcherIntentGoogle.launch(googleSignInIntent(context))
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -242,7 +238,6 @@ fun LoginScreenContent(
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.clickable {
                 onForgotPasswordClicked()
-                // navController.navigate(Screen.ResetPasswordScreen.route)
             })
         Spacer(modifier = Modifier.height(SPACE_DEFAULT.dp))
 
@@ -279,13 +274,6 @@ private fun handleBackPressed(
         (context as? Activity)?.finish()
     } else {
         backPressedOnceState.value = true
-    }
-}
-
-
-private fun handleGoogleSignInResult(navController: NavController) {
-    navController.navigate(Screen.ContainerScreen.route) {
-        popUpTo(Screen.SplashScreen.route) { inclusive = true }
     }
 }
 

@@ -82,8 +82,6 @@ fun CurrentDateView(date: String? = null, createAt: Date? = null,clickeable: Boo
         val dateFormated = getDateFromString(date)
         dateToShow = combineDateAndTime(dateFormated, createAt)
     }
-    //val dateState = rememberDatePickerState()
-
 
     val dateState = rememberDatePickerState(
         selectableDates = object : SelectableDates {
@@ -115,7 +113,6 @@ fun CurrentDateView(date: String? = null, createAt: Date? = null,clickeable: Boo
             Icon(imageVector = Icons.Default.KeyboardArrowDown, contentDescription = "")
         }
 
-
         if (showDialog) {
             DatePickerDialog(
                 onDismissRequest = { showDialog = false },
@@ -145,20 +142,12 @@ fun CurrentDateView(date: String? = null, createAt: Date? = null,clickeable: Boo
             }
         }
     } else {
-
-
             Text(
                 text = getFormattedDate(dateToShow),
                 fontSize = 12.sp,
                 modifier = Modifier.padding(start = 4.dp)
             )
-
-
-
-
     }
-
-
 }
 
 @Composable
@@ -201,7 +190,6 @@ fun DisplayEmotion(emotionIndex: Int?, style: TextStyle = MaterialTheme.typograp
         val noteEmotionConfig = emotionLists[emotionIndex!!]
         Text(
             text = "${stringResource(id = noteEmotionConfig.message)} ${stringResource(id = noteEmotionConfig.icon)}",
-           // color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -218,7 +206,6 @@ fun DisplayTag(noteTag: NoteTag?, style: TextStyle = MaterialTheme.typography.bo
         Text(
             text = noteTag.esTag,
             overflow = TextOverflow.Ellipsis,
-           // color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight.SemiBold,
             style = style
         )
@@ -226,7 +213,6 @@ fun DisplayTag(noteTag: NoteTag?, style: TextStyle = MaterialTheme.typography.bo
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun NoteInputFiled(
     note: String,
@@ -242,9 +228,7 @@ private fun NoteInputFiled(
                 fontSize = 24.sp
             )
         },
-//        colors = TextFieldDefaults.outlinedTextFieldColors(
-//            focusedBorderColor = Color.Transparent, unfocusedBorderColor = Color.Transparent
-//        ),
+
         keyboardOptions = KeyboardOptions.Default.copy(
             imeAction = ImeAction.Default,
             capitalization = KeyboardCapitalization.Sentences
@@ -337,7 +321,7 @@ fun CardItems(icon: Int, text: String, color: Color, onClick: () -> Unit) {
                 Icon(
                     painter = painterResource(id = icon),
                     contentDescription = "",
-                    Modifier.size(50.
+                    Modifier.size(50.dp)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
@@ -425,7 +409,7 @@ private fun IconFloatingOption2(painter: Painter, onClick: () -> Unit) {
 }
 
 @Composable
-fun NoticeWithoutNotesToday(modifier: Modifier = Modifier) {
+fun NoticeWithoutNotesToday() {
     Card(
         shape = RoundedCornerShape(5.dp),
         colors = CardDefaults.cardColors(

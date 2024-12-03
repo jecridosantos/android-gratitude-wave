@@ -123,12 +123,8 @@ fun ContentNotesByTagView(
                                         )
                                     )
                                 })
-
                             }
-
                         )
-
-
                     }
                 }
             } else {
