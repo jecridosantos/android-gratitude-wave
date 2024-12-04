@@ -54,6 +54,7 @@ Ejemplo:
 // Ejemplo:
 val secretKey = "tu-clave-secreta-personalizada"
 ```
+---
 
 ## 🛠️ Tecnologías Utilizadas
 
@@ -64,4 +65,14 @@ val secretKey = "tu-clave-secreta-personalizada"
       - Autenticación de usuarios.
       - Almacenamiento de datos.
       - Build with Gemini.
+---
 
+## 🚀 Cómo ejecutar la app
+1. Clona este repositorio:
+   
+```
+git clone https://github.com/tuusuario/yuspa.git
+```
+2. Ábrelo en Android Studio.
+3. Asegúrate de tener configurado Firebase correctamente (ver sección **Configuración del Proyecto**).
+4. Ejecuta la app en un emulador o dispositivo físico.
