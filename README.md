@@ -55,5 +55,13 @@ Ejemplo:
 val secretKey = "tu-clave-secreta-personalizada"
 ```
 
- **Nota:** El archivo `google-services.json` incluido en este repositorio es un archivo de ejemplo con datos ficticios. **Debes generar tu propio archivo en la configuración de Firebase** para que la app funcione correctamente.
+## 🛠️ Tecnologías Utilizadas
+
+   - Android Jetpack Compose: Para un diseño de interfaz moderno y declarativo.
+   - Kotlin: Lenguaje principal del proyecto.
+   - Java 17: Para soporte avanzado de Java.
+   - Firebase:
+      - Autenticación de usuarios.
+      - Almacenamiento de datos.
+      - Build with Gemini.
 
