@@ -53,5 +53,7 @@ Ejemplo:
 ```kotlin
 // Ejemplo:
 val secretKey = "tu-clave-secreta-personalizada"
-´´´
+```
+
  **Nota:** El archivo `google-services.json` incluido en este repositorio es un archivo de ejemplo con datos ficticios. **Debes generar tu propio archivo en la configuración de Firebase** para que la app funcione correctamente.
+
