@@ -71,8 +71,16 @@ val secretKey = "tu-clave-secreta-personalizada"
 1. Clona este repositorio:
    
 ```
-git clone https://github.com/tuusuario/yuspa.git
+git clone https://github.com/jecridosantos/android-gratitude-wave.git
 ```
 2. Ábrelo en Android Studio.
 3. Asegúrate de tener configurado Firebase correctamente (ver sección **Configuración del Proyecto**).
 4. Ejecuta la app en un emulador o dispositivo físico.
+
+---
+## 🛡️ Licencia
+Este proyecto está disponible bajo la licencia MIT
+
+---
+## 🤝 Contribuciones
+¡Las contribuciones son bienvenidas! Si tienes ideas para mejorar la app, no dudes en abrir un issue o enviar un pull request.
